@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Cache</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        button {
+            background: #f59e0b;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #d97706;
+        }
+        .result {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .success { border-left: 4px solid #10b981; }
+        .info { border-left: 4px solid #3b82f6; }
+    </style>
+</head>
+<body>
+    <h1>🧹 Clear MindCase Cache</h1>
+    
+    <div class="result info" id="status">
+        Click the button below to clear old cache versions and free up space.
+    </div>
+
+    <button onclick="clearCache()">Clear All Cache</button>
+    <button onclick="showCacheInfo()">Show Cache Info</button>
+
+    <div id="output"></div>
+
+    <script>
+        function showCacheInfo() {
+            let info = 'LocalStorage Keys:\n\n';
+            let totalSize = 0;
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                const size = new Blob([value]).size;
+                totalSize += size;
+                
+                info += `${key}: ${(size / 1024).toFixed(2)} KB\n`;
+            }
+            
+            info += `\nTotal: ${(totalSize / 1024 / 1024).toFixed(2)} MB`;
+            info += `\nItems: ${localStorage.length}`;
+            
+            const output = document.getElementById('output');
+            output.innerHTML = `<div class="result info">${info}</div>`;
+        }
+
+        function clearCache() {
+            const keysToRemove = [];
+            
+            // Find all mindcase cache keys
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && (key.startsWith('mindcase_prod_') || key.startsWith('mindcase_meta_'))) {
+                    keysToRemove.push(key);
+                }
+            }
+            
+            // Remove them
+            keysToRemove.forEach(key => {
+                localStorage.removeItem(key);
+            });
+            
+            const output = document.getElementById('output');
+            output.innerHTML = `<div class="result success">✅ Cleared ${keysToRemove.length} cache entries!\n\nCleared:\n${keysToRemove.join('\n')}\n\nYou can now reload the main app.</div>`;
+            
+            document.getElementById('status').innerHTML = '✅ Cache cleared successfully!';
+        }
+    </script>
+</body>
+</html>

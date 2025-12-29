@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Ad System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 2px solid #444;
+        }
+        button {
+            background: #f59e0b;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #d97706;
+        }
+        .result {
+            background: #1a1a1a;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success { border-left: 4px solid #10b981; }
+        .error { border-left: 4px solid #ef4444; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Ad System Test Suite</h1>
+
+    <div class="test-section">
+        <h2>1. Service Availability Check</h2>
+        <button onclick="testServiceAvailability()">Check Services</button>
+        <div id="service-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. RewardedAdManager Test</h2>
+        <button onclick="testTokenReward()">Request Token Reward</button>
+        <button onclick="testRetryReward()">Request Retry Reward</button>
+        <div id="ad-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. RetryManager Test</h2>
+        <button onclick="testRetryTracking()">Test Retry Tracking</button>
+        <button onclick="testAddAdRetry()">Add Ad Retry</button>
+        <button onclick="testUseRetry()">Use Retry</button>
+        <div id="retry-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Frequency Limits Test</h2>
+        <button onclick="testCooldown()">Test Cooldown</button>
+        <button onclick="testDailyLimit()">Test Daily Limit</button>
+        <div id="frequency-result" class="result"></div>
+    </div>
+
+    <script>
+        // Load services inline to avoid ES6 module issues
+        fetch('services/rewardedAdManager.js')
+            .then(r => r.text())
+            .then(code => {
+                // Remove export statements
+                code = code.replace(/export\s+default\s+\w+\s*;?\s*/g, '');
+                code = code.replace(/export\s*{[\s\S]*?};?\s*/g, '');
+                // Execute the code
+                eval(code);
+                console.log('RewardedAdManager loaded:', typeof window.RewardedAdManager !== 'undefined');
+
+                // Load retry manager
+                return fetch('services/retryManager.js');
+            })
+            .then(r => r.text())
+            .then(code => {
+                // Remove export statements
+                code = code.replace(/export\s+default\s+\w+\s*;?\s*/g, '');
+                code = code.replace(/export\s*{[\s\S]*?};?\s*/g, '');
+                // Execute the code
+                eval(code);
+                console.log('RetryManager loaded:', typeof window.RetryManager !== 'undefined');
+            })
+            .catch(err => {
+                console.error('Failed to load services:', err);
+            });
+    </script>
+
+    <script>
+        const userId = 'test_user_' + Date.now();
+        const puzzleId = 'test_puzzle_1';
+
+        function log(elementId, message, isError = false) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = 'result ' + (isError ? 'error' : 'success');
+        }
+
+        function testServiceAvailability() {
+            const checks = {
+                'RewardedAdManager': typeof window.RewardedAdManager !== 'undefined',
+                'RetryManager': typeof window.RetryManager !== 'undefined'
+            };
+
+            const message = Object.entries(checks)
+                .map(([name, available]) => `${name}: ${available ? '✅ Available' : '❌ Not found'}`)
+                .join('\n');
+
+            const allAvailable = Object.values(checks).every(v => v);
+            log('service-result', message, !allAvailable);
+        }
+
+        async function testTokenReward() {
+            try {
+                if (!window.RewardedAdManager) {
+                    throw new Error('RewardedAdManager not loaded');
+                }
+
+                const adManager = new window.RewardedAdManager(userId, { testMode: true });
+                const result = await adManager.requestTokenReward();
+
+                if (result.success) {
+                    const claimResult = adManager.claimReward(result.rewardToken);
+                    log('ad-result',
+                        `✅ Token Reward Success!\n` +
+                        `Tokens: ${result.tokens}\n` +
+                        `Had Bonus: ${result.hadBonus}\n` +
+                        `Message: ${result.message}\n` +
+                        `Claim Success: ${claimResult.success}`
+                    );
+                } else {
+                    log('ad-result', `⚠️ ${result.message}`, true);
+                }
+            } catch (e) {
+                log('ad-result', `❌ Error: ${e.message}`, true);
+            }
+        }
+
+        async function testRetryReward() {
+            try {
+                if (!window.RewardedAdManager) {
+                    throw new Error('RewardedAdManager not loaded');
+                }
+
+                const adManager = new window.RewardedAdManager(userId, { testMode: true });
+                const result = await adManager.requestRetryReward(puzzleId);
+
+                if (result.success) {
+                    const claimResult = adManager.claimReward(result.rewardToken);
+                    log('ad-result',
+                        `✅ Retry Reward Success!\n` +
+                        `Retries: ${result.retries}\n` +
+                        `Message: ${result.message}\n` +
+                        `Claim Success: ${claimResult.success}`
+                    );
+                } else {
+                    log('ad-result', `⚠️ ${result.message}`, true);
+                }
+            } catch (e) {
+                log('ad-result', `❌ Error: ${e.message}`, true);
+            }
+        }
+
+        function testRetryTracking() {
+            try {
+                if (!window.RetryManager) {
+                    throw new Error('RetryManager not loaded');
+                }
+
+                const retryManager = new window.RetryManager(userId);
+                const stats = retryManager.getStats(puzzleId);
+
+                log('retry-result',
+                    `✅ Retry Stats for ${puzzleId}:\n` +
+                    `Free Retries: ${stats.freeRetries}\n` +
+                    `Ad Retries: ${stats.adRetries}\n` +
+                    `Total Retries: ${stats.totalRetries}\n` +
+                    `Attempts: ${stats.attempts}\n` +
+                    `Completed: ${stats.completed}`
+                );
+            } catch (e) {
+                log('retry-result', `❌ Error: ${e.message}`, true);
+            }
+        }
+
+        function testAddAdRetry() {
+            try {
+                if (!window.RetryManager) {
+                    throw new Error('RetryManager not loaded');
+                }
+
+                const retryManager = new window.RetryManager(userId);
+                const newCount = retryManager.addAdRetry(puzzleId);
+                const stats = retryManager.getStats(puzzleId);
+
+                log('retry-result',
+                    `✅ Added Ad Retry!\n` +
+                    `New Ad Retry Count: ${newCount}\n` +
+                    `Total Retries: ${stats.totalRetries}`
+                );
+            } catch (e) {
+                log('retry-result', `❌ Error: ${e.message}`, true);
+            }
+        }
+
+        function testUseRetry() {
+            try {
+                if (!window.RetryManager) {
+                    throw new Error('RetryManager not loaded');
+                }
+
+                const retryManager = new window.RetryManager(userId);
+                const result = retryManager.useRetry(puzzleId);
+
+                if (result.success) {
+                    log('retry-result',
+                        `✅ Used Retry!\n` +
+                        `Type: ${result.type}\n` +
+                        `Remaining: ${result.remaining}`
+                    );
+                } else {
+                    log('retry-result',
+                        `⚠️ Cannot Use Retry\n` +
+                        `Reason: ${result.reason}\n` +
+                        `Remaining: ${result.remaining}`,
+                        true
+                    );
+                }
+            } catch (e) {
+                log('retry-result', `❌ Error: ${e.message}`, true);
+            }
+        }
+
+        function testCooldown() {
+            try {
+                if (!window.RewardedAdManager) {
+                    throw new Error('RewardedAdManager not loaded');
+                }
+
+                const adManager = new window.RewardedAdManager(userId, { testMode: true });
+                const stats = adManager.getStats();
+                const cooldown = adManager.getRemainingCooldown();
+
+                log('frequency-result',
+                    `✅ Cooldown Info:\n` +
+                    `Remaining Cooldown: ${cooldown} seconds\n` +
+                    `Ads Today: ${stats.todayCount}/${stats.dailyLimit}\n` +
+                    `Remaining Today: ${stats.remainingToday}`
+                );
+            } catch (e) {
+                log('frequency-result', `❌ Error: ${e.message}`, true);
+            }
+        }
+
+        async function testDailyLimit() {
+            try {
+                if (!window.RewardedAdManager) {
+                    throw new Error('RewardedAdManager not loaded');
+                }
+
+                const adManager = new window.RewardedAdManager(userId, { testMode: true });
+
+                // Try to request multiple ads rapidly
+                let successCount = 0;
+                let blockedCount = 0;
+
+                for (let i = 0; i < 5; i++) {
+                    const result = await adManager.requestTokenReward();
+                    if (result.success) {
+                        adManager.claimReward(result.rewardToken);
+                        successCount++;
+                    } else {
+                        blockedCount++;
+                    }
+                    // Small delay
+                    await new Promise(r => setTimeout(r, 100));
+                }
+
+                log('frequency-result',
+                    `✅ Daily Limit Test:\n` +
+                    `Successful: ${successCount}\n` +
+                    `Blocked: ${blockedCount}\n` +
+                    `Note: Cooldown should block rapid requests`
+                );
+            } catch (e) {
+                log('frequency-result', `❌ Error: ${e.message}`, true);
+            }
+        }
+
+        // Auto-run service check on load
+        window.addEventListener('load', () => {
+            setTimeout(testServiceAvailability, 500);
+        });
+    </script>
+</body>
+</html>

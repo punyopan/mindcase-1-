@@ -1,0 +1,217 @@
+import { AlertCircle, FileText } from '../icon';
+import { useState } from 'react';
+
+/**
+ * Data Management Settings Component
+ * Allows users to export, import, and reset their progress data
+ */
+const DataManagement = ({ user, onProgressReset }) => {
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [resetInput, setResetInput] = useState('');
+
+  const handleExportProgress = () => {
+    if (!user) return;
+
+    try {
+      const ProgressService = window.ProgressService;
+      const progressJSON = ProgressService.exportProgress(user.id);
+
+      // Create download link
+      const blob = new Blob([progressJSON], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `mindcase-progress-${user.email}-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Failed to export progress data');
+    }
+  };
+
+  const handleImportProgress = () => {
+    if (!user) return;
+
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const ProgressService = window.ProgressService;
+          const result = ProgressService.importProgress(user.id, event.target.result);
+
+          if (result.success) {
+            alert('Progress data imported successfully! Please refresh the page.');
+            window.location.reload();
+          } else {
+            alert('Failed to import: ' + result.error);
+          }
+        } catch (error) {
+          console.error('Import failed:', error);
+          alert('Failed to import progress data. Invalid file format.');
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  };
+
+  const handleResetProgress = () => {
+    if (!user) return;
+
+    if (resetInput !== 'RESET') {
+      alert('Please type RESET to confirm');
+      return;
+    }
+
+    try {
+      // Clear old progress service data
+      const ProgressService = window.ProgressService;
+      ProgressService.clearProgress(user.id);
+
+      // Clear user progress service data (tokens, unlocked topics/puzzles)
+      const userProgressKey = `mindcase_user_progress_${user.id}`;
+      const analyticsKey = `mindcase_analytics_${user.id}`;
+      localStorage.removeItem(userProgressKey);
+      localStorage.removeItem(analyticsKey);
+
+      // Clear daily minigame progress
+      localStorage.removeItem('daily_minigame_progress');
+
+      // NOTE: Premium subscription is preserved during reset
+      // Users keep their subscription status even after resetting progress
+
+      // Call parent callback to update UI
+      if (onProgressReset) {
+        onProgressReset();
+      }
+
+      setShowResetConfirm(false);
+      setResetInput('');
+
+      alert('All progress has been reset. Refreshing...');
+      window.location.reload();
+    } catch (error) {
+      console.error('Reset failed:', error);
+      alert('Failed to reset progress: ' + error.message);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-bold text-white mb-2">Data Management</h3>
+        <p className="text-stone-400 text-sm">Export, import, or reset your progress data</p>
+      </div>
+
+      {/* Export Progress */}
+      <div className="bg-stone-800/60 border border-stone-700 rounded-xl p-5">
+        <div className="flex items-start gap-3 mb-3">
+          <FileText className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <h4 className="font-bold text-white text-sm mb-1">Export Progress</h4>
+            <p className="text-stone-400 text-xs mb-3">
+              Download your progress data as a JSON file. Use this to backup your data or transfer to another device.
+            </p>
+            <button
+              onClick={handleExportProgress}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+            >
+              Export Data
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Import Progress */}
+      <div className="bg-stone-800/60 border border-stone-700 rounded-xl p-5">
+        <div className="flex items-start gap-3 mb-3">
+          <FileText className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <h4 className="font-bold text-white text-sm mb-1">Import Progress</h4>
+            <p className="text-stone-400 text-xs mb-3">
+              Restore your progress from a previously exported JSON file. This will overwrite your current progress.
+            </p>
+            <button
+              onClick={handleImportProgress}
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
+            >
+              Import Data
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Reset Progress */}
+      <div className="bg-red-900/20 border border-red-700/50 rounded-xl p-5">
+        <div className="flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <h4 className="font-bold text-red-400 text-sm mb-1">Reset All Progress</h4>
+            <p className="text-stone-400 text-xs mb-3">
+              Permanently delete all your progress data including completed puzzles, scores, and statistics.
+              <strong className="text-green-400"> Your premium subscription will be preserved.</strong>
+              <strong className="text-red-400"> This action cannot be undone.</strong>
+            </p>
+
+            {!showResetConfirm ? (
+              <button
+                onClick={() => setShowResetConfirm(true)}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors"
+              >
+                Reset Progress
+              </button>
+            ) : (
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-stone-300 text-xs mb-2">
+                    Type <strong className="text-red-400">RESET</strong> to confirm:
+                  </label>
+                  <input
+                    type="text"
+                    value={resetInput}
+                    onChange={(e) => setResetInput(e.target.value)}
+                    placeholder="Type RESET"
+                    className="w-full px-3 py-2 bg-stone-900 border border-stone-600 rounded-lg text-white text-sm focus:outline-none focus:border-red-500"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleResetProgress}
+                    disabled={resetInput !== 'RESET'}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      resetInput === 'RESET'
+                        ? 'bg-red-600 hover:bg-red-700 text-white'
+                        : 'bg-stone-700 text-stone-500 cursor-not-allowed'
+                    }`}
+                  >
+                    Confirm Reset
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowResetConfirm(false);
+                      setResetInput('');
+                    }}
+                    className="px-4 py-2 bg-stone-700 hover:bg-stone-600 text-white rounded-lg text-sm font-medium transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DataManagement;

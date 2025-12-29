@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCase - Think Before You Believe</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%237f1d1d' width='100' height='100'/><text y='75' font-size='70' fill='%23fbbf24'>🧠</text></svg>">
+
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://unpkg.com">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', system-ui, sans-serif;
+        }
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        #root { width: 100%; height: 100vh; }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        @keyframes cardAppear {
+            from { opacity: 0; transform: translateY(20px) rotate(0deg) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) rotate(var(--rotation, 0deg)) scale(1); }
+        }
+
+        .animate-spin { animation: spin 1s linear infinite; }
+        .animate-fadeInUp { animation: fadeInUp 0.5s ease-out forwards; }
+        .animate-slideInRight { animation: slideInRight 0.4s ease-out forwards; }
+        .animate-slideInLeft { animation: slideInLeft 0.4s ease-out forwards; }
+        .animate-cardAppear { animation: cardAppear 0.5s ease-out forwards; }
+
+        .stagger-1 { animation-delay: 0.05s; }
+        .stagger-2 { animation-delay: 0.1s; }
+        .stagger-3 { animation-delay: 0.15s; }
+        .stagger-4 { animation-delay: 0.2s; }
+        .stagger-5 { animation-delay: 0.25s; }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #f59e0b;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #f59e0b;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Suppress Tailwind JIT warnings */
+        .tailwind-cdn { display: none; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        // Suppress all console warnings in production
+        const originalWarn = console.warn;
+        const originalError = console.error;
+
+        console.warn = function(...args) {
+            const msg = args.join(' ');
+            // Filter out React DevTools, Babel, and Tailwind warnings
+            if (msg.includes('Download the React DevTools') ||
+                msg.includes('You are using the in-browser Babel transformer') ||
+                msg.includes('tailwind') ||
+                msg.includes('precompile')) {
+                return;
+            }
+            originalWarn.apply(console, args);
+        };
+
+        console.error = function(...args) {
+            const msg = args.join(' ');
+            // Filter out non-critical errors
+            if (msg.includes('favicon') ||
+                msg.includes('404') ||
+                msg.includes('Failed to load resource')) {
+                return;
+            }
+        
+        };
+
+        // Performance monitoring
+        const perfStart = performance.now();
+
+        // Optimized loader with aggressive caching
+        const CACHE_KEY = 'mindcase_prod_v52';
+        const CACHE_META = 'mindcase_meta_v52';
+
+        async function loadApp() {
+            try {
+                // DEVELOPMENT MODE: Caching disabled to avoid localStorage full errors
+                // TODO: Re-enable caching for production by uncommenting the block below
+
+                /*
+                // Try cache first
+                const cached = localStorage.getItem(CACHE_KEY);
+                const meta = JSON.parse(localStorage.getItem(CACHE_META) || '{}');
+
+                if (cached && meta.timestamp) {
+                    // Load from cache instantly
+                    const func = new Function('React', 'ReactDOM', cached);
+                    func(React, ReactDOM);
+
+                    const loadTime = Math.round(performance.now() - perfStart);
+                    console.log(`⚡ Loaded in ${loadTime}ms (cached)`);
+                    return;
+                }
+                */
+
+                // First time load - compile and cache
+                // Load Babel first
+                await new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = 'https://unpkg.com/@babel/standalone@7.23.5/babel.min.js';
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    document.head.appendChild(script);
+                });
+
+                // Load all files
+                const [
+                    iconModule,
+                    authService,
+                    progressService,
+                    paymentService,
+                    structuralEvaluatorService,
+                    soundService,
+                    reminderService,
+                    userProgressService,
+                    analyticsEngineService,
+                    rewardedAdManagerService,
+                    retryManagerService,
+                    skillRadarChartModule,
+                    tokenShop,
+                    advancedAnalytics,
+                    topicUnlockModal,
+                    watchAdModal,
+                    navigationModule,
+                    loginForm,
+                    signupForm,
+                    securitySettings,
+                    sessionsHistory,
+                    dataManagement,
+                    soundSettings,
+                    reminderSettings,
+                    detailedFeedback,
+                    logicGrid,
+                    wordCipher,
+                    visualMatching,
+                    colorSequence,
+                    mathPuzzle,
+                    quickMath,
+                    evidenceWeight,
+                    logicCompression,
+                    ruleDrift,
+                    missingConstraint,
+                    memoryConstellation,
+                    colorChaosKitchen,
+                    shadowDetective,
+                    emotionGarden,
+                    pathPainter,
+                    rhythmReef,
+                    gravityGuess,
+                    faceFusion,
+                    minigameManager,
+                    dailyMinigame,
+                    stripeCheckout,
+                    puzzleModalModule,
+                    dailyPuzzleModule,
+                    topicsData,
+                    dailyPuzzlesData,
+                    puzzleEvidenceData,
+                    mainApp
+                ] = await Promise.all([
+                    fetch('component/icon.jsx').then(r => r.text()),
+                    fetch('services/auth.js').then(r => r.text()),
+                    fetch('services/progress.js').then(r => r.text()),
+                    fetch('services/payment.js').then(r => r.text()),
+                    fetch('services/structuralEvaluator.js').then(r => r.text()),
+                    fetch('services/sound.js').then(r => r.text()),
+                    fetch('services/reminder.js').then(r => r.text()),
+                    fetch('services/userProgress.js').then(r => r.text()),
+                    fetch('services/analyticsEngine.js').then(r => r.text()),
+                    fetch('services/rewardedAdManager.js').then(r => r.text()),
+                    fetch('services/retryManager.js').then(r => r.text()),
+                    fetch('component/skillradarchart.jsx').then(r => r.text()),
+                    fetch('component/TokenShop.jsx').then(r => r.text()),
+                    fetch('component/AdvancedAnalytics.jsx').then(r => r.text()),
+                    fetch('component/TopicUnlockModal.jsx').then(r => r.text()),
+                    fetch('component/WatchAdModal.jsx').then(r => r.text()),
+                    fetch('component/navigation.jsx').then(r => r.text()),
+                    fetch('component/auth/LoginForm.jsx').then(r => r.text()),
+                    fetch('component/auth/SignupForm.jsx').then(r => r.text()),
+                    fetch('component/settings/SecuritySettings.jsx').then(r => r.text()),
+                    fetch('component/settings/SessionsHistory.jsx').then(r => r.text()),
+                    fetch('component/settings/DataManagement.jsx').then(r => r.text()),
+                    fetch('component/settings/SoundSettings.jsx').then(r => r.text()),
+                    fetch('component/settings/ReminderSettings.jsx').then(r => r.text()),
+                    fetch('component/feedback/DetailedFeedback.jsx').then(r => r.text()),
+                    fetch('component/minigames/LogicGrid.jsx').then(r => r.text()),
+                    fetch('component/minigames/WordCipher.jsx').then(r => r.text()),
+                    fetch('component/minigames/VisualMatching.jsx').then(r => r.text()),
+                    fetch('component/minigames/ColorSequence.jsx').then(r => r.text()),
+                    fetch('component/minigames/MathPuzzle.jsx').then(r => r.text()),
+                    fetch('component/minigames/QuickMath.jsx').then(r => r.text()),
+                    fetch('component/minigames/EvidenceWeight.jsx').then(r => r.text()),
+                    fetch('component/minigames/LogicCompression.jsx').then(r => r.text()),
+                    fetch('component/minigames/RuleDrift.jsx').then(r => r.text()),
+                    fetch('component/minigames/MissingConstraint.jsx').then(r => r.text()),
+                    fetch('component/minigames/MemoryConstellation.jsx?v=' + Date.now()).then(r => r.text()),
+                    fetch('component/minigames/ColorChaosKitchen.jsx?v=' + Date.now()).then(r => r.text()),
+                    fetch('component/minigames/ShadowDetective.jsx').then(r => r.text()),
+                    fetch('component/minigames/EmotionGarden.jsx?v=' + Date.now()).then(r => r.text()),
+                    fetch('component/minigames/PathPainter.jsx?v=' + Date.now()).then(r => r.text()),
+                    fetch('component/minigames/RhythmReef.jsx?v=' + Date.now()).then(r => r.text()),
+                    fetch('component/minigames/GravityGuess.jsx?v=' + Date.now()).then(r => r.text()),
+                    fetch('component/minigames/FaceFusion.jsx').then(r => r.text()),
+                    fetch('component/minigames/MinigameManager.jsx').then(r => r.text()),
+                    fetch('component/minigames/DailyMinigame.jsx?v=' + Date.now()).then(r => r.text()),
+                    fetch('component/payment/StripeCheckout.jsx').then(r => r.text()),
+                    fetch('component/puzzles/puzzlemodel.jsx').then(r => r.text()),
+                    fetch('component/puzzles/dailypuzzle.jsx').then(r => r.text()),
+                    fetch('data/topics.js').then(r => r.text()),
+                    fetch('data/dailyPuzzles.js').then(r => r.text()),
+                    fetch('data/puzzleEvidence.js').then(r => r.text()),
+                    fetch('mindcase.jsx').then(r => r.text())
+                ]);
+
+                // Clean up all imports and exports from component modules (comprehensive)
+                const cleanModule = (code) => {
+                    let cleaned = code;
+                    // Remove all import statements - be very aggressive
+                    cleaned = cleaned.replace(/import\s+{[^}]*}\s+from\s+['"][^'"]+['"];?\s*/g, '');
+                    cleaned = cleaned.replace(/import\s+\w+\s*,?\s*{[^}]*}\s+from\s+['"][^'"]+['"];?\s*/g, '');
+                    cleaned = cleaned.replace(/import\s+\w+\s+from\s+['"][^'"]+['"];?\s*/g, '');
+                    cleaned = cleaned.replace(/import\s+['"][^'"]+['"];?\s*/g, '');
+                    // Remove export keyword but keep declarations
+                    cleaned = cleaned.replace(/export\s+(const|let|var|function|class)\s+/g, '$1 ');
+                    // Remove standalone export statements
+                    cleaned = cleaned.replace(/export\s+default\s+\w+\s*;?\s*/g, '');
+                    cleaned = cleaned.replace(/export\s*{[\s\S]*?};?\s*/g, '');
+                    return cleaned;
+                };
+
+                // Create a combined module
+                let combinedCode = `
+                    const { useState, useMemo, useEffect, useRef } = React;
+
+                    // Icons
+                    ${cleanModule(iconModule)}
+
+                    // Services
+                    ${cleanModule(authService)}
+                    ${cleanModule(progressService)}
+                    ${cleanModule(paymentService)}
+                    ${cleanModule(structuralEvaluatorService)}
+                    ${cleanModule(soundService)}
+                    ${cleanModule(reminderService)}
+                    ${cleanModule(userProgressService)}
+                    ${cleanModule(analyticsEngineService)}
+                    ${cleanModule(rewardedAdManagerService)}
+                    ${cleanModule(retryManagerService)}
+
+                    // Data
+                    ${cleanModule(topicsData)}
+                    ${cleanModule(dailyPuzzlesData)}
+                    ${cleanModule(puzzleEvidenceData)}
+
+                    // Components
+                    ${cleanModule(skillRadarChartModule)}
+                    ${cleanModule(tokenShop)}
+                    ${cleanModule(advancedAnalytics)}
+                    ${cleanModule(topicUnlockModal)}
+                    ${cleanModule(watchAdModal)}
+                    ${cleanModule(navigationModule)}
+                    ${cleanModule(loginForm)}
+                    ${cleanModule(signupForm)}
+                    ${cleanModule(securitySettings)}
+                    ${cleanModule(sessionsHistory)}
+                    ${cleanModule(dataManagement)}
+                    ${cleanModule(soundSettings)}
+                    ${cleanModule(reminderSettings)}
+                    ${cleanModule(detailedFeedback)}
+
+                    // Minigames
+                    ${cleanModule(logicGrid)}
+                    ${cleanModule(wordCipher)}
+                    ${cleanModule(visualMatching)}
+                    ${cleanModule(colorSequence)}
+                    ${cleanModule(mathPuzzle)}
+                    ${cleanModule(quickMath)}
+                    ${cleanModule(evidenceWeight)}
+                    ${cleanModule(logicCompression)}
+                    ${cleanModule(ruleDrift)}
+                    ${cleanModule(missingConstraint)}
+                    ${cleanModule(memoryConstellation)}
+                    ${cleanModule(colorChaosKitchen)}
+                    ${cleanModule(shadowDetective)}
+                    ${cleanModule(emotionGarden)}
+                    ${cleanModule(pathPainter)}
+                    ${cleanModule(rhythmReef)}
+                    ${cleanModule(gravityGuess)}
+                    ${cleanModule(faceFusion)}
+                    ${cleanModule(minigameManager)}
+                    ${cleanModule(dailyMinigame)}
+
+                    // Payment
+                    ${cleanModule(stripeCheckout)}
+
+                    ${cleanModule(puzzleModalModule)}
+                    ${cleanModule(dailyPuzzleModule)}
+                `;
+
+                // Clean up main app
+                combinedCode += cleanModule(mainApp);
+
+                // Transform JSX
+                const compiled = Babel.transform(combinedCode, {
+                    presets: ['react'],
+                    compact: true,
+                    comments: false
+                }).code;
+
+                // Add render call
+                const final = compiled + '\nconst root=ReactDOM.createRoot(document.getElementById("root"));root.render(React.createElement(MindCaseApp));';
+
+                // DEVELOPMENT MODE: Caching disabled
+                // TODO: Re-enable for production by uncommenting the block below
+                /*
+                // Cache for next time
+                try {
+                    localStorage.setItem(CACHE_KEY, final);
+                    localStorage.setItem(CACHE_META, JSON.stringify({
+                        timestamp: Date.now(),
+                        version: 23
+                    }));
+                } catch (e) {
+                    console.warn('Cache storage failed (localStorage full)');
+                }
+                */
+
+                // Execute
+                const func = new Function('React', 'ReactDOM', final);
+                func(React, ReactDOM);
+
+                const loadTime = Math.round(performance.now() - perfStart);
+                console.log(`✅ Loaded in ${loadTime}ms (compiled & cached)`);
+                console.log('💡 Reload for instant loading!');
+
+            } catch (error) {
+                console.error('Failed to load app:', error);
+                document.getElementById('root').innerHTML =
+                    '<div style="padding:2rem;background:#7f1d1d;color:#fff;font-family:monospace;">Error loading app: ' + error.message + '</div>';
+            }
+        }
+
+        // Check for updates in development
+        async function checkUpdate() {
+            try {
+                const meta = JSON.parse(localStorage.getItem(CACHE_META) || '{}');
+                if (!meta.timestamp) return;
+
+                const response = await fetch('mindcase.jsx', { method: 'HEAD' });
+                const lastModified = new Date(response.headers.get('Last-Modified')).getTime();
+
+                if (lastModified > meta.timestamp) {
+                    console.log('🔄 Updates detected, clearing cache...');
+                    localStorage.removeItem(CACHE_KEY);
+                    localStorage.removeItem(CACHE_META);
+                }
+            } catch (e) {
+                // Silent fail
+            }
+        }
+
+        // Clear ALL old cache versions (including v4 with broken exports)
+        ['mindcase_prod_v1', 'mindcase_prod_v2', 'mindcase_prod_v3', 'mindcase_prod_v4', 'mindcase_prod_v5', 'mindcase_prod_v6', 'mindcase_prod_v7', 'mindcase_prod_v8', 'mindcase_prod_v9', 'mindcase_prod_v10', 'mindcase_prod_v11', 'mindcase_prod_v12', 'mindcase_prod_v13', 'mindcase_prod_v14', 'mindcase_prod_v15', 'mindcase_prod_v16', 'mindcase_prod_v17', 'mindcase_prod_v18', 'mindcase_prod_v19', 'mindcase_prod_v20', 'mindcase_prod_v21', 'mindcase_prod_v22', 'mindcase_prod_v23', 'mindcase_prod_v24', 'mindcase_prod_v25', 'mindcase_prod_v26', 'mindcase_prod_v27', 'mindcase_prod_v28', 'mindcase_prod_v29', 'mindcase_prod_v30', 'mindcase_meta_v1', 'mindcase_meta_v2', 'mindcase_meta_v3', 'mindcase_meta_v4', 'mindcase_meta_v5', 'mindcase_meta_v6', 'mindcase_meta_v7', 'mindcase_meta_v8', 'mindcase_meta_v9', 'mindcase_meta_v10', 'mindcase_meta_v11', 'mindcase_meta_v12', 'mindcase_meta_v13', 'mindcase_meta_v14', 'mindcase_meta_v15', 'mindcase_meta_v16', 'mindcase_meta_v17', 'mindcase_meta_v18', 'mindcase_meta_v19', 'mindcase_meta_v20', 'mindcase_meta_v21', 'mindcase_meta_v22', 'mindcase_meta_v23', 'mindcase_meta_v24', 'mindcase_meta_v25', 'mindcase_meta_v26', 'mindcase_meta_v27', 'mindcase_meta_v28', 'mindcase_meta_v29', 'mindcase_meta_v30'].forEach(key => {
+            const cached = localStorage.getItem(key);
+            if (cached && key.includes('_prod_') && cached.includes('export')) {
+                console.log('🧹 Clearing broken cache with exports:', key);
+                localStorage.removeItem(key);
+                localStorage.removeItem(key.replace('_prod_', '_meta_'));
+            } else if (cached) {
+                localStorage.removeItem(key);
+                console.log('🧹 Clearing old cache:', key);
+            }
+        });
+
+        // Dev tools
+        window.clearCache = () => {
+            localStorage.removeItem(CACHE_KEY);
+            localStorage.removeItem(CACHE_META);
+            console.log('✅ Cache cleared');
+            location.reload();
+        };
+
+        // Start app
+        checkUpdate().then(loadApp);
+    </script>
+</body>
+</html>

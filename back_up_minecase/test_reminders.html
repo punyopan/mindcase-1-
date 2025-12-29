@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Reminder Service</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px 5px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .info {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #4CAF50;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .error {
+            background: #f44336;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧠 Reminder Service Test</h1>
+
+    <div class="info">
+        <h3>Current Status</h3>
+        <p id="status">Loading...</p>
+    </div>
+
+    <div>
+        <h3>Actions</h3>
+        <button onclick="requestPermission()">Request Notification Permission</button>
+        <button onclick="enableReminders()">Enable Daily Reminders (7 PM)</button>
+        <button onclick="testNotification()">Send Test Notification</button>
+        <button onclick="getSettings()">Show Current Settings</button>
+        <button onclick="disableReminders()">Disable Reminders</button>
+    </div>
+
+    <div id="output" class="info">
+        <h3>Output</h3>
+        <pre id="outputText">Click a button to test...</pre>
+    </div>
+
+    <script src="services/reminder.js"></script>
+    <script>
+        // Initialize
+        ReminderService.init();
+        updateStatus();
+
+        function updateStatus() {
+            const settings = ReminderService.getSettings();
+            const statusEl = document.getElementById('status');
+
+            let html = `
+                <strong>Notifications Supported:</strong> ${settings.notificationSupported ? 'Yes ✅' : 'No ❌'}<br>
+                <strong>Permission:</strong> ${settings.permissionStatus}<br>
+                <strong>Reminders Enabled:</strong> ${settings.enabled ? 'Yes ✅' : 'No ❌'}<br>
+                <strong>Reminder Time:</strong> ${settings.formattedTime}
+            `;
+
+            if (settings.enabled) {
+                const timeUntil = ReminderService.getTimeUntilNextReminder();
+                if (timeUntil) {
+                    html += `<br><strong>Next Reminder:</strong> In ${timeUntil.hours}h ${timeUntil.minutes}m`;
+                }
+            }
+
+            statusEl.innerHTML = html;
+        }
+
+        async function requestPermission() {
+            log('Requesting notification permission...');
+            const result = await ReminderService.requestPermission();
+            if (result.success) {
+                log('✅ Permission granted! You should have received a test notification.', 'success');
+            } else {
+                log('❌ ' + result.error, 'error');
+            }
+            updateStatus();
+        }
+
+        async function enableReminders() {
+            log('Enabling daily reminders...');
+            const result = await ReminderService.enableReminders({ hour: 19, minute: 0 });
+            if (result.success) {
+                log('✅ ' + result.message, 'success');
+            } else {
+                log('❌ ' + result.error, 'error');
+            }
+            updateStatus();
+        }
+
+        function testNotification() {
+            log('Sending test notification...');
+            const result = ReminderService.testNotification();
+            if (result.success) {
+                log('✅ Test notification sent! Check your notifications.', 'success');
+            } else {
+                log('❌ ' + result.error, 'error');
+            }
+        }
+
+        function getSettings() {
+            const settings = ReminderService.getSettings();
+            log(JSON.stringify(settings, null, 2), 'info');
+        }
+
+        function disableReminders() {
+            log('Disabling reminders...');
+            const result = ReminderService.disableReminders();
+            if (result.success) {
+                log('✅ ' + result.message, 'success');
+            } else {
+                log('❌ Failed to disable', 'error');
+            }
+            updateStatus();
+        }
+
+        function log(message, type = 'info') {
+            const output = document.getElementById('outputText');
+            const timestamp = new Date().toLocaleTimeString();
+            output.textContent = `[${timestamp}] ${message}\n\n${output.textContent}`;
+
+            const outputDiv = document.getElementById('output');
+            outputDiv.className = 'info';
+            if (type === 'success') outputDiv.className = 'success';
+            if (type === 'error') outputDiv.className = 'error';
+
+            setTimeout(() => {
+                outputDiv.className = 'info';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
