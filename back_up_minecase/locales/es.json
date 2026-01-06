@@ -1,0 +1,52 @@
+{
+  "menu": {
+    "title_sub": "Piensa Antes De Creer",
+    "description": "Entrena tu mente para cuestionar, analizar y validar — porque en un mundo de IA, tu razonamiento importa más que nunca.",
+    "cases_solved": "Casos Resueltos",
+    "total_score": "Puntuación Total",
+    "tokens": "Fichas",
+    "complete": "Completo",
+    "day_streak": "Racha Diaria",
+    "overall_progress": "Progreso General",
+    "puzzles": "Rompecabezas",
+    "open_case_files": "Abrir Expedientes",
+    "cognitive_training": "Entrenamiento Cognitivo",
+    "start_button": "Comenzar Entrenamiento",
+    "main_menu": "Menú Principal",
+    "select_investigation": "Selecciona Tu Investigación",
+    "investigation_desc": "Cada expediente contiene 5 rompecabezas. Escribe tu razonamiento, recibe retroalimentación de IA.",
+    "progress": "Progreso"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "account": "Cuenta",
+    "appearance": "Apariencia",
+    "system": "Sistema",
+    "language": "Idioma",
+    "sound": "Sonido y Vibración",
+    "notifications": "Notificaciones",
+    "subscription": "Suscripción",
+    "security": "Seguridad",
+    "data_management": "Gestión de Datos",
+    "sessions": "Sesiones",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos de Servicio",
+    "logout": "Cerrar Sesión",
+    "back": "Atrás",
+    "active": "Activo",
+    "off": "Apagado",
+    "on": "Encendido"
+  },
+  "auth": {
+    "logged_in_as": "Conectado como",
+    "google_account": "Cuenta de Google"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "close": "Cerrar"
+  }
+}

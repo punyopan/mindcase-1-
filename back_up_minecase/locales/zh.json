@@ -1,0 +1,52 @@
+{
+  "menu": {
+    "title_sub": "三思而后信",
+    "description": "训练你的大脑去质疑、分析和验证 —— 因为在人工智能的世界里，你的推理能力比以往任何时候都重要。",
+    "cases_solved": "已解决案件",
+    "total_score": "总分",
+    "tokens": "代币",
+    "complete": "完成",
+    "day_streak": "连胜天数",
+    "overall_progress": "总体进度",
+    "puzzles": "谜题",
+    "open_case_files": "打开案件档案",
+    "cognitive_training": "认知训练",
+    "start_button": "开始训练",
+    "main_menu": "主菜单",
+    "select_investigation": "选择调查",
+    "investigation_desc": "每个案件档案包含5个谜题。写下你的推理，获取AI反馈。",
+    "progress": "进度"
+  },
+  "settings": {
+    "title": "设置",
+    "account": "账户",
+    "appearance": "外观",
+    "system": "系统",
+    "language": "语言",
+    "sound": "声音与触感",
+    "notifications": "通知",
+    "subscription": "订阅",
+    "security": "安全",
+    "data_management": "数据管理",
+    "sessions": "会话",
+    "privacy": "隐私政策",
+    "terms": "服务条款",
+    "logout": "登出",
+    "back": "返回",
+    "active": "已激活",
+    "off": "关闭",
+    "on": "开启"
+  },
+  "auth": {
+    "logged_in_as": "登录身份",
+    "google_account": "Google 账号"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "save": "保存",
+    "cancel": "取消",
+    "close": "关闭"
+  }
+}

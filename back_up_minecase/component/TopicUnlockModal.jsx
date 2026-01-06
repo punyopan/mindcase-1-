@@ -1,54 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { X, Lock, Star, Trophy } from './icon';
 
-const TopicUnlockModal = ({ onClose, topic, topicIndex, onUnlock, onSubscribe }) => {
-  const [tokens, setTokens] = useState(0);
+const TopicUnlockModal = ({ onClose, topic, topicIndex, onUnlock, onSubscribe, userId, userTokens }) => {
+  const [tokens, setTokens] = useState(userTokens || 0);
   const [unlocking, setUnlocking] = useState(false);
   const unlockAllCost = 12; // 12 tokens to unlock all puzzles from this topic
 
   useEffect(() => {
-    // Load user tokens - Get user ID from auth session
-    try {
-      const authSession = localStorage.getItem('mindcase_auth');
-      let userId = 'default_user';
-      if (authSession) {
-        try {
-          const session = JSON.parse(authSession);
-          userId = session.userId || 'default_user';
-        } catch (e) {
-          console.error('Failed to parse auth session:', e);
-        }
-      }
-      const tokenData = window.UserProgressService?.getTokens(userId);
-      setTokens(tokenData?.tokens || 0);
-    } catch (e) {
-      console.warn('Failed to load tokens:', e);
-    }
-  }, []);
+    // Sync with parent's token count
+    setTokens(userTokens || 0);
+  }, [userTokens]);
 
   const handleUnlockAll = () => {
     setUnlocking(true);
 
     try {
-      // Get user ID from auth session
-      const authSession = localStorage.getItem('mindcase_auth');
-      let userId = 'default_user';
-      if (authSession) {
-        try {
-          const session = JSON.parse(authSession);
-          userId = session.userId || 'default_user';
-        } catch (e) {
-          console.error('Failed to parse auth session:', e);
-        }
-      }
-      console.log('Attempting to unlock all puzzles for topic:', topic.id, 'for user:', userId, 'cost:', unlockAllCost);
+      // Use userId from props
+      const currentUserId = userId || 'default_user';
+      console.log('Attempting to unlock all puzzles for topic:', topic.id, 'for user:', currentUserId, 'cost:', unlockAllCost);
       console.log('UserProgressService available:', typeof window.UserProgressService !== 'undefined');
 
       if (!window.UserProgressService) {
         throw new Error('UserProgressService not available');
       }
 
-      const result = window.UserProgressService.unlockTopicPuzzle(userId, topic.id, unlockAllCost);
+      const result = window.UserProgressService.unlockTopicPuzzle(currentUserId, topic.id, unlockAllCost);
       console.log('Unlock all result:', result);
 
       if (result?.success) {

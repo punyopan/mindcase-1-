@@ -1,28 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { X, Lock, CheckCircle } from './icon';
 
-const TokenShop = ({ onClose, puzzleId, puzzleName, onUnlock }) => {
-  const [tokens, setTokens] = useState(0);
+const TokenShop = ({ onClose, puzzleId, puzzleName, onUnlock, userId, userTokens }) => {
+  const [tokens, setTokens] = useState(userTokens || 0);
   const [unlocking, setUnlocking] = useState(false);
-  const [unlockCost] = useState(5);
+  const [unlockCost] = useState(3);
 
   useEffect(() => {
-    // Load user tokens
-    try {
-      const userId = localStorage.getItem('userId') || 'default_user';
-      const tokenData = window.UserProgressService?.getTokens(userId);
-      setTokens(tokenData?.tokens || 0);
-    } catch (e) {
-      console.warn('Failed to load tokens:', e);
-    }
-  }, []);
+    // Sync with parent's token count
+    setTokens(userTokens || 0);
+  }, [userTokens]);
 
   const handleUnlock = () => {
     setUnlocking(true);
 
     try {
-      const userId = localStorage.getItem('userId') || 'default_user';
-      const result = window.UserProgressService?.spendTokens(userId, puzzleId, unlockCost);
+      // Use userId prop from parent
+      const currentUserId = userId || 'default_user';
+      const result = window.UserProgressService?.spendTokens(currentUserId, puzzleId, unlockCost);
 
       if (result?.success) {
         setTokens(result.tokens);

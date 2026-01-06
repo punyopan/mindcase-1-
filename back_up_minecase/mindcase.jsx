@@ -8,6 +8,7 @@ import { ProgressService } from './services/progress';
 import { PaymentService } from './services/payment';
 import { StructuralEvaluator } from './services/structuralEvaluator';
 import { SoundService } from './services/sound';
+import { ExpertAlignmentGrader } from './services/ExpertAlignmentGrader';
 import { ReminderService } from './services/reminder';
 import SkillRadarChart from './component/skillradarchart';
 import NavigationBar from './component/navigation';
@@ -27,6 +28,7 @@ import TokenShop from './component/TokenShop';
 import AdvancedAnalytics from './component/AdvancedAnalytics';
 import TopicUnlockModal from './component/TopicUnlockModal';
 import WatchAdModal from './component/WatchAdModal';
+import CognitiveTrainer from './component/cognitive/CognitiveTrainer';
 import {
   Brain,
   Lock,
@@ -45,6 +47,17 @@ import {
   LogIn,
   Settings
 } from './component/icon';
+import TranslationService from './services/TranslationService';
+import enLocale from './locales/en.json';
+import esLocale from './locales/es.json';
+import zhLocale from './locales/zh.json';
+
+// Initialize translation service with imported locales
+TranslationService.init({
+  'English': enLocale,
+  'Spanish': esLocale,
+  'Chinese': zhLocale
+}, 'English');
 
 // Make puzzleEvidence globally available for grading system
 if (typeof window !== 'undefined') {
@@ -63,7 +76,7 @@ const MindCaseApp = () => {
   const [selectedPuzzle, setSelectedPuzzle] = useState(null);
   const [showNavBar, setShowNavBar] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [transitionDuration, setTransitionDuration] = useState(300);
+  const transitionDuration = 300;
 
   // Puzzle interaction state
   const [userAnswer, setUserAnswer] = useState('');
@@ -82,7 +95,24 @@ const MindCaseApp = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [settingsView, setSettingsView] = useState('main');
   const [showProfilePanel, setShowProfilePanel] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('English');
+  // Initialize language from service or default
+  const [selectedLanguage, setSelectedLanguage] = useState(TranslationService.getLanguage());
+  // Force update trigger for translations
+  const [langUpdate, setLangUpdate] = useState(0);
+
+  useEffect(() => {
+    // Subscribe to language changes
+    const unsubscribe = TranslationService.subscribe((lang) => {
+      setSelectedLanguage(lang);
+      setLangUpdate(prev => prev + 1); // Force re-render
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleLanguageChange = (lang) => {
+    TranslationService.setLanguage(lang);
+  };
+
   const [reminderEnabled, setReminderEnabled] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState(null);
   const [lastOpenedPuzzle, setLastOpenedPuzzle] = useState(null);
@@ -117,9 +147,10 @@ const MindCaseApp = () => {
   const [showTokenShop, setShowTokenShop] = useState(false);
   const [lockedPuzzle, setLockedPuzzle] = useState(null);
   const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showCognitiveTrainer, setShowCognitiveTrainer] = useState(false);
+  const [unlockedPuzzles, setUnlockedPuzzles] = useState(new Set());
 
-  // Developer mode state
-  const [showDevPanel, setShowDevPanel] = useState(false);
+
 
   // Check authentication on mount and load user progress
   useEffect(() => {
@@ -143,50 +174,76 @@ const MindCaseApp = () => {
       console.warn('Reminder service initialization failed:', e);
     }
 
-    const currentUser = AuthService.getCurrentUser();
-    if (currentUser) {
-      setUser(currentUser);
-      setIsAuthenticated(true);
-      setAuthView('authenticated');
+    const initSession = async () => {
+        const currentUser = await AuthService.checkSession();
+        if (currentUser) {
+          setUser(currentUser);
+          setIsAuthenticated(true);
+          setAuthView('authenticated');
 
-      // Load user progress
-      const progress = ProgressService.getUserProgress(currentUser.id);
+          // Load user progress
+          const progress = ProgressService.getUserProgress(currentUser.id);
+          setCompletedPuzzles(new Set(progress.completedPuzzles));
+          setPuzzleScores(progress.puzzleScores);
+          setTotalScore(progress.totalScore);
+          setDailyPuzzleStreak(progress.dailyPuzzle.currentStreak);
+          setReminderEnabled(progress.settings.reminderEnabled);
+          // Note: transitionDuration is a constant, not state
+          setSelectedLanguage(progress.settings.selectedLanguage);
 
-      // Load user subscription
-      const subscription = PaymentService.getUserSubscription(currentUser.id);
-      setUserSubscription(subscription);
-      setCompletedPuzzles(new Set(progress.completedPuzzles));
-      setPuzzleScores(progress.puzzleScores);
-      setTotalScore(progress.totalScore);
-      setDailyPuzzleStreak(progress.dailyPuzzle.currentStreak);
-      setReminderEnabled(progress.settings.reminderEnabled);
-      setTransitionDuration(progress.settings.transitionDuration);
-      setSelectedLanguage(progress.settings.selectedLanguage);
+          // Check URL params for OAuth or Payment callbacks
+          const urlParams = new URLSearchParams(window.location.search);
 
-      // Load user tokens
-      try {
-        console.log('Loading tokens for user:', currentUser.id);
-        console.log('UserProgressService available:', typeof window.UserProgressService !== 'undefined');
+          // Handle OAuth callback (Google/Apple login)
+          const authSuccess = urlParams.get('auth');
+          if (authSuccess === 'success') {
+             console.log('OAuth login successful, refreshing session...');
+             window.history.replaceState({}, document.title, window.location.pathname);
+             // Session is already refreshed via cookie, just continue loading
+          }
 
-        // Debug: Check what's actually in localStorage
-        const rawProgress = localStorage.getItem(`user_progress_${currentUser.id}`);
-        console.log('Raw progress from localStorage:', rawProgress);
-        if (rawProgress) {
-          const parsed = JSON.parse(rawProgress);
-          console.log('Parsed progress tokens:', parsed.tokens);
+          // Load Payment Status (Check for Stripe Return)
+          const sessionId = urlParams.get('session_id');
+          if (sessionId) {
+             console.log('Verifying payment session:', sessionId);
+             try {
+                // Remove query params to prevent re-verification
+                window.history.replaceState({}, document.title, window.location.pathname);
+
+                // Use imported PaymentService, not window.PaymentService
+                const verifyResult = await PaymentService.verifySession(sessionId);
+                console.log('Verify result:', verifyResult);
+                
+                if (verifyResult?.success) {
+                   alert('🎉 Premium upgrade successful! Welcome to the club.');
+                } else {
+                   console.warn('Payment verification returned:', verifyResult);
+                }
+             } catch (e) {
+                console.error('Payment verification failed:', e);
+             }
+          }
+
+          // Load user subscription (async - must await) after verification
+          const subscription = await PaymentService.getUserSubscription(currentUser.id);
+          setUserSubscription(subscription);
+
+          // Load user tokens
+          try {
+            const tokenData = await window.UserProgressService?.getTokens(currentUser.id);
+            setUserTokens(tokenData?.tokens || 0);
+            // Load unlocked puzzles
+            const unlocked = window.UserProgressService?.getUnlockedPuzzles(currentUser.id) || [];
+            setUnlockedPuzzles(new Set(unlocked));
+          } catch (e) {
+            console.warn('Failed to load tokens:', e);
+          }
+        } else {
+          setAuthView('login');
         }
-
-        const tokenData = window.UserProgressService?.getTokens(currentUser.id);
-        console.log('Token data received:', tokenData);
-        const tokens = tokenData?.tokens || 0;
-        console.log('Setting userTokens to:', tokens);
-        setUserTokens(tokens);
-      } catch (e) {
-        console.warn('Failed to load tokens:', e);
-      }
-    } else {
-      setAuthView('login');
-    }
+    };
+    
+    initSession();
 
     return () => {
       document.removeEventListener('click', handleFirstInteraction);
@@ -194,22 +251,37 @@ const MindCaseApp = () => {
     };
   }, []);
 
-  // Developer mode keyboard shortcut (Ctrl+Shift+D)
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
-        e.preventDefault();
-        setShowDevPanel(prev => !prev);
-      }
-    };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
+
+  // Sync tokens and unlocked puzzles whenever user changes
+  useEffect(() => {
+    if (user?.id) {
+      // Fetch fresh tokens and unlocked puzzles for the new user
+      const fetchUserData = async () => {
+        try {
+          const tokenData = await window.UserProgressService?.getTokens(user.id);
+          setUserTokens(tokenData?.tokens || 0);
+          const unlocked = window.UserProgressService?.getUnlockedPuzzles(user.id) || [];
+          setUnlockedPuzzles(new Set(unlocked));
+        } catch (e) {
+          console.warn('Failed to sync tokens:', e);
+          setUserTokens(0);
+          setUnlockedPuzzles(new Set());
+        }
+      };
+      fetchUserData();
+    } else {
+      // Reset tokens if no user
+      setUserTokens(0);
+      setUnlockedPuzzles(new Set());
+    }
+  }, [user?.id]);
 
   // Auth handlers
-  const handleLogin = (credentials) => {
-    const result = AuthService.login(credentials);
+  const handleLogin = async (credentials) => {
+    console.log('[MindCase] handleLogin called with:', credentials.email);
+    const result = await AuthService.login(credentials);
+    console.log('[MindCase] AuthService.login result:', result.success);
     if (result.success) {
       setUser(result.user);
       setIsAuthenticated(true);
@@ -222,22 +294,22 @@ const MindCaseApp = () => {
       setTotalScore(progress.totalScore);
       setDailyPuzzleStreak(progress.dailyPuzzle.currentStreak);
 
-      // Track session and login
-      AuthService.addSession(result.user.id, {
-        browser: navigator.userAgent,
-        platform: navigator.platform
-      });
-      AuthService.addLoginHistory(result.user.id, 'login', {
-        method: 'password',
-        ipAddress: 'Local'
-      });
+      // Load user tokens
+      const tokenData = await window.UserProgressService?.getTokens(result.user.id);
+      setUserTokens(tokenData?.tokens || 0);
+
+      // Load user subscription (async - must await)
+      const subscription = await PaymentService.getUserSubscription(result.user.id);
+      setUserSubscription(subscription);
+
+      // Track activity (session/login history is handled internally by AuthService)
       ProgressService.recordActivity(result.user.id, 'login');
     }
     return result;
   };
 
-  const handleSignup = (userData) => {
-    const result = AuthService.register(userData);
+  const handleSignup = async (userData) => {
+    const result = await AuthService.register(userData);
     if (result.success) {
       setUser(result.user);
       setIsAuthenticated(true);
@@ -288,13 +360,22 @@ const MindCaseApp = () => {
     setPuzzleScores({});
     setTotalScore(0);
     setDailyPuzzleStreak(0);
+    setUserTokens(0); // Clear leaked tokens
     setScreen('menu');
     setShowNavBar(false);
   };
 
-  const handleSkipAuth = () => {
-    setAuthView('authenticated');
-    setIsAuthenticated(false);
+  const handleSkipAuth = async () => {
+    const result = await AuthService.loginAsGuest();
+    if (result.success) {
+      setUser(result.user);
+      setIsAuthenticated(true);
+      setAuthView('authenticated');
+
+      // Initialize/Load tokens for guest
+      const tokenData = await window.UserProgressService?.getTokens(result.user.id);
+      setUserTokens(tokenData?.tokens || 0);
+    }
   };
 
   // Get today's puzzle
@@ -438,6 +519,28 @@ const MindCaseApp = () => {
     alert('🎉 Subscription activated! You now have access to all premium features.');
   };
 
+  const handleCancelSubscription = async () => {
+    if (!user) return;
+    if (!window.confirm('Are you sure you want to cancel your premium subscription?\n\nYou will retain access until the end of your current billing period, but will lose access to premium features afterwards.')) {
+      return;
+    }
+
+    try {
+      const result = await PaymentService.cancelSubscription(user.id);
+      if (result.success) {
+        alert(result.message || 'Subscription canceled successfully.');
+        // Refresh subscription status
+        const subscription = await PaymentService.getUserSubscription(user.id);
+        setUserSubscription(subscription);
+      } else {
+         alert('Could not cancel subscription. Please try again later.');
+      }
+    } catch (e) {
+      console.error('Cancellation error:', e);
+      alert('Failed to cancel subscription. Please check your connection and try again.');
+    }
+  };
+
   // Smooth page transition handler with crossfade
   const navigateTo = (newScreen, topic = null) => {
     // Play appropriate sound
@@ -549,6 +652,7 @@ const MindCaseApp = () => {
   }, [selectedTopic?.id]);
 
   // NEW: Structural evaluation using StructuralEvaluator (reasoning structure-based)
+  // PLUS: Expert Alignment Grader for riddles with specific answer keys
   const evaluateAnswer = async () => {
     if (!userAnswer.trim() || isAnalyzing) return;
 
@@ -558,34 +662,70 @@ const MindCaseApp = () => {
     // Simulate processing delay
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // Use the StructuralEvaluator service (analyzes reasoning structure, applies deterministic scoring)
-    const evaluation = await StructuralEvaluator.evaluateResponse(userAnswer, {
-      puzzle: selectedPuzzle,
-      idealAnswer: selectedPuzzle.idealAnswer,
-      keyPrinciples: selectedPuzzle.keyPrinciples
-    });
+    let score, isCorrect, strengths, gaps, feedback, keyInsight, evaluation;
 
-    const score = evaluation.totalScore;
-    const isCorrect = score >= 60;
+    // Check if we have an expert alignment grading key for this puzzle
+    // This allows for high-precision grading on specific riddles based on CONTENT
+    const expertKey = ExpertAlignmentGrader.getAnswerKey(selectedPuzzle.id);
 
-    // Build strengths and gaps from reasoning components
-    const strengths = [];
-    const gaps = [];
+    if (expertKey) {
+      // Use Expert Alignment Grader
+      const expertResult = ExpertAlignmentGrader.gradeAnswer(userAnswer, selectedPuzzle.id);
+      
+      score = expertResult.alignmentScore;
+      isCorrect = score >= 60;
+      
+      strengths = expertResult.strengths;
+      gaps = expertResult.gaps;
+      feedback = expertResult.feedback;
+      keyInsight = selectedPuzzle.keyPrinciples?.[0] || "Focus on the specific details of the riddle.";
+      
+      // Adapt expert result to evaluation format expected by UI
+      evaluation = {
+        ...expertResult,
+        totalScore: score,
+        overallFeedback: feedback,
+        performanceLevel: expertResult.gradeLevel,
+        // Map breakdown to match what DetailedFeedback might expect, or simply pass it through
+        // The UI seems to handle `evaluation` generically or we might need to verify DetailedFeedback
+        components: {
+            contentAlignment: { score: score, label: 'Content Alignment', present: true, quality: score > 70 ? 2 : 1 }
+        }
+      };
+      
+    } else {
+      // Fallback: Use the StructuralEvaluator service (analyzes reasoning structure)
+      evaluation = await StructuralEvaluator.evaluateResponse(userAnswer, {
+        puzzle: selectedPuzzle,
+        idealAnswer: selectedPuzzle.idealAnswer,
+        keyPrinciples: selectedPuzzle.keyPrinciples
+      });
 
-    Object.entries(evaluation.components || {}).forEach(([componentId, componentData]) => {
-      if (componentData.present && componentData.quality >= 1) {
-        strengths.push(`✓ ${componentData.label}`);
-      } else if (componentData.required) {
-        gaps.push(`→ ${componentData.label}`);
+      score = evaluation.totalScore;
+      isCorrect = score >= 60;
+
+      // Build strengths and gaps from reasoning components
+      strengths = [];
+      gaps = [];
+
+      Object.entries(evaluation.components || {}).forEach(([componentId, componentData]) => {
+        if (componentData.present && componentData.quality >= 1) {
+          strengths.push(`✓ ${componentData.label}`);
+        } else if (componentData.required) {
+          gaps.push(`→ ${componentData.label}`);
+        }
+      });
+
+      // If no actions (fallback), add generic feedback
+      if (strengths.length === 0 && gaps.length === 0) {
+        if (score >= 70) {
+          strengths.push('Demonstrates good critical thinking');
+        }
+        gaps.push('Continue developing analytical reasoning');
       }
-    });
-
-    // If no actions (fallback), add generic feedback
-    if (strengths.length === 0 && gaps.length === 0) {
-      if (score >= 70) {
-        strengths.push('Demonstrates good critical thinking');
-      }
-      gaps.push('Continue developing analytical reasoning');
+      
+      feedback = evaluation.overallFeedback;
+      keyInsight = selectedPuzzle.keyPrinciples[0] || "Critical thinking requires questioning assumptions and considering multiple perspectives.";
     }
 
     setFeedbackData({
@@ -593,8 +733,8 @@ const MindCaseApp = () => {
       isCorrect: isCorrect,
       strengths: strengths.slice(0, 3), // Show top 3
       gaps: gaps.slice(0, 3), // Show top 3
-      feedback: evaluation.overallFeedback,
-      keyInsight: selectedPuzzle.keyPrinciples[0] || "Critical thinking requires questioning assumptions and considering multiple perspectives.",
+      feedback: feedback,
+      keyInsight: keyInsight,
       evaluation: evaluation, // Store full evaluation for detailed feedback
       performanceLevel: evaluation.performanceLevel
     });
@@ -725,9 +865,11 @@ const MindCaseApp = () => {
         <div className="mb-6 animate-[fadeIn_0.8s_ease-out]">
           <div className="relative">
             <div className="absolute inset-0 bg-red-500 blur-3xl opacity-30 animate-pulse" />
-            <div className="relative bg-gradient-to-br from-red-700 to-red-900 p-6 rounded-3xl shadow-2xl border-2 border-red-600/40">
-              <Brain className="w-24 h-24 text-red-200" />
-            </div>
+            <img 
+              src="app_icon.png" 
+              alt="MindCase Logo" 
+              className="relative w-36 h-36 rounded-3xl shadow-2xl border-2 border-red-600/40" 
+            />
           </div>
         </div>
 
@@ -739,12 +881,17 @@ const MindCaseApp = () => {
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="h-px w-16 bg-gradient-to-r from-transparent to-red-500" />
             <p className="text-xl md:text-2xl text-amber-400 font-bold tracking-widest uppercase">
-              Think Before You Believe
+              {TranslationService.t('menu.title_sub')}
             </p>
             <div className="h-px w-16 bg-gradient-to-l from-transparent to-red-500" />
           </div>
           <p className="text-stone-400 text-lg max-w-xl mx-auto leading-relaxed">
-            Train your mind to <span className="text-red-400 font-semibold">question</span>, <span className="text-amber-400 font-semibold">analyze</span>, and <span className="text-red-400 font-semibold">validate</span> — because in an AI world, your reasoning matters more than ever.
+            {TranslationService.t('menu.description').split(' ').map((word, i) => {
+               if (word.includes('question') || word.includes('cuestionar')) return <span key={i} className="text-red-400 font-semibold">{word} </span>;
+               if (word.includes('analyze') || word.includes('analizar')) return <span key={i} className="text-amber-400 font-semibold">{word} </span>;
+               if (word.includes('validate') || word.includes('validar')) return <span key={i} className="text-red-400 font-semibold">{word} </span>;
+               return word + ' ';
+            })}
           </p>
         </div>
 
@@ -754,13 +901,13 @@ const MindCaseApp = () => {
             {/* Total Solved */}
             <div className="bg-stone-900/60 backdrop-blur-sm border border-red-700/30 rounded-xl p-4 text-center">
               <div className="text-3xl font-bold text-red-400 mb-1">{stats.solved}</div>
-              <div className="text-xs text-stone-400 uppercase tracking-wide">Cases Solved</div>
+              <div className="text-xs text-stone-400 uppercase tracking-wide">{TranslationService.t('menu.cases_solved')}</div>
             </div>
 
             {/* Total Score */}
             <div className="bg-stone-900/60 backdrop-blur-sm border border-amber-700/30 rounded-xl p-4 text-center">
               <div className="text-3xl font-bold text-amber-400 mb-1">{totalScore}</div>
-              <div className="text-xs text-stone-400 uppercase tracking-wide">Total Score</div>
+              <div className="text-xs text-stone-400 uppercase tracking-wide">{TranslationService.t('menu.total_score')}</div>
             </div>
 
             {/* Tokens (Free Users) OR Completion Percentage (Premium) */}
@@ -774,27 +921,27 @@ const MindCaseApp = () => {
                 title="Click to watch ads for tokens"
               >
                 <div className="text-3xl font-bold text-blue-400 mb-1">💰 {userTokens}</div>
-                <div className="text-xs text-stone-400 uppercase tracking-wide">Tokens</div>
+                <div className="text-xs text-stone-400 uppercase tracking-wide">{TranslationService.t('menu.tokens')}</div>
               </button>
             ) : (
               <div className="bg-stone-900/60 backdrop-blur-sm border border-green-700/30 rounded-xl p-4 text-center">
                 <div className="text-3xl font-bold text-green-400 mb-1">{stats.percentage}%</div>
-                <div className="text-xs text-stone-400 uppercase tracking-wide">Complete</div>
+                <div className="text-xs text-stone-400 uppercase tracking-wide">{TranslationService.t('menu.complete')}</div>
               </div>
             )}
 
             {/* Daily Streak */}
             <div className="bg-stone-900/60 backdrop-blur-sm border border-purple-700/30 rounded-xl p-4 text-center">
               <div className="text-3xl font-bold text-purple-400 mb-1">{dailyPuzzleStreak}</div>
-              <div className="text-xs text-stone-400 uppercase tracking-wide">Day Streak</div>
+              <div className="text-xs text-stone-400 uppercase tracking-wide">{TranslationService.t('menu.day_streak')}</div>
             </div>
           </div>
 
           {/* Progress Bar */}
           <div className="mt-6 bg-stone-900/60 backdrop-blur-sm border border-amber-700/30 rounded-xl p-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-stone-300 font-medium">Overall Progress</span>
-              <span className="text-sm text-amber-400 font-bold">{stats.solved} / {stats.total} Puzzles</span>
+              <span className="text-sm text-stone-300 font-medium">{TranslationService.t('menu.overall_progress')}</span>
+              <span className="text-sm text-amber-400 font-bold">{stats.solved} / {stats.total} {TranslationService.t('menu.puzzles')}</span>
             </div>
             <div className="w-full bg-stone-800 rounded-full h-3 overflow-hidden">
               <div
@@ -805,20 +952,37 @@ const MindCaseApp = () => {
           </div>
         </div>
 
-        {/* Start button */}
-        <button
-          onClick={() => {
-            setShowNavBar(true);
-            navigateTo('topics', null);
-          }}
-          className="group relative mb-10 animate-[fadeIn_1.4s_ease-out]"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-amber-600 rounded-xl blur-lg opacity-50 group-hover:opacity-70 transition-opacity" />
-          <div className="relative bg-gradient-to-r from-red-700 to-red-800 hover:from-red-600 hover:to-red-700 px-10 py-4 rounded-xl font-bold text-xl text-white shadow-xl transform group-hover:scale-105 transition-all flex items-center gap-3 border border-red-500/40">
-            Open Case Files
-            <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-          </div>
-        </button>
+        {/* Action buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-10 animate-[fadeIn_1.4s_ease-out]">
+          {/* Start button */}
+          <button
+            onClick={() => {
+              setShowNavBar(true);
+              navigateTo('topics', null);
+            }}
+            className="group relative"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-amber-600 rounded-xl blur-lg opacity-50 group-hover:opacity-70 transition-opacity" />
+            <div className="relative bg-gradient-to-r from-red-700 to-red-800 hover:from-red-600 hover:to-red-700 px-10 py-4 rounded-xl font-bold text-xl text-white shadow-xl transform group-hover:scale-105 transition-all flex items-center gap-3 border border-red-500/40">
+              {TranslationService.t('menu.open_case_files')}
+              <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </button>
+
+          {/* Cognitive Training button */}
+          {user && (
+            <button
+              onClick={() => setShowCognitiveTrainer(true)}
+              className="group relative"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl blur-lg opacity-50 group-hover:opacity-70 transition-opacity" />
+              <div className="relative bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-600 hover:to-purple-700 px-10 py-4 rounded-xl font-bold text-xl text-white shadow-xl transform group-hover:scale-105 transition-all flex items-center gap-3 border border-purple-500/40">
+                <Lightbulb className="w-6 h-6" />
+                {TranslationService.t('menu.cognitive_training')}
+              </div>
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -894,17 +1058,125 @@ const MindCaseApp = () => {
       <div className="max-w-6xl mx-auto px-6 py-8">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold text-white mb-2">Select Your Investigation</h2>
-          <p className="text-stone-400">Each case file contains 5 puzzles. Write your reasoning, get AI feedback.</p>
+          <p className="text-stone-400">Each case file contains puzzles. Write your reasoning, get AI feedback.</p>
+        </div>
+
+        {/* Featured Topic - Riddle Marathon Banner */}
+        {topics.filter(t => t.featured).map((topic) => {
+          const topicCompleted = topic.puzzles.filter(p => completedPuzzles.has(p.id)).length;
+          // Premium users have full access based on already-loaded subscription state
+          const isPremiumUser = userSubscription?.status === 'active';
+          const canAccess = isPremiumUser ? true : true; // Featured topic always accessible
+
+          return (
+            <div
+              key={`featured-${topic.id}`}
+              onClick={() => canAccess ? navigateTo('topics', topic) : null}
+              className="mb-8 cursor-pointer group"
+            >
+              {/* Glowing border effect */}
+              <div className="relative">
+                <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 rounded-xl blur-lg opacity-60 group-hover:opacity-100 transition-all duration-500 animate-pulse" />
+
+                <div className={`relative bg-gradient-to-r ${topic.color} rounded-xl border-2 ${topic.borderColor} p-6 overflow-hidden transform group-hover:scale-[1.02] transition-all duration-300`} style={{
+                  boxShadow: '0 10px 40px rgba(251,146,60,0.3), inset 0 1px 0 rgba(255,255,255,0.2)'
+                }}>
+                  {/* Animated background pattern */}
+                  <div className="absolute inset-0 opacity-10">
+                    <div className="absolute inset-0" style={{
+                      backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px)'
+                    }} />
+                  </div>
+
+                  {/* Sparkle effects */}
+                  <div className="absolute top-4 right-8 w-2 h-2 bg-white rounded-full animate-ping opacity-75" />
+                  <div className="absolute top-12 right-20 w-1.5 h-1.5 bg-amber-200 rounded-full animate-ping opacity-60" style={{animationDelay: '0.5s'}} />
+                  <div className="absolute bottom-8 right-12 w-2 h-2 bg-yellow-300 rounded-full animate-ping opacity-50" style={{animationDelay: '1s'}} />
+
+                  {/* NEW badge */}
+                  <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-bounce">
+                    NEW!
+                  </div>
+
+                  {/* FEATURED stamp */}
+                  <div className="absolute top-4 left-4 border-2 border-amber-300/50 text-amber-200/70 px-3 py-1 text-xs font-bold tracking-widest" style={{
+                    fontFamily: 'monospace'
+                  }}>
+                    FEATURED CHALLENGE
+                  </div>
+
+                  <div className="flex flex-col md:flex-row items-center gap-6 pt-6">
+                    {/* Large icon with glow */}
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-amber-400/30 rounded-full blur-xl animate-pulse" />
+                      <div className="relative text-7xl md:text-8xl transform group-hover:rotate-12 transition-transform duration-300">{topic.icon}</div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 text-center md:text-left">
+                      <h3 className="text-3xl md:text-4xl font-bold text-white mb-2 drop-shadow-lg">
+                        {topic.name}
+                      </h3>
+                      <p className="text-white/90 text-lg mb-4 max-w-2xl">
+                        {topic.description}
+                      </p>
+
+                      {/* Stats row */}
+                      <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mb-4">
+                        <div className="bg-black/30 backdrop-blur-sm rounded-lg px-4 py-2 flex items-center gap-2">
+                          <span className="text-2xl">🎯</span>
+                          <span className="text-white font-semibold">{topic.puzzles.length} Classic Puzzles</span>
+                        </div>
+                        <div className="bg-black/30 backdrop-blur-sm rounded-lg px-4 py-2 flex items-center gap-2">
+                          <span className="text-2xl">🏆</span>
+                          <span className="text-amber-300 font-semibold">{topicCompleted}/{topic.puzzles.length} Solved</span>
+                        </div>
+                        <div className="bg-black/30 backdrop-blur-sm rounded-lg px-4 py-2 flex items-center gap-2">
+                          <span className="text-2xl">⭐</span>
+                          <span className="text-yellow-300 font-semibold">Interview Favorites</span>
+                        </div>
+                      </div>
+
+                      {/* Progress bar */}
+                      <div className="bg-black/40 rounded-full h-3 overflow-hidden max-w-md mx-auto md:mx-0">
+                        <div
+                          className="bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 h-full rounded-full transition-all duration-500 relative"
+                          style={{ width: `${(topicCompleted / topic.puzzles.length) * 100}%` }}
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* CTA Button */}
+                    <div className="flex-shrink-0">
+                      <button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 flex items-center gap-3 text-lg border border-white/30 hover:border-white/50 group-hover:scale-105 shadow-xl">
+                        <span>Start Marathon</span>
+                        <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Regular Topics Label */}
+        <div className="flex items-center gap-4 mb-6">
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-stone-600 to-transparent" />
+          <span className="text-stone-400 text-sm font-medium uppercase tracking-wider">Case Files</span>
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-stone-600 to-transparent" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {topics.map((topic, index) => {
+          {topics.filter(t => !t.featured).map((topic, index) => {
             const topicCompleted = topic.puzzles.filter(p => completedPuzzles.has(p.id)).length;
 
-            // Check topic access
-            const userId = user?.id || 'default_user';
-            const accessCheck = window.UserProgressService?.canAccessTopic(userId, topic.id, index);
-            const canAccess = accessCheck?.canAccess ?? false;
+            // Check topic access - premium users have full access
+            const isPremiumUser = userSubscription?.status === 'active';
+            // Free users get first 2 topics, premium users get all
+            const canAccess = isPremiumUser ? true : index < 2;
             const isLockedBySubscription = !canAccess;
 
             const handleTopicClick = () => {
@@ -1119,17 +1391,22 @@ const MindCaseApp = () => {
               const pos = boardPositions[index];
 
               // Check if all 3 minigames are completed
+              // For featured topics (Riddle Marathon), bypass minigame requirement
+              const isFeaturedTopic = selectedTopic.featured === true;
               const progress = user ? ProgressService.getUserProgress(user.id) : {};
               const minigameProgress = progress.minigameProgress?.[puzzle.id];
-              const hasCompletedMinigames = minigameProgress?.completed === minigameProgress?.total && minigameProgress?.total === 3;
+              const hasCompletedMinigames = isFeaturedTopic || (minigameProgress?.completed === minigameProgress?.total && minigameProgress?.total === 3);
 
-              // Check access control (free users: first 10 puzzles, then token-locked)
-              const userId = user?.id || 'default_user';
-              const accessCheck = window.UserProgressService?.canAccessPuzzle(userId, puzzle.id, index);
-              const canAccess = accessCheck?.canAccess || false;
+              // Check access control - premium users have full access
+              const isPremiumUser = userSubscription?.status === 'active';
+              // Check if unlocked with tokens
+              const isUnlockedWithTokens = unlockedPuzzles.has(puzzle.id);
+              // Premium users have full access, free users limited to first 10 puzzles or unlocked with tokens
+              const canAccess = isPremiumUser ? true : (index < 10 || isUnlockedWithTokens);
               const isLocked = !canAccess;
-              const requiresTokens = accessCheck?.requiresTokens || 5;
-              const currentTokens = accessCheck?.currentTokens || 0;
+              // Token cost for locked puzzles (free users)
+              const requiresTokens = 3;
+              const currentTokens = userTokens;
 
               if (!pos) return null;
               
@@ -1187,7 +1464,21 @@ const MindCaseApp = () => {
                           <Lock className="w-12 h-12 mx-auto mb-2 text-amber-400" />
                           <p className="font-bold text-sm mb-1">Locked Puzzle</p>
                           <p className="text-xs mb-2">{requiresTokens} tokens to unlock</p>
-                          <p className="text-xs text-amber-300">You have: {currentTokens}</p>
+                          <p className="text-xs text-amber-300 mb-3">You have: {currentTokens}</p>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setLockedPuzzle({ ...puzzle, name: puzzle.title });
+                              setShowTokenShop(true);
+                            }}
+                            className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                              currentTokens >= requiresTokens
+                                ? 'bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-white shadow-lg'
+                                : 'bg-stone-600 text-stone-300 cursor-not-allowed'
+                            }`}
+                          >
+                            {currentTokens >= requiresTokens ? `🔓 Unlock (${requiresTokens} tokens)` : `Need ${requiresTokens - currentTokens} more tokens`}
+                          </button>
                         </div>
                       </div>
                     )}
@@ -1211,7 +1502,7 @@ const MindCaseApp = () => {
                         <span className="inline-block text-xs px-2 py-1 bg-amber-200 rounded text-amber-800 font-medium">
                           {puzzle.skillFocus}
                         </span>
-                        {minigameProgress && (
+                        {minigameProgress && !isFeaturedTopic && (
                           <span className={`text-xs px-2 py-1 rounded font-medium ${
                             hasCompletedMinigames
                               ? 'bg-green-100 text-green-700'
@@ -1246,23 +1537,27 @@ const MindCaseApp = () => {
                                 openPuzzle(puzzle);
                               }}
                               disabled={!hasCompletedMinigames && !isCompleted}
-                              className={`flex-1 text-xs font-medium py-2 px-3 rounded transition-colors ${
+                              className={`${isFeaturedTopic ? 'w-full' : 'flex-1'} text-xs font-medium py-2 px-3 rounded transition-colors ${
                                 !hasCompletedMinigames && !isCompleted
                                   ? 'bg-stone-300 text-stone-500 cursor-not-allowed opacity-60'
-                                  : 'text-stone-700 hover:text-stone-900 bg-amber-100 hover:bg-amber-200'
+                                  : isFeaturedTopic
+                                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white'
+                                    : 'text-stone-700 hover:text-stone-900 bg-amber-100 hover:bg-amber-200'
                               }`}
                             >
-                              {isCompleted ? '📋 Review' : hasCompletedMinigames ? '🔍 Analyze' : '🔒 Locked'}
+                              {isCompleted ? '📋 Review' : isFeaturedTopic ? '🧩 Solve Riddle' : hasCompletedMinigames ? '🔍 Analyze' : '🔒 Locked'}
                             </button>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openMinigames(puzzle);
-                              }}
-                              className="flex-1 text-red-700 hover:text-red-900 text-xs font-medium py-2 px-3 bg-red-100 hover:bg-red-200 rounded transition-colors"
-                            >
-                              🎮 Evidence
-                            </button>
+                            {!isFeaturedTopic && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openMinigames(puzzle);
+                                }}
+                                className="flex-1 text-red-700 hover:text-red-900 text-xs font-medium py-2 px-3 bg-red-100 hover:bg-red-200 rounded transition-colors"
+                              >
+                                🎮 Evidence
+                              </button>
+                            )}
                           </>
                         )}
                       </div>
@@ -1387,101 +1682,7 @@ const MindCaseApp = () => {
     );
   };
 
-  // Developer Panel (Ctrl+Shift+D)
-  const renderDevPanel = () => {
-    if (!showDevPanel || !user) return null;
 
-    const handleSetPlan = (planId) => {
-      try {
-        if (planId === 'FREE') {
-          // Clear all subscriptions
-          const stored = localStorage.getItem('mindcase_payment_db');
-          if (stored) {
-            const data = JSON.parse(stored);
-            // Remove user's subscriptions
-            data.subscriptions = data.subscriptions.filter(sub => sub.userId !== user.id);
-            localStorage.setItem('mindcase_payment_db', JSON.stringify(data));
-          }
-          // Reload subscription
-          const subscription = PaymentService.getUserSubscription(user.id);
-          setUserSubscription(subscription);
-          alert('✅ Switched to FREE plan');
-        } else {
-          // Use simulation mode
-          const result = PaymentService.simulatePaymentSuccess(user.id, planId);
-          if (result) {
-            const subscription = PaymentService.getUserSubscription(user.id);
-            setUserSubscription(subscription);
-            alert(`✅ Switched to ${planId} plan`);
-          }
-        }
-      } catch (e) {
-        console.error('Failed to switch plan:', e);
-        alert('❌ Failed to switch plan');
-      }
-    };
-
-    return (
-      <div className="fixed top-4 left-4 z-[100] bg-purple-900/95 border-2 border-purple-500 rounded-xl p-4 shadow-2xl max-w-sm">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-bold text-purple-200 flex items-center gap-2">
-            🛠️ Developer Mode
-          </h3>
-          <button
-            onClick={() => setShowDevPanel(false)}
-            className="text-purple-300 hover:text-white transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <div className="space-y-3">
-          <div className="bg-purple-800/50 rounded-lg p-3 border border-purple-600/30">
-            <p className="text-purple-200 text-xs font-medium mb-2">Current Plan:</p>
-            <p className="text-white font-bold">
-              {userSubscription?.plan === 'free' ? 'FREE' :
-               userSubscription?.plan === 'monthly_premium' ? 'MONTHLY PREMIUM' :
-               userSubscription?.plan === 'annual_premium' ? 'ANNUAL PREMIUM' :
-               'FREE'}
-            </p>
-            <p className="text-purple-300 text-xs mt-1">
-              Status: {userSubscription?.status || 'inactive'}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-purple-200 text-sm font-medium mb-2">Switch Plan:</p>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                onClick={() => handleSetPlan('FREE')}
-                className="bg-stone-700 hover:bg-stone-600 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors"
-              >
-                Free
-              </button>
-              <button
-                onClick={() => handleSetPlan('MONTHLY')}
-                className="bg-amber-700 hover:bg-amber-600 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors"
-              >
-                Monthly
-              </button>
-              <button
-                onClick={() => handleSetPlan('ANNUAL')}
-                className="bg-red-700 hover:bg-red-600 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors"
-              >
-                Annual
-              </button>
-            </div>
-          </div>
-
-          <div className="bg-purple-800/30 rounded-lg p-2 border border-purple-600/20">
-            <p className="text-purple-300 text-xs text-center">
-              Press <strong>Ctrl+Shift+D</strong> to toggle
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   const renderProfilePanel = () => {
     const skillDescriptions = {
@@ -1553,11 +1754,23 @@ const MindCaseApp = () => {
             <div className="mb-6">
               <button
                 onClick={() => {
-                  setShowProfilePanel(false);
-                  setShowAnalytics(true);
+                  if (userSubscription?.status === 'active') {
+                    setShowProfilePanel(false);
+                    setShowAnalytics(true);
+                  } else {
+                    // Redirect to subscription page for free users
+                    setShowProfilePanel(false);
+                    setScreen('settings');
+                    setSettingsView('subscription');
+                  }
                 }}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2"
+                className={`w-full font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2 ${
+                  userSubscription?.status === 'active'
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white'
+                    : 'bg-stone-700 text-stone-400 cursor-not-allowed'
+                }`}
               >
+                {userSubscription?.status !== 'active' && <Lock className="w-4 h-4" />}
                 <BarChart2 className="w-5 h-5" />
                 View Advanced Analytics
               </button>
@@ -1759,23 +1972,7 @@ const MindCaseApp = () => {
           </div>
         </div>
 
-        <div className="p-4 bg-stone-800/60 rounded-xl border border-stone-700/50 mt-6">
-          <label className="block text-amber-300 font-semibold mb-2">Transition Speed</label>
-          <input
-            type="range"
-            min="200"
-            max="1200"
-            step="100"
-            value={transitionDuration}
-            onChange={(e) => setTransitionDuration(Number(e.target.value))}
-            className="w-full h-2 bg-stone-700 rounded-lg appearance-none cursor-pointer"
-          />
-          <div className="flex justify-between text-xs text-stone-500 mt-2">
-            <span>Fast</span>
-            <span className="text-amber-400 font-bold">{(transitionDuration / 1000).toFixed(1)}s</span>
-            <span>Slow</span>
-          </div>
-        </div>
+
       </div>
     );
 
@@ -1894,6 +2091,17 @@ const MindCaseApp = () => {
                       <p className="text-amber-300 text-xs mt-3">
                         💡 Save 30% by upgrading to Annual plan!
                       </p>
+                    )}
+                    
+                    {userSubscription.plan !== 'free' && (
+                        <div className="mt-4 pt-4 border-t border-blue-700/30">
+                            <button 
+                                onClick={handleCancelSubscription}
+                                className="text-red-400 hover:text-red-300 text-xs underline transition-colors"
+                            >
+                                Cancel Subscription
+                            </button>
+                        </div>
                     )}
                   </div>
                 )}
@@ -2131,15 +2339,15 @@ const MindCaseApp = () => {
               <div>
                 <button onClick={() => setSettingsView('main')} className="flex items-center gap-2 text-amber-500 hover:text-amber-400 transition-colors mb-4">
                   <ChevronLeft className="w-5 h-5" />
-                  <span className="font-medium">Back</span>
+                  <span className="font-medium">{TranslationService.t('settings.back')}</span>
                 </button>
-                <h3 className="text-xl font-bold text-amber-400 mb-6">Language</h3>
+                <h3 className="text-xl font-bold text-amber-400 mb-6">{TranslationService.t('settings.language')}</h3>
 
                 <div className="space-y-2">
-                  {['English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese', 'Korean', 'Portuguese'].map(lang => (
+                  {TranslationService.supportedLanguages.map(lang => (
                     <button
                       key={lang}
-                      onClick={() => setSelectedLanguage(lang)}
+                      onClick={() => handleLanguageChange(lang)}
                       className={`w-full p-4 rounded-xl border transition-all text-left ${
                         selectedLanguage === lang
                           ? 'border-amber-600 bg-amber-900/20'
@@ -2180,7 +2388,7 @@ const MindCaseApp = () => {
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-bold text-amber-400 flex items-center gap-2">
             <Settings className="w-6 h-6" />
-            Quick Settings
+            {TranslationService.t('settings.title')}
           </h3>
           <button
             onClick={() => setShowSettings(false)}
@@ -2273,10 +2481,12 @@ const MindCaseApp = () => {
         <DailyMinigame
           onClose={() => setScreen('menu')}
           userSubscription={userSubscription}
+          userId={user?.id}
           onOpenSubscription={() => {
             setScreen('settings');
             setSettingsView('subscription');
           }}
+          onTokensChange={(newTokens) => setUserTokens(newTokens)}
         />
       )}
       {screen === 'settings' && renderSettings()}
@@ -2301,6 +2511,7 @@ const MindCaseApp = () => {
           puzzle={selectedPuzzleForMinigame}
           onClose={closeMinigames}
           onEvidenceUnlock={handleEvidenceUnlock}
+          userId={user?.id}
         />
       )}
 
@@ -2311,17 +2522,17 @@ const MindCaseApp = () => {
         dailyPuzzleCompleted={dailyPuzzleCompleted}
         lastOpenedPuzzle={lastOpenedPuzzle}
         showProfilePanel={showProfilePanel}
+        showCognitiveTrainer={showCognitiveTrainer}
         setScreen={setScreen}
         setSelectedTopic={setSelectedTopic}
         navigateTo={navigateTo}
         setDailyPuzzleTimer={setDailyPuzzleTimer}
         continueLastPuzzle={continueLastPuzzle}
         setShowProfilePanel={setShowProfilePanel}
+        setShowCognitiveTrainer={setShowCognitiveTrainer}
       />
 
       {renderProfilePanel()}
-      {renderDevPanel()}
-      {/* Quick Settings Panel Removed - renderSettingsPanel() */}
 
       {/* Payment Checkout Modal */}
       {showPaymentCheckout && selectedPlan && user && (
@@ -2336,21 +2547,7 @@ const MindCaseApp = () => {
         />
       )}
 
-      {/* Token Shop Modal */}
-      {showTokenShop && lockedPuzzle && (
-        <TokenShop
-          puzzleId={lockedPuzzle.id}
-          puzzleName={lockedPuzzle.name}
-          onClose={() => {
-            setShowTokenShop(false);
-            setLockedPuzzle(null);
-          }}
-          onUnlock={() => {
-            // Refresh the page to show unlocked status
-            window.location.reload();
-          }}
-        />
-      )}
+
 
       {/* Advanced Analytics Modal */}
       {showAnalytics && user && (
@@ -2360,19 +2557,29 @@ const MindCaseApp = () => {
         />
       )}
 
+      {/* Cognitive Trainer Modal */}
+      {showCognitiveTrainer && user && (
+        <CognitiveTrainer
+          userId={user.id}
+          onClose={() => setShowCognitiveTrainer(false)}
+        />
+      )}
+
       {/* Topic Unlock Modal */}
       {showTopicUnlock && lockedTopic && user && (
         <TopicUnlockModal
           topic={lockedTopic}
           topicIndex={topics.findIndex(t => t.id === lockedTopic.id)}
+          userId={user.id}
+          userTokens={userTokens}
           onClose={() => {
             setShowTopicUnlock(false);
             setLockedTopic(null);
           }}
-          onUnlock={() => {
+          onUnlock={async () => {
             // Reload tokens after unlock
             console.log('Topic unlocked, reloading tokens for user:', user.id);
-            const tokenData = window.UserProgressService?.getTokens(user.id);
+            const tokenData = await window.UserProgressService?.getTokens(user.id);
             console.log('Token data after unlock:', tokenData);
             const newTokens = tokenData?.tokens || 0;
             console.log('Setting userTokens to:', newTokens);
@@ -2388,17 +2595,44 @@ const MindCaseApp = () => {
         />
       )}
 
+      {/* Token Shop Modal for unlocking puzzles */}
+      {showTokenShop && lockedPuzzle && (
+        <TokenShop
+          puzzleId={lockedPuzzle.id}
+          puzzleName={lockedPuzzle.name || lockedPuzzle.title}
+          userId={user?.id}
+          userTokens={userTokens}
+          onClose={() => {
+            setShowTokenShop(false);
+            setLockedPuzzle(null);
+          }}
+          onUnlock={async () => {
+            // Reload user tokens and unlocked puzzles after unlock
+            if (user) {
+              const tokenData = await window.UserProgressService?.getTokens(user.id);
+              setUserTokens(tokenData?.tokens || 0);
+              // Refresh unlocked puzzles list
+              const unlocked = window.UserProgressService?.getUnlockedPuzzles(user.id) || [];
+              setUnlockedPuzzles(new Set(unlocked));
+            }
+            setShowTokenShop(false);
+            setLockedPuzzle(null);
+          }}
+        />
+      )}
+
       {/* Watch Ad Modal */}
       {showWatchAdModal && user && (
         <WatchAdModal
           type={adModalType}
+          userId={user.id}
           onClose={() => {
             setShowWatchAdModal(false);
           }}
-          onAdComplete={(result) => {
+          onAdComplete={async (result) => {
             console.log('Ad completed, reloading tokens for user:', user.id);
             // Reload tokens after ad completion
-            const tokenData = window.UserProgressService?.getTokens(user.id);
+            const tokenData = await window.UserProgressService?.getTokens(user.id);
             console.log('Token data from UserProgressService:', tokenData);
             const newTokens = tokenData?.tokens || 0;
             console.log('Setting userTokens to:', newTokens);

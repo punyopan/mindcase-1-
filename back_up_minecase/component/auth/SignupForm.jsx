@@ -48,8 +48,8 @@ const SignupForm = ({ onSignup, onSwitchToLogin, onSkip }) => {
     setIsLoading(true);
 
     // Simulate slight delay for better UX
-    setTimeout(() => {
-      const result = onSignup({
+    setTimeout(async () => {
+      const result = await onSignup({
         name: formData.name,
         email: formData.email,
         password: formData.password

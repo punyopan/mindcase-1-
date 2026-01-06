@@ -1,48 +1,45 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { X, Lock, CheckCircle, ChevronRight } from '../icon';
 import { puzzleEvidence } from '../../data/puzzleEvidence';
-import MemoryPattern from './MemoryPattern';
 import LogicGrid from './LogicGrid';
 import WordCipher from './WordCipher';
 import VisualMatching from './VisualMatching';
 import ColorSequence from './ColorSequence';
 import MathPuzzle from './MathPuzzle';
-import WordScramble from './WordScramble';
-import QuickMath from './QuickMath';
-import ChainBreaker from './ChainBreaker';
 import EvidenceWeight from './EvidenceWeight';
-import BestTradeOff from './BestTradeOff';
-import LogicCompression from './LogicCompression';
-import LogicTiles from './LogicTiles';
-import SignalVsNoise from './SignalVsNoise';
-import CauseEffectFlow from './CauseEffectFlow';
-import MinimalProof from './MinimalProof';
+import MissingConstraint from './MissingConstraint';
+import MemoryConstellation from './MemoryConstellation';
+import ColorChaosKitchen from './ColorChaosKitchen';
+import RhythmReef from './RhythmReef';
+import FaceFusion from './FaceFusion';
+import NumberGhost from './NumberGhost';
+import TapUnless from './TapUnless';
+import RuleFlip from './RuleFlip';
+import MirrorMatch from './MirrorMatch';
 
-const MinigameManager = ({ puzzle, onClose, onEvidenceUnlock }) => {
+const MinigameManager = ({ puzzle, onClose, onEvidenceUnlock, userId }) => {
   // Use ref to track completed minigames synchronously
   const completedMinigamesRef = useRef([]);
-  // All 20 available minigames with progressive difficulty (NEW: visual reasoning games)
+  // All available minigames with progressive difficulty
   const allMinigames = useMemo(() => [
-    // Easy games - visual/pattern
+    // Easy games - visual/pattern/memory
     { name: 'Color Sequence', component: ColorSequence, difficulty: 'easy', icon: '🎨' },
-    { name: 'Word Scramble', component: WordScramble, difficulty: 'easy', icon: '🔤' },
-    { name: 'Logic Tiles', component: LogicTiles, difficulty: 'easy', icon: '🔷' },
-    { name: 'Signal vs Noise', component: SignalVsNoise, difficulty: 'easy', icon: '📊' },
-    { name: 'Memory Pattern', component: MemoryPattern, difficulty: 'easy', icon: '🧠' },
+    { name: 'Memory Constellation', component: MemoryConstellation, difficulty: 'easy', icon: '🧠' },
+    { name: 'Rhythm Reef', component: RhythmReef, difficulty: 'easy', icon: '🎵' },
     // Medium games - reasoning & analysis
     { name: 'Logic Grid', component: LogicGrid, difficulty: 'medium', icon: '🔍' },
     { name: 'Word Cipher', component: WordCipher, difficulty: 'medium', icon: '🔐' },
     { name: 'Evidence Weight', component: EvidenceWeight, difficulty: 'medium', icon: '⚖️' },
-    { name: 'Cause Effect Flow', component: CauseEffectFlow, difficulty: 'medium', icon: '🔀' },
-    { name: 'Minimal Proof', component: MinimalProof, difficulty: 'medium', icon: '🎯' },
+    { name: 'Color Chaos Kitchen', component: ColorChaosKitchen, difficulty: 'medium', icon: '🍳' },
+    { name: 'Number Ghost', component: NumberGhost, difficulty: 'medium', icon: '👻' },
+    { name: 'Tap Unless', component: TapUnless, difficulty: 'medium', icon: '🚫' },
+    { name: 'Rule Flip', component: RuleFlip, difficulty: 'medium', icon: '🔄' },
     // Hard games - reasoning & critical thinking
     { name: 'Math Puzzle', component: MathPuzzle, difficulty: 'hard', icon: '➗' },
     { name: 'Visual Matching', component: VisualMatching, difficulty: 'hard', icon: '🧩' },
-    { name: 'Quick Math', component: QuickMath, difficulty: 'hard', icon: '⏱️' },
-    { name: 'Chain Breaker', component: ChainBreaker, difficulty: 'hard', icon: '🔗' },
-    { name: 'Best Trade-Off', component: BestTradeOff, difficulty: 'hard', icon: '🎯' },
-    { name: 'Logic Compression', component: LogicCompression, difficulty: 'hard', icon: '📝' },
-    { name: 'Memory Pattern 2', component: MemoryPattern, difficulty: 'hard', icon: '🧠' }
+    { name: 'Missing Constraint', component: MissingConstraint, difficulty: 'hard', icon: '🔗' },
+    { name: 'Face Fusion', component: FaceFusion, difficulty: 'hard', icon: '😊' },
+    { name: 'Mirror Match', component: MirrorMatch, difficulty: 'hard', icon: '🪞' }
   ], []);
 
   // Select 3 minigames with escalating difficulty (easy→medium→hard)
@@ -69,8 +66,46 @@ const MinigameManager = ({ puzzle, onClose, onEvidenceUnlock }) => {
   const [currentMinigameIndex, setCurrentMinigameIndex] = useState(0);
   const [completedMinigames, setCompletedMinigames] = useState([]);
   const [unlockedEvidence, setUnlockedEvidence] = useState([]);
+  const [isPremium, setIsPremium] = useState(false);
+  const [sessionId, setSessionId] = useState(null); // Anti-cheat session ID
 
-  // Get specific evidence for this puzzle from database
+  // Check premium status on mount
+  useEffect(() => {
+    const checkPremium = async () => {
+      try {
+        // Use userId from props
+        if (userId && window.PaymentService?.isPremium) {
+          const premium = await window.PaymentService.isPremium(userId);
+          setIsPremium(premium || false);
+        }
+      } catch (e) {
+        console.warn('Failed to check premium status:', e);
+      }
+    };
+    checkPremium();
+  }, [userId]);
+
+  // Start minigame session (anti-cheat)
+  useEffect(() => {
+    const startSession = async () => {
+      if (userId && window.UserProgressService?.startMinigameSession) {
+        try {
+          const gameName = selectedMinigames[currentMinigameIndex].name;
+          const session = await window.UserProgressService.startMinigameSession(userId, gameName);
+          setSessionId(session?.sessionId || null);
+        } catch (e) {
+          console.warn('Failed to start minigame session:', e);
+        }
+      }
+    };
+    
+    // Only start if not already completed this level
+    if (!completedMinigames.includes(currentMinigameIndex)) {
+        startSession();
+    }
+  }, [currentMinigameIndex, userId, selectedMinigames, completedMinigames]);
+
+
   const evidencePieces = useMemo(() => {
     const puzzleData = puzzleEvidence[puzzle.id];
 
@@ -101,7 +136,7 @@ const MinigameManager = ({ puzzle, onClose, onEvidenceUnlock }) => {
   const currentMinigame = selectedMinigames[currentMinigameIndex];
   const CurrentGameComponent = currentMinigame.component;
 
-  const handleMinigameComplete = (result) => {
+  const handleMinigameComplete = async (result) => {
     // Prevent duplicate completions using ref for immediate synchronous check
     if (completedMinigamesRef.current.includes(currentMinigameIndex)) {
       return;
@@ -118,6 +153,53 @@ const MinigameManager = ({ puzzle, onClose, onEvidenceUnlock }) => {
     const evidence = evidencePieces[currentMinigameIndex];
     const newUnlocked = [...unlockedEvidence, evidence];
     setUnlockedEvidence(newUnlocked);
+
+    // Save progress using UserProgressService with Anti-Cheat
+    try {
+        if (window.UserProgressService && userId) {
+             let success = false;
+             
+             // Use new session-based completion if available
+             if (window.UserProgressService.completeMinigameSession && sessionId) {
+                 const sessionResult = await window.UserProgressService.completeMinigameSession(
+                     userId, 
+                     sessionId, 
+                     { ...result, gameType: currentMinigame.name }
+                 );
+                 success = sessionResult.success;
+                 
+                 if (!success) {
+                     console.warn('Minigame session rejected:', sessionResult.reason);
+                     // Optional: Show error to user? For now just log it.
+                 }
+             } else {
+                 // Legacy/Fallback flow
+                 window.UserProgressService.recordMinigameCompletion(
+                     userId,
+                     currentMinigame.name,
+                     result.timeSpent || 60000, 
+                     result.success,
+                     result
+                 );
+                 
+                 if (result.success) {
+                     window.UserProgressService.awardTokens(userId, 1);
+                 }
+                 success = true;
+             }
+             
+             // Record analytics regardless
+             window.UserProgressService.recordMinigameCompletion?.(
+                 userId,
+                 currentMinigame.name,
+                 result.timeSpent || 60000, 
+                 result.success,
+                 result
+             );
+        }
+    } catch (e) {
+        console.error("Failed to save minigame progress:", e);
+    }
 
     // Notify parent
     if (onEvidenceUnlock) {
@@ -226,6 +308,35 @@ const MinigameManager = ({ puzzle, onClose, onEvidenceUnlock }) => {
                 </span>
               </div>
             </div>
+
+            {/* Premium Skip Button */}
+            {isPremium && completedMinigames.length < selectedMinigames.length && (
+              <button
+                onClick={() => {
+                  // Mark all as completed
+                  const allCompleted = [0, 1, 2];
+                  completedMinigamesRef.current = allCompleted;
+                  setCompletedMinigames(allCompleted);
+                  
+                  // Unlock all evidence
+                  setUnlockedEvidence(evidencePieces);
+                  
+                  // Notify parent about all evidence
+                  if (onEvidenceUnlock) {
+                    evidencePieces.forEach((evidence, idx) => {
+                      onEvidenceUnlock(evidence, idx + 1, selectedMinigames.length);
+                    });
+                  }
+                  
+                  // Show confirmation
+                  alert('⚡ Premium Skip activated!\n\nAll evidence has been collected. You can now close this window and click "🔍 Analyze" on the case card.');
+                }}
+                className="w-full mt-3 py-3 rounded-xl font-bold transition-all bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white flex items-center justify-center gap-2"
+              >
+                ⚡ Skip to Analyze
+                <span className="text-xs bg-white/20 px-2 py-1 rounded-full">Premium</span>
+              </button>
+            )}
           </div>
 
           {/* Current Minigame - Middle Column */}

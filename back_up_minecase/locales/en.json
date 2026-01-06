@@ -1,0 +1,52 @@
+{
+  "menu": {
+    "title_sub": "Think Before You Believe",
+    "description": "Train your mind to question, analyze, and validate — because in an AI world, your reasoning matters more than ever.",
+    "cases_solved": "Cases Solved",
+    "total_score": "Total Score",
+    "tokens": "Tokens",
+    "complete": "Complete",
+    "day_streak": "Day Streak",
+    "overall_progress": "Overall Progress",
+    "puzzles": "Puzzles",
+    "open_case_files": "Open Case Files",
+    "cognitive_training": "Cognitive Training",
+    "start_button": "Start Training",
+    "main_menu": "Main Menu",
+    "select_investigation": "Select Your Investigation",
+    "investigation_desc": "Each case file contains 5 puzzles. Write your reasoning, get AI feedback.",
+    "progress": "Progress"
+  },
+  "settings": {
+    "title": "Settings",
+    "account": "Account",
+    "appearance": "Appearance",
+    "system": "System",
+    "language": "Language",
+    "sound": "Sound & Haptics",
+    "notifications": "Notifications",
+    "subscription": "Subscription",
+    "security": "Security",
+    "data_management": "Data Management",
+    "sessions": "Sessions",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "logout": "Log Out",
+    "back": "Back",
+    "active": "Active",
+    "off": "Off",
+    "on": "On"
+  },
+  "auth": {
+    "logged_in_as": "Logged in as",
+    "google_account": "Google Account"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close"
+  }
+}

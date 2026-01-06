@@ -1,53 +1,53 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { X, Lock, CheckCircle, Trophy, Star, ChevronDown, ChevronUp } from '../icon';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { X, Lock, CheckCircle, Trophy, Star } from '../icon';
 import LogicGrid from './LogicGrid';
 import WordCipher from './WordCipher';
 import VisualMatching from './VisualMatching';
 import ColorSequence from './ColorSequence';
 import MathPuzzle from './MathPuzzle';
-import QuickMath from './QuickMath';
 import EvidenceWeight from './EvidenceWeight';
-import LogicCompression from './LogicCompression';
-import RuleDrift from './RuleDrift';
 import MissingConstraint from './MissingConstraint';
 import MemoryConstellation from './MemoryConstellation';
 import ColorChaosKitchen from './ColorChaosKitchen';
-import ShadowDetective from './ShadowDetective';
-import EmotionGarden from './EmotionGarden';
-import PathPainter from './PathPainter';
 import RhythmReef from './RhythmReef';
-import GravityGuess from './GravityGuess';
 import FaceFusion from './FaceFusion';
+import NumberGhost from './NumberGhost';
+import TapUnless from './TapUnless';
+import RuleFlip from './RuleFlip';
+import MirrorMatch from './MirrorMatch';
 
-const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription }) => {
+const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription, onTokensChange, userId }) => {
   const [currentGameIndex, setCurrentGameIndex] = useState(0);
   const [completedGames, setCompletedGames] = useState([]);
   const [dailyProgress, setDailyProgress] = useState(null);
   const [userTokens, setUserTokens] = useState(0);
   const [selectedDifficulty, setSelectedDifficulty] = useState('medium');
   const [minigameStartTime, setMinigameStartTime] = useState(Date.now()); // Track start time for analytics
-  const [showCompletedList, setShowCompletedList] = useState(true);
+  const [sessionId, setSessionId] = useState(null);
+
+  // Ref to track completed games synchronously (prevents race conditions)
+  const completedGamesRef = useRef(new Set());
 
   // All available minigames
   const allMinigames = useMemo(() => [
+    // Easy games
     { name: 'Color Sequence', component: ColorSequence, difficulty: 'easy', icon: '🎨' },
     { name: 'Memory Constellation', component: MemoryConstellation, difficulty: 'easy', icon: '⭐' },
-    { name: 'Emotion Garden', component: EmotionGarden, difficulty: 'easy', icon: '🌸' },
+    { name: 'Rhythm Reef', component: RhythmReef, difficulty: 'easy', icon: '🌊' },
+    // Medium games
     { name: 'Logic Grid', component: LogicGrid, difficulty: 'medium', icon: '🔍' },
     { name: 'Word Cipher', component: WordCipher, difficulty: 'medium', icon: '🔐' },
     { name: 'Evidence Weight', component: EvidenceWeight, difficulty: 'medium', icon: '⚖️' },
-    { name: 'Rule Drift', component: RuleDrift, difficulty: 'medium', icon: '🔄' },
     { name: 'Missing Constraint', component: MissingConstraint, difficulty: 'medium', icon: '🔍' },
     { name: 'Color Chaos Kitchen', component: ColorChaosKitchen, difficulty: 'medium', icon: '🍳' },
-    { name: 'Shadow Detective', component: ShadowDetective, difficulty: 'medium', icon: '🔍' },
-    { name: 'Path Painter', component: PathPainter, difficulty: 'hard', icon: '🎨' },
-    { name: 'Rhythm Reef', component: RhythmReef, difficulty: 'hard', icon: '🌊' },
-    { name: 'Gravity Guess', component: GravityGuess, difficulty: 'hard', icon: '🎯' },
+    { name: 'Number Ghost', component: NumberGhost, difficulty: 'medium', icon: '👻' },
+    { name: 'Tap Unless', component: TapUnless, difficulty: 'medium', icon: '🚫' },
+    { name: 'Rule Flip', component: RuleFlip, difficulty: 'medium', icon: '🔄' },
+    // Hard games
     { name: 'Face Fusion', component: FaceFusion, difficulty: 'hard', icon: '🎭' },
     { name: 'Math Puzzle', component: MathPuzzle, difficulty: 'hard', icon: '➗' },
     { name: 'Visual Matching', component: VisualMatching, difficulty: 'hard', icon: '🧩' },
-    { name: 'Quick Math', component: QuickMath, difficulty: 'hard', icon: '⏱️' },
-    { name: 'Logic Compression', component: LogicCompression, difficulty: 'hard', icon: '📝' }
+    { name: 'Mirror Match', component: MirrorMatch, difficulty: 'hard', icon: '🪞' }
   ], []);
 
   // Get today's date string for seed
@@ -60,9 +60,12 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription }) => {
 
   // Generate minigames for today
   const todaysMinigames = useMemo(() => {
+    // Filter out any undefined games
+    const validGames = allMinigames.filter(game => game && game.component);
+
     // Premium users get all minigames
     if (isSubscribed) {
-      return allMinigames;
+      return validGames;
     }
 
     // Free users get 3 random minigames per day
@@ -76,7 +79,7 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription }) => {
     };
 
     // Shuffle array with seeded random
-    const shuffled = [...allMinigames].sort((a, b) => seededRandom(a.name.charCodeAt(0)) - seededRandom(b.name.charCodeAt(0)));
+    const shuffled = [...validGames].sort((a, b) => seededRandom(a.name.charCodeAt(0)) - seededRandom(b.name.charCodeAt(0)));
 
     // Take first 3 games
     return shuffled.slice(0, 3);
@@ -91,6 +94,8 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription }) => {
       if (progress.date === getTodayString()) {
         setDailyProgress(progress);
         setCompletedGames(progress.completed || []);
+        // Initialize ref with completed games
+        completedGamesRef.current = new Set(progress.completed || []);
       } else {
         // New day, reset progress
         const newProgress = {
@@ -100,6 +105,7 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription }) => {
         };
         localStorage.setItem('daily_minigame_progress', JSON.stringify(newProgress));
         setDailyProgress(newProgress);
+        completedGamesRef.current = new Set();
       }
     } else {
       // First time
@@ -112,18 +118,47 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription }) => {
       setDailyProgress(newProgress);
     }
 
-    // Load user tokens
-    try {
-      const userId = localStorage.getItem('userId') || 'default_user';
-      const tokens = window.UserProgressService?.getTokens(userId);
-      setUserTokens(tokens?.tokens || 0);
-    } catch (e) {
-      console.warn('Failed to load tokens:', e);
-    }
-  }, []);
+    // Load user tokens using userId prop
+    const loadTokens = async () => {
+      try {
+        const currentUserId = userId || 'default_user';
+        const tokens = await window.UserProgressService?.getTokens(currentUserId);
+        setUserTokens(tokens?.tokens || 0);
+      } catch (e) {
+        console.warn('Failed to load tokens:', e);
+      }
+    };
+    loadTokens();
+  }, [userId]);
 
-  const handleMinigameComplete = (result) => {
-    // Mark game as completed
+  // Start session when game changes
+  useEffect(() => {
+    const startGameSession = async () => {
+      const game = todaysMinigames[currentGameIndex];
+      if (game && window.UserProgressService) {
+        try {
+          const currentUserId = userId || 'default_user';
+          const session = await window.UserProgressService.startMinigameSession(currentUserId, game.name);
+          setSessionId(session.sessionId);
+        } catch (e) {
+          console.warn('Failed to start minigame session:', e);
+        }
+      }
+    };
+    startGameSession();
+  }, [currentGameIndex, todaysMinigames, userId]);
+
+  const handleMinigameComplete = async (result) => {
+    // Prevent duplicate completions using ref (synchronous check)
+    if (completedGamesRef.current.has(currentGameIndex)) {
+      console.log('Game already completed, ignoring duplicate call');
+      return;
+    }
+
+    // Mark as completed in ref immediately (synchronous)
+    completedGamesRef.current.add(currentGameIndex);
+
+    // Mark game as completed in state
     const newCompleted = [...completedGames, currentGameIndex];
     setCompletedGames(newCompleted);
 
@@ -131,28 +166,58 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription }) => {
     const timeSpent = Math.floor((Date.now() - minigameStartTime) / 60000);
 
     // Update localStorage
+    const currentGame = todaysMinigames[currentGameIndex];
     const updatedProgress = {
       date: getTodayString(),
       completed: newCompleted,
-      scores: [...(dailyProgress?.scores || []), { game: todaysMinigames[currentGameIndex].name, ...result }]
+      scores: [...(dailyProgress?.scores || []), { game: currentGame?.name || 'Unknown', ...result }]
     };
     localStorage.setItem('daily_minigame_progress', JSON.stringify(updatedProgress));
     setDailyProgress(updatedProgress);
 
     // Award token (1 token per minigame completion)
     try {
-      const userId = localStorage.getItem('userId') || 'default_user';
-      const tokenResult = window.UserProgressService?.awardTokens(userId, 1);
+      // Use the userId prop directly from parent (correctly logged in user)
+      const currentUserId = userId || 'default_user';
+      
+      let rewardData;
 
-      if (tokenResult?.success) {
-        // Update token display
-        setUserTokens(tokenResult.tokens);
+      if (sessionId) {
+          try {
+            const sessionResult = await window.UserProgressService?.completeMinigameSession(
+                currentUserId, 
+                sessionId, 
+                { 
+                    success: result?.success !== false,
+                    score: result?.score,
+                    gameType: todaysMinigames[currentGameIndex]?.name 
+                }
+            );
+            
+            if (sessionResult?.success && sessionResult?.reward) {
+              rewardData = sessionResult.reward;
+            } else if (sessionResult?.reason === 'daily_limit_reached') {
+              rewardData = { success: false, reason: 'daily_limit_reached' }; 
+            }
+          } catch (err) {
+            console.error('Session completion error:', err);
+          }
+      } else {
+        console.warn('No active session for minigame completion');
+      }
+
+      if (rewardData?.success) {
+        // Update local token display
+        const newBalance = rewardData.balance !== undefined ? rewardData.balance : rewardData.tokens;
+        setUserTokens(newBalance);
+        // Sync to parent component
+        onTokensChange?.(newBalance);
 
         // Show token reward notification
         setTimeout(() => {
-          alert(`🎉 Minigame complete! +1 token earned\n\nTotal tokens: ${tokenResult.tokens}\nToday: ${tokenResult.tokensEarnedToday}/${tokenResult.dailyLimit}`);
+          alert(`🎉 Minigame complete! +1 token earned\n\nTotal tokens: ${newBalance}\nToday: ${rewardData.tokensEarnedToday}/${rewardData.dailyLimit}`);
         }, 500);
-      } else if (tokenResult?.reason === 'daily_limit_reached') {
+      } else if (rewardData?.reason === 'daily_limit_reached') {
         setTimeout(() => {
           alert('🎉 Minigame complete!\n\n⚠️ Daily token limit reached. Come back tomorrow for more tokens!');
         }, 500);
@@ -160,14 +225,26 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription }) => {
 
       // Record minigame completion for analytics (Advanced Analytics tracking)
       try {
-        const gameName = todaysMinigames[currentGameIndex].name;
+        const gameName = todaysMinigames[currentGameIndex]?.name || 'Unknown';
         const success = result?.success !== false; // Assume success unless explicitly false
+
+        // Build detailed results object with all available data from the minigame
+        const detailedResults = {
+          score: result?.score || (success ? 100 : 50),
+          difficulty: selectedDifficulty,
+          correctResponses: result?.correctResponses || result?.correct || result?.hits || 0,
+          totalResponses: result?.totalResponses || result?.total || result?.trials || 0,
+          errors: result?.errors || result?.mistakes || 0,
+          accuracy: result?.accuracy || (result?.score ? result.score : (success ? 100 : 0)),
+          reactionTime: result?.reactionTime || result?.avgTime || null
+        };
 
         window.UserProgressService?.recordMinigameCompletion(
           userId,
           gameName,
           timeSpent,
-          success
+          success,
+          detailedResults
         );
       } catch (e) {
         console.warn('Failed to record minigame analytics:', e);
@@ -180,8 +257,8 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription }) => {
     const totalGames = isSubscribed ? todaysMinigames.length : 3;
     if (newCompleted.length === totalGames && !isSubscribed) {
       setTimeout(() => {
-        const userId = localStorage.getItem('userId') || 'default_user';
-        const tokens = window.UserProgressService?.getTokens(userId);
+        const currentUserId = userId || 'default_user';
+        const tokens = window.UserProgressService?.getTokens(currentUserId);
         alert(`🎉 All daily minigames complete!\n\n💰 Total tokens: ${tokens?.tokens || 0}\n📅 Come back tomorrow for new challenges.`);
       }, 1500);
     }
@@ -272,6 +349,7 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription }) => {
           </h3>
           <div className="flex-1 overflow-y-auto space-y-2 pr-2">
             {todaysMinigames.map((game, index) => {
+              if (!game) return null;
               const isCompleted = completedGames.includes(index);
               // Premium users can access all games, free users must play in order
               const isLocked = !isSubscribed && index > completedGames.length;
@@ -420,37 +498,6 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription }) => {
           </div>
         )}
 
-        {/* Completion Summary */}
-        {completedGames.length > 0 && !allCompleted && (
-          <div className="mt-6 bg-stone-900/60 border border-stone-700 rounded-xl p-4">
-            <button
-              onClick={() => setShowCompletedList(!showCompletedList)}
-              className="w-full text-white font-semibold mb-3 flex items-center gap-2 hover:opacity-80 transition-opacity"
-            >
-              <CheckCircle className="w-5 h-5 text-green-400" />
-              <span>Completed Today ({completedGames.length})</span>
-              {showCompletedList ? (
-                <ChevronUp className="w-4 h-4 text-stone-400 ml-auto" />
-              ) : (
-                <ChevronDown className="w-4 h-4 text-stone-400 ml-auto" />
-              )}
-            </button>
-            {showCompletedList && (
-              <div className="space-y-2">
-                {completedGames.map((gameIndex) => {
-                  const game = todaysMinigames[gameIndex];
-                  return (
-                    <div key={gameIndex} className="flex items-center gap-3 text-sm text-stone-300">
-                      <span className="text-xl">{game.icon}</span>
-                      <span>{game.name}</span>
-                      <CheckCircle className="w-4 h-4 text-green-500 ml-auto" />
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
           </div>
         </div>
       </div>

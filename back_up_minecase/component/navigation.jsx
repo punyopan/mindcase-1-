@@ -1,4 +1,4 @@
-import { Home, FolderOpen, Puzzle, Play, User, Settings } from './icon';
+import { Home, FolderOpen, Puzzle, Play, User, Settings, Brain } from './icon';
 
 const NavigationBar = ({
   showNavBar,
@@ -7,12 +7,14 @@ const NavigationBar = ({
   dailyPuzzleCompleted,
   lastOpenedPuzzle,
   showProfilePanel,
+  showCognitiveTrainer,
   setScreen,
   setSelectedTopic,
   navigateTo,
   setDailyPuzzleTimer,
   continueLastPuzzle,
-  setShowProfilePanel
+  setShowProfilePanel,
+  setShowCognitiveTrainer
 }) => {
   if (!showNavBar) return null;
 
@@ -22,15 +24,14 @@ const NavigationBar = ({
         <div className="flex justify-around items-center">
           <button
             onClick={() => {
-              setScreen('menu');
-              setSelectedTopic(null);
+              setShowCognitiveTrainer(true);
             }}
             className={`flex flex-col items-center gap-1 px-4 py-2 rounded-lg transition-all ${
-              screen === 'menu' ? 'bg-red-700/30 text-red-400' : 'text-stone-400 hover:text-amber-400'
+              showCognitiveTrainer ? 'bg-purple-700/30 text-purple-400' : 'text-stone-400 hover:text-amber-400'
             }`}
           >
-            <Home className="w-6 h-6" />
-            <span className="text-xs font-medium">Home</span>
+            <Brain className="w-6 h-6" />
+            <span className="text-xs font-medium">Training</span>
           </button>
 
           <button

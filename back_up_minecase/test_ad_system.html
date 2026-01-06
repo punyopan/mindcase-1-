@@ -76,33 +76,20 @@
         <div id="frequency-result" class="result"></div>
     </div>
 
-    <script>
-        // Load services inline to avoid ES6 module issues
-        fetch('services/rewardedAdManager.js')
-            .then(r => r.text())
-            .then(code => {
-                // Remove export statements
-                code = code.replace(/export\s+default\s+\w+\s*;?\s*/g, '');
-                code = code.replace(/export\s*{[\s\S]*?};?\s*/g, '');
-                // Execute the code
-                eval(code);
-                console.log('RewardedAdManager loaded:', typeof window.RewardedAdManager !== 'undefined');
-
-                // Load retry manager
-                return fetch('services/retryManager.js');
-            })
-            .then(r => r.text())
-            .then(code => {
-                // Remove export statements
-                code = code.replace(/export\s+default\s+\w+\s*;?\s*/g, '');
-                code = code.replace(/export\s*{[\s\S]*?};?\s*/g, '');
-                // Execute the code
-                eval(code);
-                console.log('RetryManager loaded:', typeof window.RetryManager !== 'undefined');
-            })
-            .catch(err => {
-                console.error('Failed to load services:', err);
-            });
+    <script type="module">
+        import RewardedAdManager from './services/rewardedAdManager.js';
+        import AnalyticsService from './services/analyticsService.js';
+        
+        // Expose to window for the test buttons
+        window.RewardedAdManager = RewardedAdManager;
+        window.AnalyticsService = AnalyticsService;
+        
+        console.log('Modules loaded successfully');
+        
+        // Load retry manager legacy way (if it's not a module yet) or just fetch it
+        // Assuming RetryManager is still needed for tests
+        import RetryManager from './services/retryManager.js'; // Assuming we converted it or it works
+        window.RetryManager = RetryManager;
     </script>
 
     <script>

@@ -1,0 +1,14 @@
+{
+  "name": "mindcase",
+  "version": "1.0.0",
+  "description": "MindCase - Cognitive Training Application",
+  "scripts": {
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "cd backend && npm run dev",
+    "frontend": "start http://127.0.0.1:5501/prod.html",
+    "install:all": "npm install && cd backend && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

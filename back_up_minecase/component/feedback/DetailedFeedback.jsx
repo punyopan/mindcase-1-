@@ -10,10 +10,54 @@ const DetailedFeedback = ({ evaluation, onClose }) => {
   // Detect evaluation type
   const isStructural = evaluation.components && evaluation.model;
   const isSemantic = !isStructural && evaluation.actions && evaluation.schema;
+  const isExpert = evaluation.breakdown && evaluation.breakdown.requiredConcepts;
 
   // For structural evaluation, convert components to dimensions display
-  const dimensions = isStructural
-    ? Object.entries(evaluation.components).map(([compId, compData]) => ({
+  // For expert evaluation (Riddles), use the specific breakdown
+  let dimensions = [];
+
+  if (isExpert) {
+     const b = evaluation.breakdown;
+     dimensions = [
+        {
+           name: 'Required Concepts',
+           score: b.requiredConcepts.score,
+           max: 100, // Normalized to 100 in grader
+           percentage: b.requiredConcepts.score,
+           feedback: b.requiredConcepts.description,
+           color: 'blue',
+           icon: '🔑'
+        },
+        {
+           name: 'Core Solution',
+           score: b.coreAnswer.score,
+           max: 100, 
+           percentage: b.coreAnswer.score,
+           feedback: b.coreAnswer.description,
+           color: 'purple',
+           icon: '🧩'
+        },
+        {
+           name: 'Conclusion',
+           score: b.correctConclusion.score,
+           max: 100,
+           percentage: b.correctConclusion.score,
+           feedback: b.correctConclusion.description,
+           color: 'green',
+           icon: '✅'
+        },
+        {
+           name: 'Bonus Insights',
+           score: b.bonusInsights.score,
+           max: 100,
+           percentage: b.bonusInsights.score,
+           feedback: b.bonusInsights.description,
+           color: 'amber',
+           icon: '✨'
+        }
+     ];
+  } else if (isStructural) {
+     dimensions = Object.entries(evaluation.components).map(([compId, compData]) => ({
         name: compData.label,
         score: compData.score,
         max: compData.maxScore,
@@ -24,9 +68,9 @@ const DetailedFeedback = ({ evaluation, onClose }) => {
         color: compData.present ? (compData.quality === 2 ? 'green' : 'amber') : 'red',
         icon: compData.present ? (compData.quality === 2 ? '✓✓' : '✓') : '○',
         required: compData.required
-      }))
-    : isSemantic
-    ? Object.entries(evaluation.actions).map(([actionId, actionData]) => ({
+      }));
+  } else if (isSemantic) {
+     dimensions = Object.entries(evaluation.actions).map(([actionId, actionData]) => ({
         name: actionData.label,
         score: actionData.score,
         max: actionData.maxScore,
@@ -36,8 +80,9 @@ const DetailedFeedback = ({ evaluation, onClose }) => {
           : `Not detected: ${actionData.label}`,
         color: actionData.present ? (actionData.clarity === 2 ? 'green' : 'amber') : 'red',
         icon: actionData.present ? '✓' : '○'
-      }))
-    : [
+      }));
+  } else {
+     dimensions = [
         {
           name: 'Claim Identification',
           score: evaluation.claimIdentification?.score || 0,
@@ -84,6 +129,7 @@ const DetailedFeedback = ({ evaluation, onClose }) => {
           icon: '✨'
         }
       ];
+  }
 
   const getColorClass = (color, type = 'bg') => {
     const colorMap = {
@@ -217,10 +263,17 @@ const DetailedFeedback = ({ evaluation, onClose }) => {
           <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
           <div>
             <h4 className="font-bold text-amber-400 mb-2 text-sm">
-              {isStructural ? `How We Grade: ${evaluation.model}` : 'How We Grade Your Reasoning'}
+              {isExpert ? 'How We Grade: Expert Alignment' : isStructural ? `How We Grade: ${evaluation.model}` : 'How We Grade Your Reasoning'}
             </h4>
             <div className="text-stone-400 text-xs space-y-1.5">
-              {isStructural ? (
+              {isExpert ? (
+                 <>
+                  <p>• <strong>Required Concepts (20%):</strong> Do you mention the key terms related to the puzzle?</p>
+                  <p>• <strong>Core Solution (50%):</strong> Do you identify and explain the main solution components?</p>
+                  <p>• <strong>Conclusion (20%):</strong> Is your final answer correct based on the constraints?</p>
+                  <p>• <strong>Bonus Insights (10%):</strong> Do you demonstrate deeper understanding of the principles?</p>
+                 </>
+              ) : isStructural ? (
                 <>
                   <p className="mb-2">We evaluate the <strong>structure of your reasoning</strong>, not just keywords:</p>
                   {dimensions.filter(d => d.required).map((d, i) => (

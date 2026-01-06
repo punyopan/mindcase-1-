@@ -1,13 +1,28 @@
 // Rewarded Advertisement Manager
 // SDK-agnostic, modular, privacy-compliant rewarded ad system
 
+// Use globals for bundle compatibility (services expose themselves to window)
+const AnalyticsService = window.AnalyticsService || { 
+    logEvent: (name, data) => console.log(`[Analytics] ${name}`, data) 
+};
+
+// AdAdapters are loaded separately and exposed globally
+const TestAdAdapter = window.AdAdapters?.TestAdAdapter || class {
+    async init() { return true; }
+    async isAvailable() { return true; }
+    async showRewardedAd() {
+        return new Promise(r => setTimeout(() => r({ success: true, rewardId: `test_${Date.now()}` }), 1000));
+    }
+};
+const AdMobWebAdapter = window.AdAdapters?.AdMobWebAdapter || TestAdAdapter;
+
 class FrequencyManager {
   constructor(userId) {
     this.userId = userId;
     this.storageKey = `ad_frequency_${userId}`;
     this.config = {
       cooldownSeconds: 30, // 30 seconds between ads (voluntary viewing)
-      dailyLimit: 10 // Max 10 ads per day
+      dailyLimit: 20 // Increased limit for production
     };
   }
 
@@ -30,11 +45,7 @@ class FrequencyManager {
   }
 
   save(data) {
-    try {
-      localStorage.setItem(this.storageKey, JSON.stringify(data));
-    } catch (e) {
-      console.error('Failed to save frequency data:', e);
-    }
+    localStorage.setItem(this.storageKey, JSON.stringify(data));
   }
 
   checkAndUpdate() {
@@ -42,44 +53,36 @@ class FrequencyManager {
     const now = Date.now();
     const today = new Date().toDateString();
 
-    // Reset daily count if it's a new day
     if (data.lastResetDate !== today) {
       data.todayCount = 0;
       data.lastResetDate = today;
     }
 
-    // Check cooldown (30 seconds)
     const timeSinceLastAd = now - data.lastAdTime;
     const cooldownMs = this.config.cooldownSeconds * 1000;
+    
+    // Cooldown check
     if (timeSinceLastAd < cooldownMs) {
       const remainingSeconds = Math.ceil((cooldownMs - timeSinceLastAd) / 1000);
-      return {
-        allowed: false,
-        reason: 'cooldown',
-        remainingSeconds
-      };
+      return { allowed: false, reason: 'cooldown', remainingSeconds };
     }
 
-    // Check daily limit
+    // Daily Limit check
     if (data.todayCount >= this.config.dailyLimit) {
-      return {
-        allowed: false,
-        reason: 'daily_limit',
-        limit: this.config.dailyLimit
-      };
+      return { allowed: false, reason: 'daily_limit', limit: this.config.dailyLimit };
     }
 
-    // Update counters
-    data.lastAdTime = now;
-    data.todayCount++;
-    this.save(data);
-
-    return {
-      allowed: true,
-      remainingToday: this.config.dailyLimit - data.todayCount
-    };
+    // Speculative update (will be confirmed on success)
+    return { allowed: true, remainingToday: this.config.dailyLimit - data.todayCount };
   }
-
+  
+  recordSuccess() {
+      const data = this.load();
+      data.lastAdTime = Date.now();
+      data.todayCount++;
+      this.save(data);
+  }
+  
   getRemainingCooldown() {
     const data = this.load();
     const now = Date.now();
@@ -94,371 +97,159 @@ class FrequencyManager {
   }
 }
 
-class RewardValidator {
-  constructor(userId) {
-    this.userId = userId;
-    this.storageKey = `ad_rewards_${userId}`;
-  }
-
-  generateToken() {
-    return `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  }
-
-  createReward(rewardType, amount) {
-    const token = this.generateToken();
-    const reward = {
-      token,
-      type: rewardType,
-      amount,
-      timestamp: Date.now(),
-      claimed: false
-    };
-
-    try {
-      const history = this.loadHistory();
-      history.push(reward);
-      // Keep only last 50 rewards
-      if (history.length > 50) {
-        history.shift();
-      }
-      localStorage.setItem(this.storageKey, JSON.stringify(history));
-    } catch (e) {
-      console.error('Failed to save reward:', e);
-    }
-
-    return token;
-  }
-
-  claimReward(token) {
-    try {
-      const history = this.loadHistory();
-      const reward = history.find(r => r.token === token && !r.claimed);
-
-      if (!reward) {
-        return { success: false, reason: 'invalid_token' };
-      }
-
-      // Check if reward is too old (more than 5 minutes)
-      const age = Date.now() - reward.timestamp;
-      if (age > 5 * 60 * 1000) {
-        return { success: false, reason: 'expired' };
-      }
-
-      // Mark as claimed
-      reward.claimed = true;
-      localStorage.setItem(this.storageKey, JSON.stringify(history));
-
-      return {
-        success: true,
-        type: reward.type,
-        amount: reward.amount
-      };
-    } catch (e) {
-      console.error('Failed to claim reward:', e);
-      return { success: false, reason: 'error' };
-    }
-  }
-
-  loadHistory() {
-    try {
-      const data = localStorage.getItem(this.storageKey);
-      return data ? JSON.parse(data) : [];
-    } catch (e) {
-      return [];
-    }
-  }
-
-  // Fraud detection - check for suspicious patterns
-  detectFraud() {
-    const history = this.loadHistory();
-    const recentRewards = history.filter(r =>
-      Date.now() - r.timestamp < 10 * 60 * 1000 // Last 10 minutes
-    );
-
-    // Too many rewards in short time
-    if (recentRewards.length > 5) {
-      return { suspicious: true, reason: 'rapid_rewards' };
-    }
-
-    // Check for timestamp manipulation
-    const timestamps = recentRewards.map(r => r.timestamp).sort();
-    for (let i = 1; i < timestamps.length; i++) {
-      if (timestamps[i] - timestamps[i-1] < 30000) { // Less than 30 seconds apart
-        return { suspicious: true, reason: 'rapid_completion' };
-      }
-    }
-
-    return { suspicious: false };
-  }
-}
-
-// Test mode adapter for development/testing
-class TestAdAdapter {
-  constructor() {
-    this.available = true;
-  }
-
-  async isAvailable() {
-    return true;
-  }
-
-  async showAd() {
-    return new Promise((resolve) => {
-      // Simulate ad loading and completion
-      console.log('[TEST MODE] Simulating ad playback...');
-      setTimeout(() => {
-        // 90% success rate in test mode
-        const success = Math.random() > 0.1;
-        resolve({
-          success,
-          reason: success ? 'completed' : 'user_canceled'
-        });
-      }, 1000);
-    });
-  }
-}
-
 // Main Rewarded Ad Manager
 class RewardedAdManager {
   constructor(userId, options = {}) {
     this.userId = userId;
+    this.options = options;
+    
+    // Initialize Components
     this.frequencyManager = new FrequencyManager(userId);
-    this.rewardValidator = new RewardValidator(userId);
-    this.testMode = options.testMode !== false; // Default to test mode
-    this.adapter = new TestAdAdapter();
-    this.analytics = options.analytics || this.createDefaultAnalytics();
-  }
-
-  createDefaultAnalytics() {
-    return {
-      logEvent: (event, data) => {
-        console.log(`[Analytics] ${event}:`, data);
-      }
-    };
+    this.analytics = AnalyticsService;
+    
+    // Select Adapter
+    const useTestMode = options.testMode !== false;
+    this.adapter = useTestMode ? new TestAdAdapter() : new AdMobWebAdapter();
+    
+    // Initialize Adapter
+    this.adapter.init().catch(e => console.error('Ad Adapter Init Failed:', e));
+    
+    // Backend API URL
+    this.apiUrl = options.apiUrl || 'http://localhost:3000/api';
   }
 
   async requestTokenReward() {
-    // Check user age compliance (COPPA)
-    if (!this.checkAgeCompliance()) {
-      return {
-        success: false,
-        reason: 'age_restricted',
-        message: 'Ads are not available for users under 13.'
-      };
-    }
-
-    // Check frequency limits
-    const frequencyCheck = this.frequencyManager.checkAndUpdate();
-    if (!frequencyCheck.allowed) {
-      let message = 'Please wait before watching another ad.';
-      if (frequencyCheck.reason === 'cooldown') {
-        const seconds = frequencyCheck.remainingSeconds;
-        message = `Please wait ${seconds} second${seconds > 1 ? 's' : ''} before watching another ad.`;
-      } else if (frequencyCheck.reason === 'daily_limit') {
-        message = `You've reached the daily limit of ${frequencyCheck.limit} ads. Please try again tomorrow!`;
-      }
-
-      this.analytics.logEvent('ad_request_rejected', {
-        reason: frequencyCheck.reason,
-        userId: this.userId
-      });
-
-      return {
-        success: false,
-        reason: frequencyCheck.reason,
-        message
-      };
-    }
-
-    // Check for fraud
-    const fraudCheck = this.rewardValidator.detectFraud();
-    if (fraudCheck.suspicious) {
-      this.analytics.logEvent('fraud_detected', {
-        reason: fraudCheck.reason,
-        userId: this.userId
-      });
-
-      return {
-        success: false,
-        reason: 'suspicious_activity',
-        message: 'Unusual activity detected. Please try again later.'
-      };
-    }
-
-    // Check if ads are available
-    const available = await this.adapter.isAvailable();
-    if (!available) {
-      this.analytics.logEvent('ad_not_available', { userId: this.userId });
-      return {
-        success: false,
-        reason: 'ad_unavailable',
-        message: 'Ads are not available right now. Please try again later.'
-      };
-    }
-
-    this.analytics.logEvent('ad_request_started', { userId: this.userId });
-
-    // Show the ad
-    const result = await this.adapter.showAd();
-
-    if (!result.success) {
-      this.analytics.logEvent('ad_not_completed', {
-        reason: result.reason,
-        userId: this.userId
-      });
-
-      return {
-        success: false,
-        reason: result.reason,
-        message: result.reason === 'user_canceled'
-          ? 'You need to watch the complete ad to earn tokens.'
-          : 'Ad could not be loaded. Please try again.'
-      };
-    }
-
-    // Calculate reward: 1 token guaranteed + 50% chance for bonus
-    const baseTokens = 1;
-    const bonusToken = Math.random() < 0.5 ? 1 : 0;
-    const totalTokens = baseTokens + bonusToken;
-
-    // Create validated reward token
-    const rewardToken = this.rewardValidator.createReward('token', totalTokens);
-
-    this.analytics.logEvent('ad_completed', {
-      userId: this.userId,
-      tokensEarned: totalTokens,
-      hadBonus: bonusToken > 0
-    });
-
-    return {
-      success: true,
-      rewardToken,
-      tokens: totalTokens,
-      hadBonus: bonusToken > 0,
-      message: bonusToken > 0
-        ? `🎉 Lucky! You earned ${totalTokens} tokens!`
-        : `✅ You earned ${totalTokens} token!`
-    };
+    return this._requestReward('token');
   }
 
   async requestRetryReward(puzzleId) {
-    // Similar checks as token reward
+    return this._requestReward('retry', { puzzleId });
+  }
+
+  async _requestReward(rewardType, context = {}) {
+    // 1. Check Age Compliance (COPPA)
     if (!this.checkAgeCompliance()) {
-      return {
-        success: false,
-        reason: 'age_restricted',
-        message: 'Ads are not available for users under 13.'
-      };
+      return { success: false, reason: 'age_restricted', message: 'Ads are not available for users under 13.' };
     }
 
-    const frequencyCheck = this.frequencyManager.checkAndUpdate();
-    if (!frequencyCheck.allowed) {
-      let message = 'Please wait before watching another ad.';
-      if (frequencyCheck.reason === 'cooldown') {
-        const seconds = frequencyCheck.remainingSeconds;
-        message = `Please wait ${seconds} second${seconds > 1 ? 's' : ''} before watching another ad.`;
-      }
-      return {
-        success: false,
-        reason: frequencyCheck.reason,
-        message
-      };
+    // 2. Check Frequency
+    const freqCheck = this.frequencyManager.checkAndUpdate();
+    if (!freqCheck.allowed) {
+       this.analytics.logEvent('ad_request_rejected', { reason: freqCheck.reason, userId: this.userId });
+       return { 
+           success: false, 
+           reason: freqCheck.reason, 
+           message: freqCheck.reason === 'cooldown' 
+               ? `Please wait ${freqCheck.remainingSeconds}s.` 
+               : 'Daily limit reached.' 
+       };
     }
 
-    const fraudCheck = this.rewardValidator.detectFraud();
-    if (fraudCheck.suspicious) {
-      return {
-        success: false,
-        reason: 'suspicious_activity',
-        message: 'Unusual activity detected. Please try again later.'
-      };
-    }
-
+    // 3. Check Availability
     const available = await this.adapter.isAvailable();
     if (!available) {
-      return {
-        success: false,
-        reason: 'ad_unavailable',
-        message: 'Ads are not available right now. Please try again later.'
-      };
+       this.analytics.logEvent('ad_not_available', { userId: this.userId });
+       return { success: false, reason: 'ad_unavailable', message: 'No ads available.' };
     }
 
-    this.analytics.logEvent('retry_ad_request', { userId: this.userId, puzzleId });
-
-    const result = await this.adapter.showAd();
+    // 4. Show Ad
+    this.analytics.logEvent('ad_started', { userId: this.userId, type: rewardType });
+    
+    const result = await this.adapter.showRewardedAd();
 
     if (!result.success) {
-      return {
-        success: false,
-        reason: result.reason,
-        message: 'Ad could not be completed. Please try again.'
-      };
+        this.analytics.logEvent('ad_failed', { userId: this.userId, reason: result.reason });
+        return { success: false, reason: result.reason, message: 'Ad not completed.' };
     }
 
-    // Create retry reward token
-    const rewardToken = this.rewardValidator.createReward('retry', 1);
+    // 5. Ad Completed - Verify & Grant Reward
+    this.frequencyManager.recordSuccess();
+    
+    // Trigger Server-Side Verification (Simulated for TestAdapter, actual for AdMob)
+    await this._triggerVerification(result, rewardType);
 
-    this.analytics.logEvent('retry_ad_completed', { userId: this.userId, puzzleId });
+    // 6. Optimistic UI Update (Legacy support)
+    // We confirm success to the caller so they can update UI immediately
+    // but the real source of truth is the backend DB now.
+    
+    this.analytics.logEvent('ad_completed', { 
+        userId: this.userId, 
+        rewardType, 
+        transactionId: result.rewardId 
+    });
 
     return {
-      success: true,
-      rewardToken,
-      retries: 1,
-      message: '✅ You earned 1 more attempt!'
+        success: true,
+        rewardToken: result.rewardId, // For legacy compatibility
+        amount: rewardType === 'token' ? 1 : 1,
+        message: 'Reward granted!'
     };
   }
 
-  claimReward(rewardToken) {
-    const result = this.rewardValidator.claimReward(rewardToken);
-
-    if (result.success) {
-      this.analytics.logEvent('reward_claimed', {
-        userId: this.userId,
-        type: result.type,
-        amount: result.amount
-      });
-    } else {
-      this.analytics.logEvent('reward_claim_failed', {
-        userId: this.userId,
-        reason: result.reason
-      });
-    }
-
-    return result;
+  /**
+   * Simulates the Server-Side Verification call from the Ad Network
+   * In production, the Ad Network server calls this, not the Client.
+   * But for the Test Adapter, we must simulate it.
+   */
+  async _triggerVerification(adResult, rewardItem) {
+      if (this.adapter.constructor.name === 'TestAdAdapter') {
+          console.log('[AdManager] Simulating SSV Callback...');
+          try {
+              // Construct Mock SSV URL
+              const params = new URLSearchParams({
+                  user_id: this.userId,
+                  ad_network_transaction_id: adResult.rewardId,
+                  reward_amount: 1,
+                  reward_item: rewardItem,
+                  signature: 'mock_ssv_signature',
+                  key_id: 'mock_key'
+              });
+              
+              const webhookUrl = `${this.apiUrl}/ads/webhook/admob?${params.toString()}`;
+              
+              // Fire and forget (or await if we want to debug)
+              fetch(webhookUrl).then(r => {
+                  console.log(`[AdManager] SSV Callback sent: ${r.status}`);
+              }).catch(e => console.error('[AdManager] SSV Callback failed:', e));
+              
+          } catch (e) {
+              console.error('SSV Simulation Error:', e);
+          }
+      }
   }
 
   checkAgeCompliance() {
-    // Check if user has verified age
     try {
-      const userId = localStorage.getItem('userId') || 'default_user';
-      const userAge = localStorage.getItem(`user_age_${userId}`);
-
-      // If no age set, assume compliant (default for now)
-      if (!userAge) return true;
-
-      // COPPA compliance - no ads for under 13
+      const userAge = localStorage.getItem(`user_age_${this.userId}`);
+      if (!userAge) return true; // Default compliant if unknown
       return parseInt(userAge) >= 13;
-    } catch (e) {
-      return true; // Default to compliant if check fails
-    }
+    } catch (e) { return true; }
   }
-
-  getRemainingCooldown() {
-    return this.frequencyManager.getRemainingCooldown();
-  }
-
+  
   getStats() {
-    const freqData = this.frequencyManager.load();
-    return {
-      todayCount: freqData.todayCount,
-      dailyLimit: this.frequencyManager.config.dailyLimit,
-      remainingToday: this.frequencyManager.config.dailyLimit - freqData.todayCount,
-      cooldownSeconds: this.getRemainingCooldown()
-    };
+      const stats = this.frequencyManager.load();
+      return {
+          todayCount: stats.todayCount,
+          dailyLimit: this.frequencyManager.config.dailyLimit,
+          remainingToday: this.frequencyManager.config.dailyLimit - stats.todayCount,
+          cooldownSeconds: this.frequencyManager.getRemainingCooldown()
+      };
+  }
+
+  // Legacy Compatibility Methods
+  getRemainingCooldown() {
+      return this.frequencyManager.getRemainingCooldown();
+  }
+
+  claimReward(rewardToken) {
+      // In the new architecture, rewards are granted server-side via SSV.
+      // This method exists for backward compatibility with existing UI code.
+      // It returns success since the reward was already processed.
+      console.log('[AdManager] claimReward called (legacy) - token:', rewardToken);
+      return { success: true, type: 'token', amount: 1 };
   }
 }
 
-// Export for use in the app
+// Export
 window.RewardedAdManager = RewardedAdManager;
-
 export default RewardedAdManager;

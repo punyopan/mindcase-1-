@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Zap, Clock } from './icon';
 
-const WatchAdModal = ({ onClose, onAdComplete, type = 'token', puzzleId = null }) => {
+const WatchAdModal = ({ onClose, onAdComplete, type = 'token', puzzleId = null, userId }) => {
   const [loading, setLoading] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [stats, setStats] = useState(null);
@@ -18,19 +18,10 @@ const WatchAdModal = ({ onClose, onAdComplete, type = 'token', puzzleId = null }
     }
 
     try {
-      // Initialize ad manager - Get user ID from auth session
-      const authSession = localStorage.getItem('mindcase_auth');
-      let userId = 'default_user';
-      if (authSession) {
-        try {
-          const session = JSON.parse(authSession);
-          userId = session.userId || 'default_user';
-        } catch (e) {
-          console.error('Failed to parse auth session:', e);
-        }
-      }
-      console.log('Initializing RewardedAdManager for user:', userId);
-      const adManager = new window.RewardedAdManager(userId, { testMode: true });
+      // Use userId from props (passed from parent)
+      const currentUserId = userId || 'default_user';
+      console.log('Initializing RewardedAdManager for user:', currentUserId);
+      const adManager = new window.RewardedAdManager(currentUserId, { testMode: true });
 
       // Get current stats
       const currentStats = adManager.getStats();
@@ -63,19 +54,10 @@ const WatchAdModal = ({ onClose, onAdComplete, type = 'token', puzzleId = null }
         return;
       }
 
-      // Get user ID from auth session
-      const authSession = localStorage.getItem('mindcase_auth');
-      let userId = 'default_user';
-      if (authSession) {
-        try {
-          const session = JSON.parse(authSession);
-          userId = session.userId || 'default_user';
-        } catch (e) {
-          console.error('Failed to parse auth session:', e);
-        }
-      }
-      console.log('Creating RewardedAdManager instance for user:', userId);
-      const adManager = new window.RewardedAdManager(userId, { testMode: true });
+      // Use userId from props
+      const currentUserId = userId || 'default_user';
+      console.log('Creating RewardedAdManager instance for user:', currentUserId);
+      const adManager = new window.RewardedAdManager(currentUserId, { testMode: true });
 
       let result;
       const actualType = typeof type === 'object' ? type.type : type;
@@ -102,11 +84,11 @@ const WatchAdModal = ({ onClose, onAdComplete, type = 'token', puzzleId = null }
             const userProgress = window.UserProgressService;
             if (userProgress) {
               console.log('Awarding ad tokens:', claimResult.amount);
-              userProgress.awardAdTokens(userId, claimResult.amount);
+              await userProgress.awardAdTokens(currentUserId, claimResult.amount);
             }
           } else if (claimResult.type === 'retry' && actualPuzzleId) {
             if (window.RetryManager) {
-              const retryManager = new window.RetryManager(userId);
+              const retryManager = new window.RetryManager(currentUserId);
               retryManager.addAdRetry(actualPuzzleId);
             } else {
               console.error('RetryManager not available');

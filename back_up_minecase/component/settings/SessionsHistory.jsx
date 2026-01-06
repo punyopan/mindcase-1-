@@ -1,23 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, AlertCircle, X } from '../icon';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ChevronLeft, AlertCircle, X, RefreshCw } from '../icon';
 import { AuthService } from '../../services/auth';
 
 const SessionsHistory = ({ user, onBack }) => {
   const [view, setView] = useState('sessions'); // 'sessions' or 'history'
   const [sessions, setSessions] = useState([]);
   const [loginHistory, setLoginHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const loadData = useCallback(async () => {
     if (user) {
-      setSessions(AuthService.getActiveSessions(user.id));
-      setLoginHistory(AuthService.getLoginHistory(user.id));
+      setLoading(true);
+      try {
+        const [sessionsData, historyData] = await Promise.all([
+          AuthService.getActiveSessions(),
+          AuthService.getLoginHistory()
+        ]);
+        setSessions(sessionsData);
+        setLoginHistory(historyData);
+      } catch (e) {
+        console.error('Error loading session data:', e);
+      }
+      setLoading(false);
     }
   }, [user]);
 
-  const handleRevokeSession = (sessionId) => {
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const handleRevokeSession = async (familyId) => {
     if (confirm('Are you sure you want to revoke this session?')) {
-      AuthService.revokeSession(user.id, sessionId);
-      setSessions(AuthService.getActiveSessions(user.id));
+      await AuthService.revokeSession(familyId);
+      // Refresh sessions list
+      const updated = await AuthService.getActiveSessions();
+      setSessions(updated);
     }
   };
 
@@ -81,10 +98,18 @@ const SessionsHistory = ({ user, onBack }) => {
           >
             <ChevronLeft className="w-6 h-6 text-stone-400" />
           </button>
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl font-bold text-white">Security Activity</h1>
             <p className="text-stone-400 text-sm">Monitor your account activity</p>
           </div>
+          <button
+            onClick={loadData}
+            disabled={loading}
+            className="p-2 hover:bg-stone-800 rounded-lg transition-colors"
+            title="Refresh"
+          >
+            <RefreshCw className={`w-5 h-5 text-stone-400 ${loading ? 'animate-spin' : ''}`} />
+          </button>
         </div>
 
         {/* Tabs */}
@@ -112,7 +137,11 @@ const SessionsHistory = ({ user, onBack }) => {
         </div>
 
         {/* Content */}
-        {view === 'sessions' ? (
+        {loading ? (
+          <div className="bg-stone-900/60 backdrop-blur-sm border border-stone-700 rounded-xl p-8 text-center">
+            <p className="text-stone-400">Loading...</p>
+          </div>
+        ) : view === 'sessions' ? (
           <div className="space-y-3">
             {sessions.length === 0 ? (
               <div className="bg-stone-900/60 backdrop-blur-sm border border-stone-700 rounded-xl p-8 text-center">
@@ -135,15 +164,15 @@ const SessionsHistory = ({ user, onBack }) => {
                           {session.browser ? session.browser.split(' ').slice(0, 3).join(' ') : 'Unknown Browser'}
                         </div>
                         <div className="text-stone-500 text-xs mt-1">
-                          Created: {formatDate(session.createdAt)}
+                          Created: {formatDate(session.created_at)}
                         </div>
                         <div className="text-stone-500 text-xs">
-                          Last active: {formatDate(session.lastActive)}
+                          Last active: {formatDate(session.last_active)}
                         </div>
                       </div>
                     </div>
                     <button
-                      onClick={() => handleRevokeSession(session.id)}
+                      onClick={() => handleRevokeSession(session.family_id)}
                       className="p-2 hover:bg-red-900/30 rounded-lg transition-colors group"
                       title="Revoke session"
                     >

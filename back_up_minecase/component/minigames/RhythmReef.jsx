@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-const RhythmReef = ({ onComplete, difficulty = 'medium' }) => {
+const RhythmReef = ({ onComplete, difficulty = 'easy' }) => {
   const [sequence, setSequence] = useState([]);
   const [playerSequence, setPlayerSequence] = useState([]);
   const [isShowing, setIsShowing] = useState(true);
@@ -8,31 +8,38 @@ const RhythmReef = ({ onComplete, difficulty = 'medium' }) => {
   const [score, setScore] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [currentCreature, setCurrentCreature] = useState(null);
+  const [feedback, setFeedback] = useState(null);
+  const animationRef = useRef(null);
 
   const difficultySettings = {
-    easy: { totalRounds: 6, sequenceLength: 4 },
-    medium: { totalRounds: 8, sequenceLength: 5 },
-    hard: { totalRounds: 10, sequenceLength: 6 }
+    easy: { totalRounds: 5, sequenceLength: 3 },
+    medium: { totalRounds: 7, sequenceLength: 4 },
+    hard: { totalRounds: 10, sequenceLength: 5 }
   };
 
-  const settings = difficultySettings[difficulty] || difficultySettings.medium;
+  const settings = difficultySettings[difficulty] || difficultySettings.easy;
 
   const creatures = [
-    { id: 'jellyfish', emoji: '🪼', tempo: 800, color: '#ec4899' },
-    { id: 'fish', emoji: '🐠', tempo: 400, color: '#3b82f6' },
-    { id: 'seahorse', emoji: '🦭', tempo: 600, color: '#a78bfa' },
-    { id: 'octopus', emoji: '🐙', tempo: 500, color: '#f97316' },
-    { id: 'turtle', emoji: '🐢', tempo: 900, color: '#10b981' }
+    { id: 'jellyfish', emoji: '🪼', tempo: 600, color: '#ec4899', sound: 'high' },
+    { id: 'fish', emoji: '🐠', tempo: 600, color: '#3b82f6', sound: 'medium' },
+    { id: 'seahorse', emoji: '🦭', tempo: 600, color: '#a78bfa', sound: 'low' },
+    { id: 'octopus', emoji: '🐙', tempo: 600, color: '#f97316', sound: 'pulse' }
   ];
 
   useEffect(() => {
     startRound();
+    playSound('gameStart');
+  }, []);
+
+  const playSound = (type) => {
     try {
-      window.SoundService?.playSound('gameStart');
+      if (window.SoundService?.playSound) {
+        window.SoundService.playSound(type);
+      }
     } catch (e) {
       console.warn('Sound failed:', e);
     }
-  }, []);
+  };
 
   const startRound = () => {
     const newSequence = Array.from({ length: settings.sequenceLength }, () =>
@@ -40,6 +47,7 @@ const RhythmReef = ({ onComplete, difficulty = 'medium' }) => {
     );
     setSequence(newSequence);
     setPlayerSequence([]);
+    setFeedback(null);
     animateSequence(newSequence);
   };
 
@@ -50,15 +58,11 @@ const RhythmReef = ({ onComplete, difficulty = 'medium' }) => {
     seq.forEach((creature, index) => {
       setTimeout(() => {
         setCurrentCreature(creature);
-        try {
-          window.SoundService?.playSound('buttonClick');
-        } catch (e) {
-          console.warn('Sound failed:', e);
-        }
+        playSound('buttonClick');
 
         setTimeout(() => {
           setCurrentCreature(null);
-        }, creature.tempo - 100);
+        }, creature.tempo - 150);
 
         if (index === seq.length - 1) {
           setTimeout(() => {
@@ -72,22 +76,18 @@ const RhythmReef = ({ onComplete, difficulty = 'medium' }) => {
   };
 
   const handleCreatureClick = (creature) => {
-    if (isShowing || isComplete) return;
+    if (isShowing || isComplete || !creature) return;
 
     const newPlayerSeq = [...playerSequence, creature];
     setPlayerSequence(newPlayerSeq);
 
     setCurrentCreature(creature);
-    setTimeout(() => setCurrentCreature(null), creature.tempo - 100);
+    playSound('buttonClick');
 
-    try {
-      window.SoundService?.playSound('buttonClick');
-    } catch (e) {
-      console.warn('Sound failed:', e);
-    }
+    setTimeout(() => setCurrentCreature(null), 200);
 
     // Check if correct
-    const isCorrect = sequence[newPlayerSeq.length - 1].id === creature.id;
+    const isCorrect = sequence[newPlayerSeq.length - 1]?.id === creature.id;
 
     if (!isCorrect) {
       handleWrong();
@@ -96,50 +96,43 @@ const RhythmReef = ({ onComplete, difficulty = 'medium' }) => {
     }
   };
 
-  const handleCorrect = () => {
-    setScore(score + 10);
-
-    try {
-      window.SoundService?.playSound('gameSuccess');
-    } catch (e) {
-      console.warn('Sound failed:', e);
-    }
-
-    if (round >= settings.totalRounds) {
-      completeGame(score + 10);
-    } else {
-      setTimeout(() => {
-        setRound(round + 1);
-        startRound();
-      }, 1000);
-    }
-  };
-
   const handleWrong = () => {
-    try {
-      window.SoundService?.playSound('gameFail');
-    } catch (e) {
-      console.warn('Sound failed:', e);
-    }
+    setFeedback('wrong');
+    playSound('gameFail');
 
     setTimeout(() => {
-      setPlayerSequence([]);
-      animateSequence(sequence);
-    }, 1000);
+      if (round >= settings.totalRounds) {
+        completeGame(score);
+      } else {
+        setRound(round + 1);
+        startRound();
+      }
+    }, 1500);
+  };
+
+  const handleCorrect = () => {
+    const points = 10 * round;
+    setScore(score + points);
+    setFeedback('correct');
+    playSound('gameSuccess');
+
+    setTimeout(() => {
+      if (round >= settings.totalRounds) {
+        completeGame(score + points);
+      } else {
+        setRound(round + 1);
+        startRound();
+      }
+    }, 1500);
   };
 
   const completeGame = (finalScore) => {
     setIsComplete(true);
-
-    try {
-      window.SoundService?.playSound('gameSuccess');
-    } catch (e) {
-      console.warn('Sound failed:', e);
-    }
+    playSound('gameSuccess');
 
     setTimeout(() => {
       onComplete({
-        success: finalScore >= 50,
+        success: finalScore >= 30,
         score: finalScore
       });
     }, 2000);
@@ -147,16 +140,18 @@ const RhythmReef = ({ onComplete, difficulty = 'medium' }) => {
 
   if (isComplete) {
     return (
-      <div className="bg-stone-900/60 backdrop-blur-sm border border-amber-700/30 rounded-xl p-6">
+      <div className="bg-gradient-to-br from-blue-900/40 to-purple-900/40 border border-blue-700/50 rounded-xl p-8 max-w-md mx-auto">
         <div className="text-center">
-          <div className="text-6xl mb-4">🌊</div>
-          <h3 className="text-2xl font-bold text-white mb-2">Reef Master!</h3>
-          <p className="text-stone-400 text-sm mb-6">Perfect rhythm and memory</p>
-
+          <div className="text-7xl mb-4">🏆</div>
+          <h3 className="text-3xl font-bold text-white mb-4">Rhythm Master!</h3>
           <div className="bg-stone-800/60 border border-stone-700 rounded-lg p-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-xl text-stone-300">Final Score:</span>
+              <span className="text-amber-400 font-bold text-3xl">{score}</span>
+            </div>
             <div className="flex justify-between items-center">
-              <span className="text-stone-300">Final Score:</span>
-              <span className="text-amber-400 font-bold text-2xl">{score}</span>
+              <span className="text-xl text-stone-300">Rounds:</span>
+              <span className="text-blue-400 font-bold text-3xl">{round}/{settings.totalRounds}</span>
             </div>
           </div>
         </div>
@@ -165,105 +160,91 @@ const RhythmReef = ({ onComplete, difficulty = 'medium' }) => {
   }
 
   return (
-    <div className="bg-stone-900/60 backdrop-blur-sm border border-amber-700/30 rounded-xl p-6">
-      <div className="text-center mb-4">
-        <h3 className="text-xl font-bold text-white mb-2">🌊 Rhythm Reef</h3>
-        <p className="text-stone-400 text-sm">Tap creatures in the same rhythm and order</p>
-
-        <div className="flex justify-center gap-4 mt-3">
-          <div className="flex items-center gap-2">
-            <span className="text-stone-400 text-xs">Round:</span>
-            <span className="font-bold text-sm text-amber-400">{round} / {settings.totalRounds}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-stone-400 text-xs">Score:</span>
-            <span className="font-bold text-sm text-green-400">{score}</span>
-          </div>
+    <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 border border-blue-700/40 rounded-xl p-6 max-w-md mx-auto">
+      <div className="text-center mb-6">
+        <h3 className="text-3xl font-bold text-white mb-3">🌊 Rhythm Reef</h3>
+        <div className="text-lg text-blue-200 font-semibold mb-2">
+          Round {round} / {settings.totalRounds}
+        </div>
+        <div className="text-base text-stone-300 bg-stone-900/50 rounded-lg p-3">
+          {isShowing ? '👀 Watch the sequence...' : '🎯 Repeat the rhythm!'}
         </div>
       </div>
 
-      {/* Underwater Scene */}
-      <div className="relative w-full max-w-2xl mx-auto aspect-video max-h-[40vh] bg-gradient-to-b from-blue-900 to-blue-950 rounded-xl overflow-hidden border-2 border-blue-700 mb-3">
-        {/* Bubbles */}
-        <div className="absolute inset-0 opacity-20">
-          {[...Array(10)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-2 h-2 bg-white rounded-full animate-ping"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 2}s`
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Center Display */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          {currentCreature && (
-            <div
-              className="text-9xl animate-pulse"
-              style={{
-                filter: `drop-shadow(0 0 20px ${currentCreature.color})`
-              }}
-            >
-              {currentCreature.emoji}
-            </div>
-          )}
-          {!currentCreature && !isShowing && (
-            <div className="text-white text-sm">
-              {playerSequence.length}/{sequence.length}
-            </div>
-          )}
-        </div>
-
-        {/* Coral decoration */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-green-900/40 to-transparent" />
-      </div>
-
-      {/* Status */}
-      <div className="text-center mb-4">
-        {isShowing ? (
-          <p className="text-blue-300 text-sm font-medium animate-pulse">
-            🎵 Watch and listen to the rhythm...
-          </p>
-        ) : (
-          <p className="text-green-300 text-sm font-medium">
-            🖱️ Tap creatures in the same order and rhythm
-          </p>
+      {/* Sequence Display Area - Fixed height to prevent layout shift */}
+      <div className="bg-gradient-to-br from-cyan-900/20 to-blue-900/20 border-2 border-cyan-500/30 rounded-2xl p-6 mb-6 h-[140px] flex items-center justify-center overflow-hidden">
+        {currentCreature && (
+          <div
+            className="text-8xl animate-pulse"
+            style={{
+              filter: `drop-shadow(0 0 20px ${currentCreature.color})`,
+              transition: 'all 0.2s ease',
+              transform: 'scale(1.1)'
+            }}
+          >
+            {currentCreature.emoji}
+          </div>
+        )}
+        {feedback && !currentCreature && (
+          <div className={`text-5xl font-bold ${
+            feedback === 'correct' ? 'text-emerald-400' : 'text-rose-400'
+          }`}>
+            {feedback === 'correct' ? '✓ Perfect!' : '✗ Try Again'}
+          </div>
+        )}
+        {!currentCreature && !feedback && !isShowing && (
+          <div className="text-stone-600 text-6xl">?</div>
         )}
       </div>
 
       {/* Creature Buttons */}
-      <div className="grid grid-cols-5 gap-2">
+      <div className="grid grid-cols-2 gap-3 mb-4">
         {creatures.map(creature => (
           <button
             key={creature.id}
             onClick={() => handleCreatureClick(creature)}
-            disabled={isShowing}
-            className={`p-4 rounded-lg border-2 transition-all ${
-              isShowing
-                ? 'bg-stone-800 border-stone-700 opacity-50 cursor-not-allowed'
-                : 'bg-stone-700 border-stone-600 hover:border-stone-500 hover:scale-105'
+            disabled={isShowing || isComplete}
+            className={`p-4 rounded-xl border-2 transition-all transform ${
+              isShowing || isComplete
+                ? 'bg-stone-800/50 border-stone-700 opacity-40 cursor-not-allowed'
+                : 'bg-gradient-to-br from-stone-700 to-stone-800 border-stone-600 hover:border-stone-500 hover:scale-105 active:scale-95 shadow-lg'
             }`}
             style={{
-              borderColor: currentCreature?.id === creature.id ? creature.color : undefined
+              borderColor: currentCreature?.id === creature.id ? creature.color : undefined,
+              boxShadow: currentCreature?.id === creature.id ? `0 0 20px ${creature.color}` : undefined
             }}
           >
-            <div className="text-3xl">{creature.emoji}</div>
-            <div className="text-xs text-stone-400 mt-1">
+            <div className="text-5xl mb-2">{creature.emoji}</div>
+            <div className="text-xs text-stone-400 font-semibold uppercase">
               {creature.tempo}ms
             </div>
           </button>
         ))}
       </div>
 
-      <div className="mt-4 bg-stone-800/40 border border-stone-700 rounded-lg p-2">
-        <p className="text-stone-400 text-xs text-center">
-          💡 Each creature has a unique tempo - match both order AND rhythm!
-        </p>
+      {/* Progress Indicators */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-emerald-900/30 border border-emerald-700/50 rounded-lg p-3 text-center">
+          <div className="text-2xl font-bold text-emerald-400">{score}</div>
+          <div className="text-xs text-emerald-300 uppercase tracking-wide font-semibold">Score</div>
+        </div>
+        <div className="bg-blue-900/30 border border-blue-700/50 rounded-lg p-3 text-center">
+          <div className="text-2xl font-bold text-blue-400">{playerSequence.length}/{sequence.length}</div>
+          <div className="text-xs text-blue-300 uppercase tracking-wide font-semibold">Progress</div>
+        </div>
       </div>
+
+      {/* Sequence Preview (for debugging/learning) */}
+      {playerSequence.length > 0 && (
+        <div className="mt-4 text-center">
+          <div className="text-xs text-stone-500 mb-2">Your Sequence:</div>
+          <div className="flex justify-center gap-1">
+            {playerSequence.map((c, i) => (
+              <span key={i} className="text-2xl">{c.emoji}</span>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

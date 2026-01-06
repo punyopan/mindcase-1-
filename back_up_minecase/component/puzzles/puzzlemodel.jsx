@@ -29,47 +29,55 @@ const PuzzleModal = ({
           ? 'opacity-100 scale-100 translate-y-0'
           : 'opacity-0 scale-95 translate-y-8'
       }`}>
-        {/* Header with image */}
-        <div className="relative rounded-t-xl overflow-hidden">
-          <div className="h-48 overflow-hidden">
-            <img
-              src={selectedPuzzle.image}
-              alt={selectedPuzzle.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/60 to-transparent" />
+        {/* Header (Refactored for no background image) */}
+        <div className="flex items-start justify-between p-6 border-b border-stone-700/50 bg-stone-900/30 rounded-t-2xl">
+          <div className="flex items-center gap-4">
+            <div className="text-4xl">{selectedPuzzle.icon}</div>
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-1">{selectedPuzzle.title}</h2>
+              <span className="inline-block text-sm px-3 py-1 bg-amber-900/40 border border-amber-700/50 rounded-full text-amber-200">
+                {selectedPuzzle.skillFocus}
+              </span>
+            </div>
           </div>
 
           <button
             onClick={closePuzzle}
-            className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 rounded-full p-2 transition-colors"
+            className="bg-stone-800 hover:bg-stone-700 rounded-full p-2 transition-colors border border-stone-600 group"
           >
-            <X className="w-5 h-5 text-white" />
+            <X className="w-6 h-6 text-stone-400 group-hover:text-white transition-colors" />
           </button>
-
-          <div className="absolute bottom-4 left-6 right-6">
-            <div className="flex items-end justify-between">
-              <div>
-                <div className="text-5xl mb-2">{selectedPuzzle.icon}</div>
-                <h2 className="text-2xl font-bold text-white mb-1">{selectedPuzzle.title}</h2>
-                <span className="inline-block text-sm px-3 py-1 bg-amber-600/80 rounded-full text-white">
-                  {selectedPuzzle.skillFocus}
-                </span>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div className="p-6 space-y-6">
           {!showFeedback ? (
             <>
               {/* Question */}
-              <div className="bg-amber-900/30 border border-amber-700/50 rounded-xl p-5">
-                <div className="flex items-start gap-3">
-                  <AlertCircle className="w-6 h-6 text-amber-500 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <h3 className="font-bold text-amber-400 mb-2 text-lg">CASE BRIEF</h3>
-                    <p className="text-stone-200 leading-relaxed whitespace-pre-line">{selectedPuzzle.question}</p>
+              <div className="bg-amber-900/30 border border-amber-700/50 rounded-xl overflow-hidden">
+                {/* Puzzle illustration image */}
+                {selectedPuzzle.image && (
+                  <div className="relative w-full bg-stone-900 rounded-t-xl overflow-hidden">
+                    <img
+                      src={selectedPuzzle.image}
+                      alt={selectedPuzzle.title}
+                      className="w-full h-auto object-contain opacity-90"
+                    />
+
+                    <div className="absolute bottom-3 left-4 flex items-center gap-2">
+                      <span className="text-3xl">{selectedPuzzle.icon}</span>
+                      <span className="text-amber-300 text-sm font-medium bg-black/40 px-2 py-1 rounded">
+                        {selectedPuzzle.skillFocus}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <div className="p-5">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="w-6 h-6 text-amber-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h3 className="font-bold text-amber-400 mb-3 text-lg">CASE BRIEF</h3>
+                      <p className="text-stone-200 leading-relaxed whitespace-pre-line">{selectedPuzzle.question}</p>
+                    </div>
                   </div>
                 </div>
               </div>
