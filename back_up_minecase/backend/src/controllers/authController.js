@@ -225,9 +225,9 @@ exports.socialCallback = async (req, res) => {
         setRefreshTokenCookie(res, refreshToken);
 
         // Redirect to frontend with success indicator
-        // IMPORTANT: Use localhost (not 127.0.0.1) to match the backend domain for cookies
+        // IMPORTANT: Use localhost to match cookie domain for OAuth cookies to work
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5501';
-        res.redirect(`${frontendUrl}/back_up_minecase/prod.html?auth=success`);
+        res.redirect(`${frontendUrl}/prod.html?auth=success`);
     } catch (err) {
         console.error('Social callback error:', err);
         res.redirect('/login?error=auth_failed');

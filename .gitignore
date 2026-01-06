@@ -1,0 +1,30 @@
+# Dependencies - CRITICAL: never commit these
+**/node_modules/
+
+# Environment variables
+.env
+.env.*
+*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Build outputs
+dist/
+build/
+
+# Logs
+*.log
+logs/
+
+# Database files
+*.db
+
+# Temp files
+*.tmp

@@ -26,7 +26,7 @@ class PaymentController {
 
         try {
             const priceId = PRICE_IDS[planType] || PRICE_IDS.monthly;
-            // IMPORTANT: Use localhost (not 127.0.0.1) to match the backend domain for cookies
+            // IMPORTANT: Use localhost to match cookie domain
             const frontendUrl = process.env.FRONTEND_URL || req.headers.origin || 'http://localhost:5501';
 
             const session = await stripe.checkout.sessions.create({
@@ -37,8 +37,8 @@ class PaymentController {
                     quantity: 1
                 }],
                 client_reference_id: userId,
-                success_url: `${frontendUrl}/back_up_minecase/prod.html?session_id={CHECKOUT_SESSION_ID}&payment=success`,
-                cancel_url: `${frontendUrl}/back_up_minecase/prod.html?payment=canceled`,
+                success_url: `${frontendUrl}/prod.html?session_id={CHECKOUT_SESSION_ID}&payment=success`,
+                cancel_url: `${frontendUrl}/prod.html?payment=canceled`,
                 metadata: {
                     userId: userId,
                     planType: planType
