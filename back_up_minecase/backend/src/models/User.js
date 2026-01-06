@@ -95,6 +95,13 @@ class User {
             [id]
         );
     }
+
+    static async updatePassword(id, passwordHash) {
+        await db.query(
+            'UPDATE t_users SET password_hash = $1, updated_at = NOW() WHERE id = $2',
+            [passwordHash, id]
+        );
+    }
 }
 
 module.exports = User;

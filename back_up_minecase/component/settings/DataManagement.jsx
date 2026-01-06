@@ -32,6 +32,65 @@ const DataManagement = ({ user, onProgressReset }) => {
     }
   };
 
+  /**
+   * Validate imported progress data schema
+   * Returns { valid: boolean, errors: string[] }
+   */
+  const validateProgressSchema = (data) => {
+    const errors = [];
+    
+    // Must be an object
+    if (typeof data !== 'object' || data === null || Array.isArray(data)) {
+      return { valid: false, errors: ['Invalid data format: must be a JSON object'] };
+    }
+
+    // Required top-level fields
+    const requiredFields = ['userId', 'exportDate'];
+    for (const field of requiredFields) {
+      if (!(field in data)) {
+        errors.push(`Missing required field: ${field}`);
+      }
+    }
+
+    // Validate tokens if present
+    if ('tokens' in data && typeof data.tokens !== 'number') {
+      errors.push('Invalid tokens: must be a number');
+    }
+    if ('tokens' in data && data.tokens < 0) {
+      errors.push('Invalid tokens: cannot be negative');
+    }
+
+    // Validate unlockedPuzzles if present
+    if ('unlockedPuzzles' in data) {
+      if (!Array.isArray(data.unlockedPuzzles)) {
+        errors.push('Invalid unlockedPuzzles: must be an array');
+      }
+    }
+
+    // Validate unlockedTopics if present
+    if ('unlockedTopics' in data) {
+      if (!Array.isArray(data.unlockedTopics)) {
+        errors.push('Invalid unlockedTopics: must be an array');
+      }
+    }
+
+    // Validate streak if present
+    if ('streak' in data) {
+      if (typeof data.streak !== 'number' || data.streak < 0) {
+        errors.push('Invalid streak: must be a non-negative number');
+      }
+    }
+
+    // Validate analytics if present
+    if ('analytics' in data) {
+      if (typeof data.analytics !== 'object' || data.analytics === null) {
+        errors.push('Invalid analytics: must be an object');
+      }
+    }
+
+    return { valid: errors.length === 0, errors };
+  };
+
   const handleImportProgress = () => {
     if (!user) return;
 
@@ -45,6 +104,23 @@ const DataManagement = ({ user, onProgressReset }) => {
       const reader = new FileReader();
       reader.onload = (event) => {
         try {
+          // Parse JSON first
+          let parsedData;
+          try {
+            parsedData = JSON.parse(event.target.result);
+          } catch (parseError) {
+            alert('Invalid JSON file. Please check the file format.');
+            return;
+          }
+
+          // Validate schema
+          const validation = validateProgressSchema(parsedData);
+          if (!validation.valid) {
+            alert('Invalid progress file:\n\n• ' + validation.errors.join('\n• '));
+            return;
+          }
+
+          // Proceed with import
           const ProgressService = window.ProgressService;
           const result = ProgressService.importProgress(user.id, event.target.result);
 
@@ -56,7 +132,7 @@ const DataManagement = ({ user, onProgressReset }) => {
           }
         } catch (error) {
           console.error('Import failed:', error);
-          alert('Failed to import progress data. Invalid file format.');
+          alert('Failed to import progress data. ' + error.message);
         }
       };
       reader.readAsText(file);

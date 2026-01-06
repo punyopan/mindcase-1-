@@ -236,4 +236,144 @@ export class AuthService {
       return false;
     }
   }
+
+  /**
+   * Change password
+   */
+  static async changePassword(currentPassword, newPassword) {
+    try {
+      const response = await fetch(`${API_URL}/change-password`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${_accessToken}`
+        },
+        body: JSON.stringify({ currentPassword, newPassword })
+      });
+      
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to change password');
+      
+      return { success: true, message: data.message };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  }
+
+  /**
+   * Setup 2FA - Get QR code
+   */
+  static async setup2FA() {
+    try {
+      const response = await fetch(`${API_URL}/2fa/setup`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${_accessToken}`
+        }
+      });
+      
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to setup 2FA');
+      
+      return { success: true, qrCode: data.qrCode, secret: data.manualEntry };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  }
+
+  /**
+   * Verify 2FA setup with code
+   */
+  static async verify2FASetup(code) {
+    try {
+      const response = await fetch(`${API_URL}/2fa/verify`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${_accessToken}`
+        },
+        body: JSON.stringify({ code })
+      });
+      
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Invalid code');
+      
+      return { success: true, backupCodes: data.backupCodes };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  }
+
+  /**
+   * Disable 2FA
+   */
+  static async disable2FA(password) {
+    try {
+      const response = await fetch(`${API_URL}/2fa/disable`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${_accessToken}`
+        },
+        body: JSON.stringify({ password })
+      });
+      
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to disable 2FA');
+      
+      return { success: true };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  }
+
+  /**
+   * Get 2FA status
+   */
+  static async get2FAStatus() {
+    try {
+      const response = await fetch(`${API_URL}/2fa/status`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${_accessToken}`
+        }
+      });
+      
+      const data = await response.json();
+      return data.enabled || false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /**
+   * Verify 2FA code during login
+   */
+  static async verify2FALogin(userId, code, trustDevice = false) {
+    try {
+      const response = await fetch(`${API_URL}/2fa/login`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, code, trustDevice })
+      });
+      
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Invalid 2FA code');
+      
+      _accessToken = data.accessToken;
+      _currentUser = data.user;
+      return { success: true, user: _currentUser };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  }
 }
+

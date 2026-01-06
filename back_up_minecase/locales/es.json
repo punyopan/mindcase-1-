@@ -1,20 +1,20 @@
 {
   "menu": {
-    "title_sub": "Piensa Antes De Creer",
+    "title_sub": "Piensa Antes de Creer",
     "description": "Entrena tu mente para cuestionar, analizar y validar — porque en un mundo de IA, tu razonamiento importa más que nunca.",
     "cases_solved": "Casos Resueltos",
     "total_score": "Puntuación Total",
     "tokens": "Fichas",
     "complete": "Completo",
-    "day_streak": "Racha Diaria",
+    "day_streak": "Racha de Días",
     "overall_progress": "Progreso General",
-    "puzzles": "Rompecabezas",
+    "puzzles": "Acertijos",
     "open_case_files": "Abrir Expedientes",
     "cognitive_training": "Entrenamiento Cognitivo",
-    "start_button": "Comenzar Entrenamiento",
+    "start_button": "Empezar Entrenamiento",
     "main_menu": "Menú Principal",
     "select_investigation": "Selecciona Tu Investigación",
-    "investigation_desc": "Cada expediente contiene 5 rompecabezas. Escribe tu razonamiento, recibe retroalimentación de IA.",
+    "investigation_desc": "Cada expediente contiene 5 acertijos. Escribe tu razonamiento, obtén retroalimentación de IA.",
     "progress": "Progreso"
   },
   "settings": {
@@ -34,12 +34,32 @@
     "logout": "Cerrar Sesión",
     "back": "Atrás",
     "active": "Activo",
-    "off": "Apagado",
-    "on": "Encendido"
+    "off": "Desactivado",
+    "on": "Activado",
+    "export_data": "Exportar Datos",
+    "import_data": "Importar Datos",
+    "reset_progress": "Reiniciar Progreso",
+    "change_password": "Cambiar Contraseña",
+    "enable_2fa": "Activar Autenticación de Dos Factores",
+    "disable_2fa": "Desactivar Autenticación de Dos Factores",
+    "current_password": "Contraseña Actual",
+    "new_password": "Nueva Contraseña",
+    "confirm_password": "Confirmar Contraseña"
   },
   "auth": {
     "logged_in_as": "Conectado como",
-    "google_account": "Cuenta de Google"
+    "google_account": "Cuenta de Google",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar Sesión",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "name": "Nombre",
+    "forgot_password": "¿Olvidaste tu contraseña?",
+    "continue_as_guest": "Continuar como Invitado",
+    "or": "o",
+    "already_have_account": "¿Ya tienes una cuenta?",
+    "dont_have_account": "¿No tienes una cuenta?"
   },
   "common": {
     "loading": "Cargando...",
@@ -47,6 +67,49 @@
     "success": "Éxito",
     "save": "Guardar",
     "cancel": "Cancelar",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "confirm": "Confirmar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "done": "Hecho",
+    "retry": "Reintentar",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "puzzles": {
+    "correct": "¡Correcto!",
+    "incorrect": "Incorrecto",
+    "skip": "Saltar",
+    "hint": "Pista",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "submit": "Enviar",
+    "your_answer": "Tu Respuesta",
+    "reasoning": "Razonamiento",
+    "feedback": "Retroalimentación",
+    "unlock": "Desbloquear",
+    "locked": "Bloqueado",
+    "tokens_required": "{count} fichas requeridas"
+  },
+  "analytics": {
+    "title": "Análisis",
+    "performance": "Rendimiento",
+    "streak": "Racha",
+    "accuracy": "Precisión",
+    "speed": "Velocidad",
+    "consistency": "Consistencia",
+    "improving": "Mejorando",
+    "stable": "Estable",
+    "declining": "Declinando"
+  },
+  "premium": {
+    "upgrade": "Actualizar a Premium",
+    "features": "Funciones Premium",
+    "ad_free": "Experiencia Sin Anuncios",
+    "unlimited_puzzles": "Acertijos Ilimitados",
+    "advanced_analytics": "Análisis Avanzados",
+    "priority_support": "Soporte Prioritario",
+    "subscribe": "Suscribirse",
+    "restore": "Restaurar Compra"
   }
 }

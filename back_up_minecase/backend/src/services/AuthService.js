@@ -168,6 +168,38 @@ class AuthService {
 
         return { accessToken: newAccessToken, refreshToken: newRefreshToken };
     }
+
+    /**
+     * Change user password
+     * Requires current password verification
+     */
+    static async changePassword(userId, currentPassword, newPassword) {
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        if (!user.password_hash) {
+            throw new Error('Cannot change password for social login accounts');
+        }
+
+        // Verify current password
+        const valid = await this.verifyPassword(user.password_hash, currentPassword);
+        if (!valid) {
+            throw new Error('Current password is incorrect');
+        }
+
+        // Validate new password strength
+        if (newPassword.length < 8) {
+            throw new Error('Password must be at least 8 characters');
+        }
+
+        // Hash and update
+        const newHash = await this.hashPassword(newPassword);
+        await User.updatePassword(userId, newHash);
+
+        return { success: true };
+    }
 }
 
 module.exports = AuthService;

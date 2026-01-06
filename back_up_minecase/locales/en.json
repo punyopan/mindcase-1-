@@ -35,11 +35,31 @@
     "back": "Back",
     "active": "Active",
     "off": "Off",
-    "on": "On"
+    "on": "On",
+    "export_data": "Export Data",
+    "import_data": "Import Data",
+    "reset_progress": "Reset Progress",
+    "change_password": "Change Password",
+    "enable_2fa": "Enable Two-Factor Authentication",
+    "disable_2fa": "Disable Two-Factor Authentication",
+    "current_password": "Current Password",
+    "new_password": "New Password",
+    "confirm_password": "Confirm Password"
   },
   "auth": {
     "logged_in_as": "Logged in as",
-    "google_account": "Google Account"
+    "google_account": "Google Account",
+    "login": "Log In",
+    "register": "Register",
+    "logout": "Log Out",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "forgot_password": "Forgot Password?",
+    "continue_as_guest": "Continue as Guest",
+    "or": "or",
+    "already_have_account": "Already have an account?",
+    "dont_have_account": "Don't have an account?"
   },
   "common": {
     "loading": "Loading...",
@@ -47,6 +67,49 @@
     "success": "Success",
     "save": "Save",
     "cancel": "Cancel",
-    "close": "Close"
+    "close": "Close",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "done": "Done",
+    "retry": "Retry",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "puzzles": {
+    "correct": "Correct!",
+    "incorrect": "Incorrect",
+    "skip": "Skip",
+    "hint": "Hint",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "your_answer": "Your Answer",
+    "reasoning": "Reasoning",
+    "feedback": "Feedback",
+    "unlock": "Unlock",
+    "locked": "Locked",
+    "tokens_required": "{count} tokens required"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "performance": "Performance",
+    "streak": "Streak",
+    "accuracy": "Accuracy",
+    "speed": "Speed",
+    "consistency": "Consistency",
+    "improving": "Improving",
+    "stable": "Stable",
+    "declining": "Declining"
+  },
+  "premium": {
+    "upgrade": "Upgrade to Premium",
+    "features": "Premium Features",
+    "ad_free": "Ad-Free Experience",
+    "unlimited_puzzles": "Unlimited Puzzles",
+    "advanced_analytics": "Advanced Analytics",
+    "priority_support": "Priority Support",
+    "subscribe": "Subscribe",
+    "restore": "Restore Purchase"
   }
 }

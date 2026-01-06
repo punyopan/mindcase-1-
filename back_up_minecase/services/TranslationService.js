@@ -1,8 +1,10 @@
 /**
  * Translation Service
  * Handles loading locales, managing selected language, and translating keys.
- * Implements Singleton pattern.
+ * Implements Singleton pattern with localStorage persistence.
  */
+const STORAGE_KEY = 'mindcase_language_preference';
+
 class _TranslationService {
   constructor() {
     if (_TranslationService.instance) {
@@ -20,19 +22,53 @@ class _TranslationService {
       'Chinese', 'Japanese', 'Korean', 'Portuguese'
     ];
 
+    // Load saved preference
+    this._loadSavedLanguage();
+
     _TranslationService.instance = this;
+  }
+
+  /**
+   * Load saved language preference from localStorage
+   */
+  _loadSavedLanguage() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved && this.supportedLanguages.includes(saved)) {
+        this.currentLang = saved;
+      }
+    } catch (e) {
+      // localStorage not available
+    }
+  }
+
+  /**
+   * Save language preference to localStorage
+   */
+  _saveLanguagePreference() {
+    try {
+      localStorage.setItem(STORAGE_KEY, this.currentLang);
+    } catch (e) {
+      // localStorage not available
+    }
   }
 
   /**
    * Initialize with language data
    * @param {Object} initialData - Object containing locale data { English: {...}, Spanish: {...} }
-   * @param {string} defaultLang - Default language to start with
+   * @param {string} defaultLang - Default language to start with (only if no saved pref)
    */
   init(initialData = {}, defaultLang = 'English') {
     this.translations = initialData;
-    this.currentLang = defaultLang;
-    // Update supported languages based on initialization data
     this.supportedLanguages = Object.keys(initialData);
+    
+    // Check if saved language is still valid
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved && this.supportedLanguages.includes(saved)) {
+      this.currentLang = saved;
+    } else {
+      this.currentLang = defaultLang;
+    }
   }
 
   /**
@@ -55,12 +91,13 @@ class _TranslationService {
   }
 
   /**
-   * Set the current language
+   * Set the current language (with persistence)
    * @param {string} lang 
    */
   setLanguage(lang) {
     if (this.supportedLanguages.includes(lang)) {
       this.currentLang = lang;
+      this._saveLanguagePreference();
       this.notifySubscribers();
       return true;
     }
@@ -73,6 +110,13 @@ class _TranslationService {
    */
   getLanguage() {
     return this.currentLang;
+  }
+
+  /**
+   * Get all supported languages
+   */
+  getSupportedLanguages() {
+    return this.supportedLanguages;
   }
 
   /**
@@ -127,8 +171,18 @@ class _TranslationService {
       return params[key] !== undefined ? params[key] : match;
     });
   }
+
+  /**
+   * Check if a key exists
+   */
+  hasKey(key) {
+    const keys = key.split('.');
+    return this.getValue(this.currentLang, keys) !== null || 
+           this.getValue(this.fallbackLang, keys) !== null;
+  }
 }
 
 // Create and export singleton instance
 const TranslationService = new _TranslationService();
 export default TranslationService;
+

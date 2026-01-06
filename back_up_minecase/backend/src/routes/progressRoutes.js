@@ -33,4 +33,17 @@ router.get('/access/:contentType/:contentId', ProgressController.checkAccess);
 // Transaction history
 router.get('/transactions', ProgressController.getTransactions);
 
+// Streak operations
+router.get('/streak', ProgressController.getStreak);
+router.post('/streak/activity', ProgressController.recordActivity);
+router.post('/streak/sync', ProgressController.syncStreak);
+
+// Data sync operations
+router.get('/sync', ProgressController.getSyncedData);
+router.post('/sync', ProgressController.syncData);
+router.post('/sync/progress', ProgressController.syncProgressData);
+router.post('/sync/analytics', ProgressController.syncAnalyticsData);
+
 module.exports = router;
+
+

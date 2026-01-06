@@ -16,6 +16,16 @@ router.get('/sessions', verifyToken, authController.getSessions);
 router.get('/history', verifyToken, authController.getHistory);
 router.delete('/sessions/:familyId', verifyToken, authController.revokeSession);
 
+// Password change (requires authentication)
+router.post('/change-password', verifyToken, authController.validatePasswordChange, authController.changePassword);
+
+// 2FA routes (requires authentication)
+router.post('/2fa/setup', verifyToken, authController.setup2FA);
+router.post('/2fa/verify', verifyToken, authController.verify2FA);
+router.post('/2fa/disable', verifyToken, authController.disable2FA);
+router.get('/2fa/status', verifyToken, authController.get2FAStatus);
+router.post('/2fa/login', authController.verify2FALogin); // Not protected - used during login flow
+
 // Social Login Routes
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 router.get('/google/callback', 

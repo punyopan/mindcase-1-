@@ -1,7 +1,9 @@
 const AuthService = require('../services/AuthService');
+const TwoFactorService = require('../services/TwoFactorService');
 const { body, validationResult } = require('express-validator');
 const LoginHistory = require('../models/LoginHistory');
 const RefreshToken = require('../models/RefreshToken');
+const User = require('../models/User');
 
 /**
  * Extract device info from request headers
@@ -282,3 +284,131 @@ exports.revokeSession = async (req, res) => {
         res.status(500).json({ success: false, message: err.message });
     }
 };
+
+/**
+ * Change password for authenticated user
+ */
+exports.validatePasswordChange = [
+    body('currentPassword').exists().withMessage('Current password required'),
+    body('newPassword').isLength({ min: 8 }).withMessage('New password must be at least 8 characters')
+];
+
+exports.changePassword = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+        const { currentPassword, newPassword } = req.body;
+        await AuthService.changePassword(req.user.uid, currentPassword, newPassword);
+        
+        res.json({ success: true, message: 'Password changed successfully' });
+    } catch (err) {
+        res.status(400).json({ success: false, message: err.message });
+    }
+};
+
+/**
+ * Setup 2FA - Step 1: Generate secret and QR code
+ */
+exports.setup2FA = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.uid);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        const result = await TwoFactorService.generateSecret(req.user.uid, user.email);
+        res.json({ success: true, ...result });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+/**
+ * Verify 2FA - Step 2: Verify code and enable 2FA
+ */
+exports.verify2FA = async (req, res) => {
+    try {
+        const { code } = req.body;
+        if (!code) {
+            return res.status(400).json({ success: false, message: 'Verification code required' });
+        }
+
+        const result = await TwoFactorService.verifyAndEnable(req.user.uid, code);
+        res.json({ success: true, backupCodes: result.backupCodes });
+    } catch (err) {
+        res.status(400).json({ success: false, message: err.message });
+    }
+};
+
+/**
+ * Disable 2FA
+ */
+exports.disable2FA = async (req, res) => {
+    try {
+        const { password } = req.body;
+        if (!password) {
+            return res.status(400).json({ success: false, message: 'Password required' });
+        }
+
+        // Verify password first
+        const user = await User.findById(req.user.uid);
+        const valid = await AuthService.verifyPassword(user.password_hash, password);
+        if (!valid) {
+            return res.status(401).json({ success: false, message: 'Invalid password' });
+        }
+
+        await TwoFactorService.disable(req.user.uid);
+        res.json({ success: true, message: '2FA disabled' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+/**
+ * Check 2FA status
+ */
+exports.get2FAStatus = async (req, res) => {
+    try {
+        const enabled = await TwoFactorService.is2FAEnabled(req.user.uid);
+        res.json({ success: true, enabled });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+/**
+ * Verify 2FA code during login (for 2FA-enabled users)
+ */
+exports.verify2FALogin = async (req, res) => {
+    try {
+        const { userId, code, trustDevice } = req.body;
+        
+        const valid = await TwoFactorService.verifyCode(userId, code);
+        if (!valid) {
+            return res.status(401).json({ success: false, message: 'Invalid 2FA code' });
+        }
+
+        // Trust device if requested
+        if (trustDevice) {
+            await TwoFactorService.trustDevice(userId, req);
+        }
+
+        // Now issue the actual tokens
+        const user = await User.findById(userId);
+        const deviceInfo = getDeviceInfo(req);
+        const { accessToken, refreshToken } = await AuthService.issueTokenPair(user, deviceInfo);
+
+        setRefreshTokenCookie(res, refreshToken);
+        res.json({
+            success: true,
+            user: { id: user.id, name: user.name, email: user.email, role: user.role },
+            accessToken
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+

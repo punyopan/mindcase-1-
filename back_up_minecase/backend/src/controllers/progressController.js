@@ -6,6 +6,7 @@
 const WalletService = require('../services/WalletService');
 const UserProgressService = require('../services/UserProgressService');
 const MinigameSessionService = require('../services/MinigameSessionService');
+const StreakService = require('../services/StreakService');
 
 class ProgressController {
 
@@ -269,6 +270,154 @@ class ProgressController {
             res.status(500).json({ success: false, message: 'Failed to get transactions' });
         }
     }
+
+    /**
+     * GET /api/progress/streak
+     * Get user's current streak
+     */
+    static async getStreak(req, res) {
+        try {
+            const userId = req.user.uid;
+            const streak = await StreakService.getStreak(userId);
+            
+            res.json({
+                success: true,
+                streak
+            });
+        } catch (error) {
+            console.error('Error getting streak:', error);
+            res.status(500).json({ success: false, message: 'Failed to get streak' });
+        }
+    }
+
+    /**
+     * POST /api/progress/streak/activity
+     * Record daily activity and update streak
+     */
+    static async recordActivity(req, res) {
+        try {
+            const userId = req.user.uid;
+            const result = await StreakService.recordActivity(userId);
+            
+            res.json({
+                success: true,
+                ...result
+            });
+        } catch (error) {
+            console.error('Error recording activity:', error);
+            res.status(500).json({ success: false, message: 'Failed to record activity' });
+        }
+    }
+
+    /**
+     * POST /api/progress/streak/sync
+     * Sync streak from client (offline-first support)
+     * Body: { clientStreak: number, clientLastDate: string }
+     */
+    static async syncStreak(req, res) {
+        try {
+            const userId = req.user.uid;
+            const { clientStreak, clientLastDate } = req.body;
+            
+            if (typeof clientStreak !== 'number' || clientStreak < 0) {
+                return res.status(400).json({ success: false, message: 'Invalid clientStreak' });
+            }
+            
+            const result = await StreakService.syncStreak(userId, clientStreak, clientLastDate);
+            
+            res.json({
+                success: true,
+                streak: result
+            });
+        } catch (error) {
+            console.error('Error syncing streak:', error);
+            res.status(500).json({ success: false, message: 'Failed to sync streak' });
+        }
+    }
+
+    /**
+     * GET /api/progress/sync
+     * Get synced data from server
+     */
+    static async getSyncedData(req, res) {
+        try {
+            const userId = req.user.uid;
+            const ProgressSyncService = require('../services/ProgressSyncService');
+            const data = await ProgressSyncService.getSyncedData(userId);
+            
+            res.json({
+                success: true,
+                ...data
+            });
+        } catch (error) {
+            console.error('Error getting synced data:', error);
+            res.status(500).json({ success: false, message: 'Failed to get synced data' });
+        }
+    }
+
+    /**
+     * POST /api/progress/sync
+     * Sync all data to server
+     * Body: { progressData: object, analyticsData: object, clientVersion?: number }
+     */
+    static async syncData(req, res) {
+        try {
+            const userId = req.user.uid;
+            const { progressData, analyticsData, clientVersion = 1 } = req.body;
+            
+            const ProgressSyncService = require('../services/ProgressSyncService');
+            const result = await ProgressSyncService.syncAll(userId, progressData, analyticsData, clientVersion);
+            
+            res.json({
+                success: true,
+                serverVersion: result.serverVersion,
+                syncedAt: new Date().toISOString()
+            });
+        } catch (error) {
+            console.error('Error syncing data:', error);
+            res.status(500).json({ success: false, message: 'Failed to sync data' });
+        }
+    }
+
+    /**
+     * POST /api/progress/sync/progress
+     * Sync only progress data
+     */
+    static async syncProgressData(req, res) {
+        try {
+            const userId = req.user.uid;
+            const { progressData, clientVersion = 1 } = req.body;
+            
+            const ProgressSyncService = require('../services/ProgressSyncService');
+            const result = await ProgressSyncService.syncProgress(userId, progressData, clientVersion);
+            
+            res.json(result);
+        } catch (error) {
+            console.error('Error syncing progress:', error);
+            res.status(500).json({ success: false, message: 'Failed to sync progress' });
+        }
+    }
+
+    /**
+     * POST /api/progress/sync/analytics
+     * Sync only analytics data
+     */
+    static async syncAnalyticsData(req, res) {
+        try {
+            const userId = req.user.uid;
+            const { analyticsData, clientVersion = 1 } = req.body;
+            
+            const ProgressSyncService = require('../services/ProgressSyncService');
+            const result = await ProgressSyncService.syncAnalytics(userId, analyticsData, clientVersion);
+            
+            res.json(result);
+        } catch (error) {
+            console.error('Error syncing analytics:', error);
+            res.status(500).json({ success: false, message: 'Failed to sync analytics' });
+        }
+    }
 }
 
 module.exports = ProgressController;
+
+
