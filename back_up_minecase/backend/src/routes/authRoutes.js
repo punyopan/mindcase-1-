@@ -27,7 +27,14 @@ router.get('/2fa/status', verifyToken, authController.get2FAStatus);
 router.post('/2fa/login', authController.verify2FALogin); // Not protected - used during login flow
 
 // Social Login Routes
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+// Accept redirect_uri to know where to return after OAuth
+router.get('/google', (req, res, next) => {
+    const redirectUri = req.query.redirect_uri || req.headers.referer || '';
+    passport.authenticate('google', { 
+        scope: ['profile', 'email'],
+        state: Buffer.from(JSON.stringify({ redirectUri })).toString('base64')
+    })(req, res, next);
+});
 router.get('/google/callback', 
     passport.authenticate('google', { session: false, failureRedirect: '/login?error=auth_failed' }),
     authController.socialCallback

@@ -4,7 +4,9 @@
  * Manages Access Tokens in memory.
  */
 
-const API_URL = 'http://localhost:3000/api/auth';
+// Get API URL from config (set in config.js) or fallback
+const baseApiUrl = window.AppConfig?.API_URL || 'http://localhost:3000/api';
+const API_URL = baseApiUrl.endsWith('/') ? baseApiUrl + 'auth' : baseApiUrl + '/auth';
 
 // Internal state (Memory Storage)
 let _accessToken = null;

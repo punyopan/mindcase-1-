@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "description": "MindCase - Cognitive Training Application",
   "scripts": {
-    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "dev": "concurrently \"npm run backend\" \"npm run serve\" \"npm run open\"",
     "backend": "cd backend && npm run dev",
-    "frontend": "start http://127.0.0.1:5501/prod.html",
+    "serve": "http-server . -p 5501 -c-1 --cors",
+    "open": "node -e \"setTimeout(() => require('child_process').exec('start http://localhost:5501/prod.html'), 1500)\"",
     "install:all": "npm install && cd backend && npm install"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "http-server": "^14.1.1"
   }
 }

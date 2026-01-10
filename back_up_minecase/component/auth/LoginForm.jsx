@@ -105,7 +105,12 @@ const LoginForm = ({ onLogin, onSwitchToSignup, onSkip }) => {
           {/* Social Login */}
           <div className="mt-6 space-y-3">
              <button
-               onClick={() => window.location.href = 'http://localhost:3000/api/auth/google'}
+               onClick={() => {
+                 // Pass current URL as redirect_uri so OAuth knows where to return
+                 const redirectUri = encodeURIComponent(window.location.href);
+                 const apiBase = window.AppConfig?.API_URL?.replace(/\/api$/, '') || 'http://localhost:3000';
+                 window.location.href = `${apiBase}/api/auth/google?redirect_uri=${redirectUri}`;
+               }}
                className="w-full bg-white text-stone-900 font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2 shadow-lg hover:bg-stone-50"
              >
                <svg className="w-5 h-5" viewBox="0 0 24 24">

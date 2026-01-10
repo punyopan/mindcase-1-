@@ -46,8 +46,8 @@ const setRefreshTokenCookie = (res, token) => {
     res.cookie('refresh_token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', 
-        sameSite: 'Lax', // Changed from Strict - allows cookie on same-site navigations
-        path: '/api/auth', // Accessible for both /refresh and /logout
+        sameSite: 'Lax',
+        path: '/', // Changed to root to avoid scoping issues between /api/auth and other paths
         maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
     });
 };
@@ -148,8 +148,11 @@ exports.upgrade = async (req, res) => {
 
 exports.refresh = async (req, res) => {
     const incomingRefreshToken = req.cookies.refresh_token;
+    console.log('[Auth] Refresh request from origin:', req.headers.origin);
+    console.log('[Auth] Cookies received:', req.cookies); // Debug log
     
     if (!incomingRefreshToken) {
+        console.log('[Auth] No refresh token found in cookies');
         return res.status(401).json({ message: 'No refresh token provided' });
     }
 
@@ -159,11 +162,12 @@ exports.refresh = async (req, res) => {
         setRefreshTokenCookie(res, refreshToken);
         // Clear old cookie path if it exists (migration)
         res.clearCookie('refresh_token', { path: '/api/auth/refresh' });
+        res.clearCookie('refresh_token', { path: '/api/auth' });
         res.json({ success: true, accessToken });
     } catch (err) {
         // Clear cookie if invalid
-        res.clearCookie('refresh_token', { path: '/api/auth' });
-        res.clearCookie('refresh_token', { path: '/api/auth/refresh' });
+        res.clearCookie('refresh_token', { path: '/' });
+        res.clearCookie('refresh_token', { path: '/api/auth' }); // Legacy cleanup
         res.status(403).json({ success: false, message: err.message });
     }
 };
@@ -192,8 +196,9 @@ exports.logout = async (req, res) => {
         }
     }
 
-    res.clearCookie('refresh_token', { path: '/api/auth' });
-    res.clearCookie('refresh_token', { path: '/api/auth/refresh' }); // Clear old path too
+    res.clearCookie('refresh_token', { path: '/' });
+    res.clearCookie('refresh_token', { path: '/api/auth' }); // Legacy
+    res.clearCookie('refresh_token', { path: '/api/auth/refresh' }); // Legacy
     res.json({ success: true, message: 'Logged out' });
 };
 
@@ -217,17 +222,41 @@ exports.socialCallback = async (req, res) => {
         await LoginHistory.create({
             userId: req.user.id,
             action: 'login',
-            method: 'google', // or detect from req.authInfo if available
+            method: 'google',
             ...deviceInfo
         });
         console.log('[Auth] OAuth login history created for user:', req.user.id);
 
         setRefreshTokenCookie(res, refreshToken);
 
-        // Redirect to frontend with success indicator
-        // IMPORTANT: Use localhost to match cookie domain for OAuth cookies to work
-        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5501';
-        res.redirect(`${frontendUrl}/prod.html?auth=success`);
+        // Extract redirect URL from OAuth state (passed from initial auth request)
+        let redirectUrl = 'http://localhost:5501/prod.html'; // Safe default - serving from project root
+        try {
+            if (req.query.state) {
+                const state = JSON.parse(Buffer.from(req.query.state, 'base64').toString());
+                console.log('[Auth] Parsed OAuth state:', JSON.stringify(state));
+
+                if (state.redirectUri) {
+                    // redirectUri is already decoded by Express when it was received as query param
+                    // Just use it directly
+                    redirectUrl = state.redirectUri;
+                    console.log('[Auth] Original redirectUrl from state:', redirectUrl);
+                }
+            }
+        } catch (e) {
+            console.log('[Auth] Could not parse OAuth state, using default redirect', e);
+        }
+
+        // ALWAYS ensure the URL ends with .html if it's the prod page
+        // Simple string replacement - guaranteed to work
+        if (redirectUrl.includes('/prod') && !redirectUrl.includes('.html')) {
+            redirectUrl = redirectUrl.replace('/prod', '/prod.html');
+        }
+        console.log('[Auth] Final redirect URL:', redirectUrl);
+
+        // Add auth success param
+        const separator = redirectUrl.includes('?') ? '&' : '?';
+        res.redirect(`${redirectUrl}${separator}auth=success`);
     } catch (err) {
         console.error('Social callback error:', err);
         res.redirect('/login?error=auth_failed');
