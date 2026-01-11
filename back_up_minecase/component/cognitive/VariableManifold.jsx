@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import TranslationService from '../../services/TranslationService';
 
 /**
  * VARIABLE MANIFOLD - Cognitive Training Game
@@ -366,16 +367,14 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
             </div>
 
             <div className="bg-red-900/20 border border-red-700/30 rounded-xl p-4">
-              <h4 className="font-bold text-red-400 mb-2">Critical Notice</h4>
+              <h4 className="font-bold text-red-400 mb-2">{TranslationService.t('cognitive.critical_notice')}</h4>
               <p className="text-stone-300 text-sm">
-                There is NO WIN STATE. Every configuration involves trade-offs.
-                Your goal is to understand the system, make defensible choices,
-                and articulate what you're sacrificing and why.
+                {TranslationService.t('cognitive.no_win_state')}
               </p>
             </div>
 
             <div className="bg-amber-900/30 border border-amber-700/50 rounded-xl p-4">
-              <h4 className="font-bold text-amber-400 mb-2">How This Works</h4>
+              <h4 className="font-bold text-amber-400 mb-2">{TranslationService.t('cognitive.how_this_works')}</h4>
               <ul className="text-stone-300 text-sm space-y-2 text-left">
                 <li>1. Explore the system to understand how variables connect</li>
                 <li>2. Make interventions (you have limited changes)</li>
@@ -389,7 +388,7 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
               onClick={() => setPhase('system_exploration')}
               className="px-8 py-3 bg-gradient-to-r from-amber-600 to-red-600 text-white font-bold rounded-xl hover:from-amber-500 hover:to-red-500 transition-all"
             >
-              Explore System
+              {TranslationService.t('cognitive.explore_system')}
             </button>
           </div>
         );
@@ -398,9 +397,9 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
         return (
           <div className="space-y-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-white">System Exploration</h3>
+              <h3 className="text-xl font-bold text-white">{TranslationService.t('cognitive.system_exploration')}</h3>
               <div className="px-4 py-2 bg-stone-800 rounded-lg text-stone-400">
-                Exploring: {Math.floor(explorationTime / 60)}:{String(explorationTime % 60).padStart(2, '0')}
+                {TranslationService.t('cognitive.exploring')}: {Math.floor(explorationTime / 60)}:{String(explorationTime % 60).padStart(2, '0')}
               </div>
             </div>
 
@@ -416,7 +415,7 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
 
             {/* Constraints */}
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
-              <h4 className="font-bold text-amber-400 mb-2">System Constraints</h4>
+              <h4 className="font-bold text-amber-400 mb-2">{TranslationService.t('cognitive.system_constraints')}</h4>
               <ul className="space-y-2">
                 {scenario?.constraints?.map((c, idx) => (
                   <li key={idx} className="text-stone-300 text-sm flex items-center gap-2">
@@ -429,7 +428,7 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
 
             {/* Tensions hint */}
             <div className="bg-amber-900/20 border border-amber-700/30 rounded-xl p-4">
-              <h4 className="font-bold text-amber-400 mb-2">Known Tensions</h4>
+              <h4 className="font-bold text-amber-400 mb-2">{TranslationService.t('cognitive.known_tensions')}</h4>
               <ul className="space-y-1">
                 {scenario?.tensions?.slice(0, 2).map((t, idx) => (
                   <li key={idx} className="text-stone-300 text-sm">

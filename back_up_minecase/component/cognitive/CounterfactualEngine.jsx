@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import TranslationService from '../../services/TranslationService';
 
 /**
  * COUNTERFACTUAL ENGINE - Premium Cognitive Training Game
@@ -19,6 +20,12 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
   // Game phases
   const [phase, setPhase] = useState('briefing');
+  const [, setLang] = useState(TranslationService.currentLang);
+
+  useEffect(() => {
+    const unsubscribe = TranslationService.subscribe((lang) => setLang(lang));
+    return () => unsubscribe();
+  }, []);
 
   // Dependency mapping
   const [dependencies, setDependencies] = useState([]);
@@ -44,20 +51,20 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
   const startTimeRef = useRef(Date.now());
 
   const DEPENDENCY_TYPES = [
-    { id: 'necessary', label: 'Necessary', description: 'Without this, outcome couldn\'t happen', color: 'red' },
-    { id: 'sufficient', label: 'Sufficient', description: 'This alone could cause the outcome', color: 'purple' },
-    { id: 'contributing', label: 'Contributing', description: 'Helped make outcome more likely', color: 'amber' },
-    { id: 'enabling', label: 'Enabling', description: 'Created conditions for outcome', color: 'blue' },
-    { id: 'accelerating', label: 'Accelerating', description: 'Made outcome happen faster', color: 'green' }
+    { id: 'necessary', label: TranslationService.t('counterfactual.type_necessary'), description: TranslationService.t('counterfactual.type_necessary_desc'), color: 'red' },
+    { id: 'sufficient', label: TranslationService.t('counterfactual.type_sufficient'), description: TranslationService.t('counterfactual.type_sufficient_desc'), color: 'purple' },
+    { id: 'contributing', label: TranslationService.t('counterfactual.type_contributing'), description: TranslationService.t('counterfactual.type_contributing_desc'), color: 'amber' },
+    { id: 'enabling', label: TranslationService.t('counterfactual.type_enabling'), description: TranslationService.t('counterfactual.type_enabling_desc'), color: 'blue' },
+    { id: 'accelerating', label: TranslationService.t('counterfactual.type_accelerating'), description: TranslationService.t('counterfactual.type_accelerating_desc'), color: 'green' }
   ];
 
   const COUNTERFACTUAL_PROMPTS = [
-    "What if the timing had been different?",
-    "What if a key person had made a different choice?",
-    "What if resources had been allocated differently?",
-    "What if information had been available (or hidden)?",
-    "What if external circumstances had changed?",
-    "What if the sequence of events had been different?"
+    TranslationService.t('counterfactual.prompt_0'),
+    TranslationService.t('counterfactual.prompt_1'),
+    TranslationService.t('counterfactual.prompt_2'),
+    TranslationService.t('counterfactual.prompt_3'),
+    TranslationService.t('counterfactual.prompt_4'),
+    TranslationService.t('counterfactual.prompt_5')
   ];
 
   // Log interaction
@@ -72,7 +79,7 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
 
   // Add dependency
   const addDependency = () => {
-    if (currentDependency.trim().length < 10) return;
+    if (currentDependency.trim().length < 5) return;
 
     const newDep = {
       id: dependencies.length + 1,
@@ -94,7 +101,7 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
 
   // Add counterfactual
   const addCounterfactual = () => {
-    if (currentCounterfactual.change.length < 10 || currentCounterfactual.outcome.length < 10) return;
+    if (currentCounterfactual.change.length < 5 || currentCounterfactual.outcome.length < 5) return;
 
     const newCF = {
       id: counterfactuals.length + 1,
@@ -141,7 +148,7 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
     } else if (dependencies.length >= 2) {
       score += 8;
     } else {
-      evaluation.feedback.push("Outcomes typically depend on multiple factors. Try to identify at least 4.");
+      evaluation.feedback.push(TranslationService.t('counterfactual.feedback_count'));
     }
 
     // Used multiple dependency types
@@ -149,7 +156,7 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
       score += 15;
       evaluation.cognitiveGrowth.push('nuanced_causation');
     } else {
-      evaluation.feedback.push("Different factors play different causal roles. Explore necessary, sufficient, and contributing factors.");
+      evaluation.feedback.push(TranslationService.t('counterfactual.feedback_variety'));
     }
 
     // Explored multiple counterfactuals
@@ -157,7 +164,7 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
       score += 20;
       evaluation.cognitiveGrowth.push('counterfactual_thinking');
     } else {
-      evaluation.feedback.push("Exploring more 'what if' scenarios reveals how contingent outcomes really are.");
+      evaluation.feedback.push(TranslationService.t('counterfactual.feedback_scenarios'));
     }
 
     // Varied confidence levels (not all high or all low)
@@ -170,18 +177,18 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
     }
 
     // Identified pivotal moment
-    if (pivotalMoment.length >= 30) {
+    if (pivotalMoment.length >= 10) {
       score += 15;
       evaluation.cognitiveGrowth.push('leverage_point_identification');
     }
 
     // Provided reasoning for inevitability
-    if (inevitabilityReasoning.length >= 50) {
+    if (inevitabilityReasoning.length >= 20) {
       score += 15;
     }
 
     // Extracted lessons
-    if (lessonsLearned.length >= 40) {
+    if (lessonsLearned.length >= 20) {
       score += 10;
       evaluation.cognitiveGrowth.push('meta_learning');
     }
@@ -251,22 +258,22 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
       className="bg-stone-800/50 border border-stone-700 rounded-xl p-4"
     >
       <div className="flex items-start justify-between mb-2">
-        <div className="text-purple-400 text-sm font-bold">What If...</div>
+        <div className="text-purple-400 text-sm font-bold">{TranslationService.t('counterfactual.label_what_if')}</div>
         {phase === 'counterfactual' && (
           <button
             onClick={() => removeCounterfactual(cf.id)}
             className="text-stone-500 hover:text-red-400 text-sm"
           >
-            Remove
+            {TranslationService.t('cognitive.remove')}
           </button>
         )}
       </div>
       <p className="text-white mb-2">{cf.change}</p>
       <div className="text-stone-400 text-sm mb-2">
-        <span className="text-amber-400">Then:</span> {cf.outcome}
+        <span className="text-amber-400">{TranslationService.t('counterfactual.label_then')}</span> {cf.outcome}
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-stone-500 text-xs">Confidence:</span>
+        <span className="text-stone-500 text-xs">{TranslationService.t('cognitive.confidence')}:</span>
         <div className="flex-1 h-2 bg-stone-700 rounded-full overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-amber-600 to-amber-400"
@@ -285,10 +292,10 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
         return (
           <div className="space-y-6 text-center max-w-2xl mx-auto">
             <div className="text-6xl mb-4">🔄</div>
-            <h2 className="text-2xl font-bold text-purple-400">Counterfactual Engine</h2>
+            <h2 className="text-2xl font-bold text-purple-400">{TranslationService.t('counterfactual.title')}</h2>
 
             <div className="bg-stone-800/50 rounded-xl p-6 text-left">
-              <div className="text-stone-400 text-sm uppercase tracking-wider mb-2">The Outcome</div>
+              <div className="text-stone-400 text-sm uppercase tracking-wider mb-2">{TranslationService.t('counterfactual.outcome')}</div>
               <p className="text-xl text-white font-medium leading-relaxed">
                 {scenario?.outcome}
               </p>
@@ -298,19 +305,18 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
             </div>
 
             <div className="bg-purple-900/20 border border-purple-700/30 rounded-xl p-4">
-              <h4 className="font-bold text-purple-400 mb-2">Your Mission</h4>
+              <h4 className="font-bold text-purple-400 mb-2">{TranslationService.t('counterfactual.mission_title')}</h4>
               <p className="text-stone-300 text-sm">
-                This outcome happened. But was it inevitable?
-                Explore the causal web that led here, and imagine how things could have gone differently.
+                 {TranslationService.t('counterfactual.mission_desc')}
               </p>
             </div>
 
             <div className="bg-stone-800/30 border border-stone-700 rounded-xl p-4">
-              <h4 className="font-bold text-white mb-3">How This Works</h4>
+              <h4 className="font-bold text-white mb-3">{TranslationService.t('counterfactual.how_works')}</h4>
               <ul className="text-stone-300 text-sm space-y-2 text-left">
-                <li>1. <strong>Map Dependencies</strong> - What factors led to this outcome?</li>
-                <li>2. <strong>Explore Counterfactuals</strong> - What if things had been different?</li>
-                <li>3. <strong>Analyze Fragility</strong> - Was this outcome inevitable or contingent?</li>
+                <li>{TranslationService.t('counterfactual.step_1')}</li>
+                <li>{TranslationService.t('counterfactual.step_2')}</li>
+                <li>{TranslationService.t('counterfactual.step_3')}</li>
               </ul>
             </div>
 
@@ -318,7 +324,7 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
               onClick={() => setPhase('mapping')}
               className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:from-purple-500 hover:to-pink-500 transition-all"
             >
-              Begin Mapping
+              {TranslationService.t('counterfactual.begin_mapping')}
             </button>
           </div>
         );
@@ -327,26 +333,25 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
         return (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold text-white">Map Dependencies</h3>
+              <h3 className="text-xl font-bold text-white">{TranslationService.t('counterfactual.map_title')}</h3>
               <span className="text-stone-400 text-sm">
-                Factors: <span className="text-purple-400 font-bold">{dependencies.length}</span>
+                {TranslationService.t('counterfactual.factors_count')}: <span className="text-purple-400 font-bold">{dependencies.length}</span>
               </span>
             </div>
 
             {/* The Outcome */}
             <div className="bg-purple-900/20 border border-purple-700/30 rounded-xl p-4">
-              <div className="text-purple-400 text-xs uppercase mb-1">The Outcome</div>
+              <div className="text-purple-400 text-xs uppercase mb-1">{TranslationService.t('counterfactual.outcome')}</div>
               <p className="text-white">{scenario?.outcome}</p>
             </div>
 
             <div className="bg-stone-800/30 border border-stone-700 rounded-xl p-4 text-sm text-stone-400">
-              <strong>Question:</strong> What factors HAD to be true for this outcome to occur?
-              What was necessary? What just contributed? What enabled the conditions?
+              <strong>{TranslationService.t('counterfactual.causal_question')}</strong>
             </div>
 
             {/* Add dependency form */}
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
-              <div className="text-purple-400 font-bold text-sm mb-3">Add Causal Factor</div>
+              <div className="text-purple-400 font-bold text-sm mb-3">{TranslationService.t('counterfactual.add_factor')}</div>
 
               <div className="flex flex-wrap gap-2 mb-3">
                 {DEPENDENCY_TYPES.map(type => (
@@ -374,16 +379,16 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
                   type="text"
                   value={currentDependency}
                   onChange={(e) => setCurrentDependency(e.target.value)}
-                  placeholder="This outcome depended on..."
+                  placeholder={TranslationService.t('counterfactual.factor_placeholder')}
                   className="flex-1 bg-stone-900 border border-stone-600 rounded-lg px-3 py-2 text-white placeholder-stone-500"
                   onKeyPress={(e) => e.key === 'Enter' && addDependency()}
                 />
                 <button
                   onClick={addDependency}
-                  disabled={currentDependency.trim().length < 10}
+                  disabled={currentDependency.trim().length < 5}
                   className="px-4 py-2 bg-purple-600 text-white rounded-lg disabled:opacity-50"
                 >
-                  Add
+                  {TranslationService.t('excavator.add_btn')}
                 </button>
               </div>
             </div>
@@ -391,7 +396,7 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
             {/* Dependencies list */}
             {dependencies.length > 0 && (
               <div className="space-y-2">
-                <h4 className="text-white font-bold">Identified Dependencies:</h4>
+                <h4 className="text-white font-bold">{TranslationService.t('counterfactual.identified_deps')}</h4>
                 <div className="space-y-2">
                   {dependencies.map(d => renderDependencyCard(d))}
                 </div>
@@ -403,13 +408,13 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
                 onClick={() => setPhase('counterfactual')}
                 className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:from-purple-500 hover:to-pink-500 transition-all"
               >
-                Explore Counterfactuals
+                {TranslationService.t('counterfactual.explore_btn')}
               </button>
             )}
 
             {dependencies.length < 3 && (
               <p className="text-center text-stone-500 text-sm">
-                Identify at least 3 dependencies before proceeding
+                {TranslationService.t('counterfactual.identify_3')}
               </p>
             )}
           </div>
@@ -419,21 +424,21 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
         return (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold text-white">Counterfactual Exploration</h3>
+              <h3 className="text-xl font-bold text-white">{TranslationService.t('counterfactual.cf_title')}</h3>
               <span className="text-stone-400 text-sm">
-                Scenarios: <span className="text-purple-400 font-bold">{counterfactuals.length}</span>
+                {TranslationService.t('counterfactual.scenarios_count')}: <span className="text-purple-400 font-bold">{counterfactuals.length}</span>
               </span>
             </div>
 
             {/* The Outcome */}
             <div className="bg-purple-900/20 border border-purple-700/30 rounded-xl p-4">
-              <div className="text-purple-400 text-xs uppercase mb-1">Actual Outcome</div>
+              <div className="text-purple-400 text-xs uppercase mb-1">{TranslationService.t('counterfactual.actual_outcome')}</div>
               <p className="text-white">{scenario?.outcome}</p>
             </div>
 
             {/* Prompts */}
             <div className="bg-stone-800/30 border border-stone-700 rounded-xl p-4">
-              <div className="text-stone-400 text-sm mb-2">Consider these prompts:</div>
+              <div className="text-stone-400 text-sm mb-2">{TranslationService.t('counterfactual.prompts_label')}</div>
               <div className="flex flex-wrap gap-2">
                 {COUNTERFACTUAL_PROMPTS.map((prompt, idx) => (
                   <span key={idx} className="px-2 py-1 bg-stone-700 text-stone-300 text-xs rounded-lg">
@@ -445,33 +450,33 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
 
             {/* Add counterfactual form */}
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4 space-y-3">
-              <div className="text-purple-400 font-bold text-sm">Create Counterfactual</div>
+              <div className="text-purple-400 font-bold text-sm">{TranslationService.t('counterfactual.create_cf')}</div>
 
               <div>
-                <label className="text-stone-400 text-xs block mb-1">If this had been different...</label>
+                <label className="text-stone-400 text-xs block mb-1">{TranslationService.t('counterfactual.if_change')}</label>
                 <input
                   type="text"
                   value={currentCounterfactual.change}
                   onChange={(e) => setCurrentCounterfactual(prev => ({ ...prev, change: e.target.value }))}
-                  placeholder="What if [X] had been different..."
+                  placeholder={TranslationService.t('counterfactual.change_placeholder')}
                   className="w-full bg-stone-900 border border-stone-600 rounded-lg px-3 py-2 text-white placeholder-stone-500"
                 />
               </div>
 
               <div>
-                <label className="text-stone-400 text-xs block mb-1">Then the outcome would have been...</label>
+                <label className="text-stone-400 text-xs block mb-1">{TranslationService.t('counterfactual.then_outcome')}</label>
                 <input
                   type="text"
                   value={currentCounterfactual.outcome}
                   onChange={(e) => setCurrentCounterfactual(prev => ({ ...prev, outcome: e.target.value }))}
-                  placeholder="The outcome would likely be..."
+                  placeholder={TranslationService.t('counterfactual.outcome_placeholder')}
                   className="w-full bg-stone-900 border border-stone-600 rounded-lg px-3 py-2 text-white placeholder-stone-500"
                 />
               </div>
 
               <div>
                 <label className="text-stone-400 text-xs block mb-1">
-                  How confident are you in this counterfactual?
+                  {TranslationService.t('counterfactual.confidence_q')}
                 </label>
                 <div className="flex items-center gap-4">
                   <input
@@ -493,17 +498,17 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
 
               <button
                 onClick={addCounterfactual}
-                disabled={currentCounterfactual.change.length < 10 || currentCounterfactual.outcome.length < 10}
+                disabled={currentCounterfactual.change.length < 5 || currentCounterfactual.outcome.length < 5}
                 className="w-full py-2 bg-purple-600 text-white rounded-lg disabled:opacity-50"
               >
-                Add Counterfactual
+                {TranslationService.t('counterfactual.add_cf_btn')}
               </button>
             </div>
 
             {/* Counterfactuals list */}
             {counterfactuals.length > 0 && (
               <div className="space-y-3">
-                <h4 className="text-white font-bold">Alternative Histories:</h4>
+                <h4 className="text-white font-bold">{TranslationService.t('counterfactual.alt_histories')}</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {counterfactuals.map(cf => renderCounterfactualCard(cf))}
                 </div>
@@ -515,13 +520,13 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
                 onClick={() => setPhase('analysis')}
                 className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:from-purple-500 hover:to-pink-500 transition-all"
               >
-                Proceed to Analysis
+                {TranslationService.t('counterfactual.proceed_analysis')}
               </button>
             )}
 
             {counterfactuals.length < 2 && (
               <p className="text-center text-stone-500 text-sm">
-                Create at least 2 counterfactuals before proceeding
+                {TranslationService.t('counterfactual.create_2')}
               </p>
             )}
           </div>
@@ -530,7 +535,7 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
       case 'analysis':
         return (
           <div className="space-y-6 max-w-2xl mx-auto">
-            <h3 className="text-xl font-bold text-white text-center">Fragility Analysis</h3>
+            <h3 className="text-xl font-bold text-white text-center">{TranslationService.t('counterfactual.analysis_title')}</h3>
 
             {/* Summary */}
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
@@ -549,15 +554,15 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
             {/* Pivotal moment */}
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
               <label className="block text-purple-400 font-bold mb-2">
-                What was the PIVOTAL moment or decision?
+                {TranslationService.t('counterfactual.pivotal_q')}
               </label>
               <p className="text-stone-400 text-xs mb-2">
-                If you could change ONE thing to alter the outcome, what would it be?
+                {TranslationService.t('counterfactual.pivotal_desc')}
               </p>
               <textarea
                 value={pivotalMoment}
                 onChange={(e) => setPivotalMoment(e.target.value)}
-                placeholder="The most critical decision point was..."
+                placeholder={TranslationService.t('counterfactual.pivotal_placeholder')}
                 className="w-full h-24 bg-stone-900 border border-stone-600 rounded-lg p-3 text-white placeholder-stone-500 resize-none"
               />
             </div>
@@ -565,10 +570,10 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
             {/* Inevitability rating */}
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
               <label className="block text-purple-400 font-bold mb-4">
-                How INEVITABLE was this outcome?
+                {TranslationService.t('counterfactual.inevitable_q')}
               </label>
               <div className="flex items-center gap-4">
-                <span className="text-green-400 text-sm">Could easily<br/>have differed</span>
+                <span className="text-green-400 text-sm">{TranslationService.t('counterfactual.easily_differ')}</span>
                 <input
                   type="range"
                   min="0"
@@ -577,7 +582,7 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
                   onChange={(e) => setInevitabilityRating(parseInt(e.target.value))}
                   className="flex-1 accent-purple-500"
                 />
-                <span className="text-red-400 text-sm">Was<br/>inevitable</span>
+                <span className="text-red-400 text-sm">{TranslationService.t('counterfactual.was_inevitable')}</span>
               </div>
               <div className="text-center text-2xl font-bold text-purple-400 mt-2">
                 {inevitabilityRating}%
@@ -587,12 +592,12 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
             {/* Reasoning */}
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
               <label className="block text-purple-400 font-bold mb-2">
-                Why this inevitability rating?
+                {TranslationService.t('counterfactual.why_inevitable')}
               </label>
               <textarea
                 value={inevitabilityReasoning}
                 onChange={(e) => setInvitabilityReasoning(e.target.value)}
-                placeholder="This outcome was contingent/inevitable because..."
+                placeholder={TranslationService.t('counterfactual.inevitable_placeholder')}
                 className="w-full h-24 bg-stone-900 border border-stone-600 rounded-lg p-3 text-white placeholder-stone-500 resize-none"
               />
             </div>
@@ -600,12 +605,12 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
             {/* Lessons */}
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
               <label className="block text-purple-400 font-bold mb-2">
-                What does this teach about causation and contingency?
+                {TranslationService.t('counterfactual.lessons_q')}
               </label>
               <textarea
                 value={lessonsLearned}
                 onChange={(e) => setLessonsLearned(e.target.value)}
-                placeholder="This exercise reveals that..."
+                placeholder={TranslationService.t('counterfactual.lessons_placeholder')}
                 className="w-full h-24 bg-stone-900 border border-stone-600 rounded-lg p-3 text-white placeholder-stone-500 resize-none"
               />
             </div>
@@ -615,7 +620,7 @@ const CounterfactualEngine = ({ scenario, userId, onComplete }) => {
                 onClick={completeSession}
                 className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-xl hover:from-green-500 hover:to-emerald-500 transition-all"
               >
-                Complete Analysis
+                {TranslationService.t('counterfactual.complete_btn')}
               </button>
             )}
           </div>

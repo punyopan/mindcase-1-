@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import TranslationService from '../services/TranslationService';
 import { X, Zap, Clock } from './icon';
 
 const WatchAdModal = ({ onClose, onAdComplete, type = 'token', puzzleId = null, userId }) => {
   const [loading, setLoading] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [stats, setStats] = useState(null);
+  const [, setLang] = useState(TranslationService.currentLang);
+
+  useEffect(() => {
+    const unsubscribe = TranslationService.subscribe((lang) => setLang(lang));
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     console.log('WatchAdModal mounted, checking services...');
@@ -149,7 +156,7 @@ const WatchAdModal = ({ onClose, onAdComplete, type = 'token', puzzleId = null, 
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-white flex items-center gap-2">
               <Zap className="w-6 h-6" />
-              {isRetryType ? 'Watch Ad for Retry' : 'Watch Ad for Tokens'}
+              {isRetryType ? TranslationService.t('modals.watch_ad_retry') : TranslationService.t('modals.watch_ad_tokens')}
             </h2>
             <button
               onClick={onClose}
@@ -166,18 +173,18 @@ const WatchAdModal = ({ onClose, onAdComplete, type = 'token', puzzleId = null, 
           <div className="bg-gradient-to-br from-amber-900/30 to-yellow-900/30 border-2 border-amber-600/50 rounded-xl p-6 text-center">
             <div className="text-6xl mb-4">{isRetryType ? '🎯' : '💰'}</div>
             <h3 className="text-2xl font-bold text-amber-400 mb-2">
-              {isRetryType ? 'Earn Extra Attempt!' : 'Earn Tokens!'}
+              {isRetryType ? TranslationService.t('modals.earn_attempt') : TranslationService.t('modals.earn_tokens')}
             </h3>
             <p className="text-stone-300 text-sm mb-4">
               {isRetryType
-                ? 'Watch a short ad to get another attempt at this puzzle'
-                : 'Watch a short ad to earn tokens'}
+                ? TranslationService.t('modals.watch_desc_retry')
+                : TranslationService.t('modals.watch_desc_tokens')}
             </p>
 
             {!isRetryType && (
               <div className="bg-black/30 border border-amber-700/30 rounded-lg p-4">
-                <div className="text-amber-400 font-bold text-lg mb-1">1 token guaranteed</div>
-                <div className="text-green-400 text-sm">+ 50% chance for bonus token!</div>
+                <div className="text-amber-400 font-bold text-lg mb-1">{TranslationService.t('modals.token_guarantee')}</div>
+                <div className="text-green-400 text-sm">{TranslationService.t('modals.bonus_chance')}</div>
               </div>
             )}
           </div>
@@ -186,14 +193,14 @@ const WatchAdModal = ({ onClose, onAdComplete, type = 'token', puzzleId = null, 
           {stats && (
             <div className="bg-stone-800/50 border border-stone-700 rounded-lg p-4 space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-stone-400">Remaining today:</span>
+                <span className="text-stone-400">{TranslationService.t('modals.remaining_today')}:</span>
                 <span className="text-white font-bold">{stats.remainingToday} / {stats.dailyLimit}</span>
               </div>
               {cooldown > 0 && (
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-stone-400 flex items-center gap-2">
                     <Clock className="w-4 h-4" />
-                    Cooldown:
+                    {TranslationService.t('modals.cooldown')}:
                   </span>
                   <span className="text-amber-400 font-bold">{formatCooldown(cooldown)}</span>
                 </div>
@@ -214,7 +221,7 @@ const WatchAdModal = ({ onClose, onAdComplete, type = 'token', puzzleId = null, 
             {loading ? (
               <>
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                Loading Ad...
+                {TranslationService.t('modals.loading_ad')}
               </>
             ) : cooldown > 0 ? (
               <>
@@ -222,11 +229,11 @@ const WatchAdModal = ({ onClose, onAdComplete, type = 'token', puzzleId = null, 
                 Wait {formatCooldown(cooldown)}
               </>
             ) : stats && stats.remainingToday <= 0 ? (
-              'Daily Limit Reached'
+              TranslationService.t('modals.daily_limit_reached')
             ) : (
               <>
                 <Zap className="w-5 h-5" />
-                Watch Ad
+                {TranslationService.t('modals.watch_ad_btn')}
               </>
             )}
           </button>
@@ -234,17 +241,17 @@ const WatchAdModal = ({ onClose, onAdComplete, type = 'token', puzzleId = null, 
           {/* Info */}
           <div className="bg-stone-800/50 border border-stone-700 rounded-lg p-4 text-center">
             <p className="text-stone-300 text-xs leading-relaxed">
-              💡 <strong>Tips:</strong><br/>
-              • Watch the complete ad to earn rewards<br/>
-              • You can watch up to {stats?.dailyLimit || 10} ads per day<br/>
-              • Wait 30 seconds between ads
+              💡 <strong>{TranslationService.t('modals.ad_tips')}</strong><br/>
+              • {TranslationService.t('modals.ad_tip_1')}<br/>
+              • {TranslationService.t('modals.ad_tip_2', { count: stats?.dailyLimit || 10 })}<br/>
+              • {TranslationService.t('modals.ad_tip_3')}
             </p>
           </div>
 
           {/* Privacy Notice */}
           <div className="text-center">
             <p className="text-stone-500 text-xs">
-              Ads help support this free game. Your privacy is protected.
+              {TranslationService.t('modals.privacy_notice')}
             </p>
           </div>
         </div>

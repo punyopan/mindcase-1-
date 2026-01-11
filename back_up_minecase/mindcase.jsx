@@ -1075,8 +1075,8 @@ const MindCaseApp = () => {
       {/* Topics grid */}
       <div className="max-w-6xl mx-auto px-6 py-8">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-white mb-2">Select Your Investigation</h2>
-          <p className="text-stone-400">Each case file contains puzzles. Write your reasoning, get AI feedback.</p>
+          <h2 className="text-3xl font-bold text-white mb-2">{TranslationService.t('topics.case_files_title')}</h2>
+          <p className="text-stone-400">{TranslationService.t('topics.case_files_desc')}</p>
         </div>
 
         {/* Featured Topic - Riddle Marathon Banner */}
@@ -1113,14 +1113,14 @@ const MindCaseApp = () => {
 
                   {/* NEW badge */}
                   <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-bounce">
-                    NEW!
+                    {TranslationService.t('topics.new_badge')}
                   </div>
 
                   {/* FEATURED stamp */}
                   <div className="absolute top-4 left-4 border-2 border-amber-300/50 text-amber-200/70 px-3 py-1 text-xs font-bold tracking-widest" style={{
                     fontFamily: 'monospace'
                   }}>
-                    FEATURED CHALLENGE
+                    {TranslationService.t('topics.featured_challenge')}
                   </div>
 
                   <div className="flex flex-col md:flex-row items-center gap-6 pt-6">
@@ -1133,10 +1133,10 @@ const MindCaseApp = () => {
                     {/* Content */}
                     <div className="flex-1 text-center md:text-left">
                       <h3 className="text-3xl md:text-4xl font-bold text-white mb-2 drop-shadow-lg">
-                        {topic.name}
+                        {TranslationService.t(`topics.${topic.id}.name`) || topic.name}
                       </h3>
                       <p className="text-white/90 text-lg mb-4 max-w-2xl">
-                        {topic.description}
+                        {TranslationService.t(`topics.${topic.id}.description`) || topic.description}
                       </p>
 
                       {/* Stats row */}
@@ -1169,7 +1169,7 @@ const MindCaseApp = () => {
                     {/* CTA Button */}
                     <div className="flex-shrink-0">
                       <button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 flex items-center gap-3 text-lg border border-white/30 hover:border-white/50 group-hover:scale-105 shadow-xl">
-                        <span>Start Marathon</span>
+                        <span>{TranslationService.t('topics.start_marathon')}</span>
                         <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                       </button>
                     </div>
@@ -1241,7 +1241,7 @@ const MindCaseApp = () => {
                   <div className="absolute top-2 right-2 border-2 border-red-600/30 text-red-600/40 px-3 py-1 text-xs font-bold tracking-widest rotate-12" style={{
                     fontFamily: 'monospace'
                   }}>
-                    CASE FILE
+                    {TranslationService.t('topics.case_file')}
                   </div>
 
                   <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-bl-full" />
@@ -1249,8 +1249,8 @@ const MindCaseApp = () => {
                   {canAccess ? (
                     <>
                       <div className="text-5xl mb-4">{topic.icon}</div>
-                      <h3 className="text-xl font-bold text-white mb-2">{topic.name}</h3>
-                      <p className="text-white/70 text-sm mb-4">{topic.description}</p>
+                      <h3 className="text-xl font-bold text-white mb-2">{TranslationService.t(`topics.${topic.id}.name`) || topic.name}</h3>
+                      <p className="text-white/70 text-sm mb-4">{TranslationService.t(`topics.${topic.id}.description`) || topic.description}</p>
                       
                       <div className="bg-black/30 rounded-lg p-3 mb-4">
                         <div className="flex items-center justify-between mb-2">
@@ -1266,7 +1266,7 @@ const MindCaseApp = () => {
                       </div>
 
                       <button className="w-full bg-white/20 hover:bg-white/30 text-white font-semibold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm">
-                        Open Case File
+                        {TranslationService.t('topics.open_case')}
                         <ChevronRight className="w-4 h-4" />
                       </button>
                     </>
@@ -1278,7 +1278,7 @@ const MindCaseApp = () => {
                       <div className="bg-amber-900/30 border border-amber-700/50 rounded-lg p-3 mb-3">
                         <div className="flex items-center justify-center gap-2 text-amber-300 text-xs mb-2">
                           <Lock className="w-4 h-4" />
-                          <span className="font-medium">Locked Case File</span>
+                          <span className="font-medium">{TranslationService.t('topics.locked_case')}</span>
                         </div>
                         <p className="text-white/60 text-xs text-center">
                           Unlock 1 puzzle for <strong className="text-amber-400">3 tokens</strong><br/>
@@ -1287,7 +1287,7 @@ const MindCaseApp = () => {
                       </div>
                       <button className="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white font-semibold py-2.5 rounded-lg transition-all flex items-center justify-center gap-2 text-sm">
                         <Lock className="w-4 h-4" />
-                        Unlock Case
+                        {TranslationService.t('topics.unlock_case')}
                       </button>
                     </>
                   ) : (
@@ -1297,7 +1297,7 @@ const MindCaseApp = () => {
                       <p className="text-white/50 text-sm mb-4">{topic.description}</p>
                       <div className="flex items-center justify-center gap-2 text-white/50 py-2">
                         <Lock className="w-5 h-5" />
-                        <span className="text-sm">Complete previous cases</span>
+                        <span className="text-sm">{TranslationService.t('topics.complete_previous')}</span>
                       </div>
                     </>
                   )}

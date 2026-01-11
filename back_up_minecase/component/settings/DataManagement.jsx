@@ -1,5 +1,6 @@
 import { AlertCircle, FileText } from '../icon';
 import { useState } from 'react';
+import TranslationService from '../../services/TranslationService';
 
 /**
  * Data Management Settings Component
@@ -184,8 +185,8 @@ const DataManagement = ({ user, onProgressReset }) => {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-bold text-white mb-2">Data Management</h3>
-        <p className="text-stone-400 text-sm">Export, import, or reset your progress data</p>
+        <h3 className="text-lg font-bold text-white mb-2">{TranslationService.t('settings.data_management')}</h3>
+        <p className="text-stone-400 text-sm">{TranslationService.t('settings.data_desc')}</p>
       </div>
 
       {/* Export Progress */}
@@ -193,15 +194,15 @@ const DataManagement = ({ user, onProgressReset }) => {
         <div className="flex items-start gap-3 mb-3">
           <FileText className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h4 className="font-bold text-white text-sm mb-1">Export Progress</h4>
+            <h4 className="font-bold text-white text-sm mb-1">{TranslationService.t('settings.export_progress')}</h4>
             <p className="text-stone-400 text-xs mb-3">
-              Download your progress data as a JSON file. Use this to backup your data or transfer to another device.
+              {TranslationService.t('settings.export_desc')}
             </p>
             <button
               onClick={handleExportProgress}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
             >
-              Export Data
+              {TranslationService.t('settings.export_data')}
             </button>
           </div>
         </div>
@@ -212,15 +213,15 @@ const DataManagement = ({ user, onProgressReset }) => {
         <div className="flex items-start gap-3 mb-3">
           <FileText className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h4 className="font-bold text-white text-sm mb-1">Import Progress</h4>
+            <h4 className="font-bold text-white text-sm mb-1">{TranslationService.t('settings.import_progress')}</h4>
             <p className="text-stone-400 text-xs mb-3">
-              Restore your progress from a previously exported JSON file. This will overwrite your current progress.
+              {TranslationService.t('settings.import_desc')}
             </p>
             <button
               onClick={handleImportProgress}
               className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
             >
-              Import Data
+              {TranslationService.t('settings.import_data')}
             </button>
           </div>
         </div>
@@ -231,11 +232,11 @@ const DataManagement = ({ user, onProgressReset }) => {
         <div className="flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h4 className="font-bold text-red-400 text-sm mb-1">Reset All Progress</h4>
+            <h4 className="font-bold text-red-400 text-sm mb-1">{TranslationService.t('settings.reset_progress')}</h4>
             <p className="text-stone-400 text-xs mb-3">
-              Permanently delete all your progress data including completed puzzles, scores, and statistics.
-              <strong className="text-green-400"> Your premium subscription will be preserved.</strong>
-              <strong className="text-red-400"> This action cannot be undone.</strong>
+              {TranslationService.t('settings.reset_desc')}
+              <strong className="text-green-400"> {TranslationService.t('settings.premium_preserved')}</strong>
+              <strong className="text-red-400"> {TranslationService.t('settings.cannot_undo')}</strong>
             </p>
 
             {!showResetConfirm ? (

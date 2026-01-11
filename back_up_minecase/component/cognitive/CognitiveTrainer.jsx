@@ -7,6 +7,8 @@ import AnalysisPhase from './AnalysisPhase';
 import AssumptionExcavator from './AssumptionExcavator';
 import CounterfactualEngine from './CounterfactualEngine';
 import PerspectivePrism from './PerspectivePrism';
+import TranslationService from '../../services/TranslationService';
+import { CognitiveTranslator } from '../../services/CognitiveTranslator';
 
 /**
  * COGNITIVE TRAINER - Main Orchestration Component
@@ -133,26 +135,57 @@ const CognitiveTrainer = ({ userId, onClose }) => {
     // Check for saved session first
     const savedSession = loadSavedSession();
 
+    // Function to translate scenarios
+    const translateScenarios = async (rawScenarios) => {
+      const currentLang = TranslationService.getLanguage();
+      
+      // No translation needed for English
+      if (currentLang === 'English' || !currentLang) {
+        return rawScenarios;
+      }
+
+      const translatedScenarios = { ...rawScenarios };
+      try {
+        const keys = Object.keys(rawScenarios);
+        await Promise.all(keys.map(async (key) => {
+          if (rawScenarios[key]) {
+            const scenarioWithType = { ...rawScenarios[key], type: key };
+            translatedScenarios[key] = await CognitiveTranslator.getTranslatedScenario(scenarioWithType, currentLang);
+          }
+        }));
+      } catch (err) {
+        console.warn('Cognitive scenario translation failed:', err);
+      }
+      return translatedScenarios;
+    };
+
     if (savedSession && savedSession.stage > 0) {
       // Restore saved session
       setStage(savedSession.stage);
       setShowIntermission(savedSession.showIntermission);
       setSessionPortfolio(savedSession.sessionPortfolio);
       setSelectedStage(savedSession.selectedStage);
-      setScenarios(savedSession.scenarios);
       setHasSavedSession(true);
+      
+      // Translate saved scenarios
+      translateScenarios(savedSession.scenarios).then(translated => {
+        setScenarios(translated);
+      });
     } else {
       // Generate new scenarios
       const engine = window.CognitiveGameEngine;
       if (engine) {
-        setScenarios({
+        const rawScenarios = {
           signal: engine.generateSignalFieldScenario('medium'),
           forensic: engine.generateForensicNarrativeScenario('medium'),
           variable: engine.generateVariableManifoldScenario('medium'),
-          // Premium game scenarios
           assumption: engine.generateAssumptionExcavatorScenario?.('medium'),
           counterfactual: engine.generateCounterfactualEngineScenario?.('medium'),
           perspective: engine.generatePerspectivePrismScenario?.('medium')
+        };
+
+        translateScenarios(rawScenarios).then(translated => {
+          setScenarios(translated);
         });
       }
     }
@@ -238,19 +271,19 @@ const CognitiveTrainer = ({ userId, onClose }) => {
     let icon = "";
 
     if (stage === 1) {
-        title = "Observation Phase Concluded";
-        sub = "Data patterns accepted. Initializing Hypothesis Engine...";
-        next = "Stage 2: Forensic Reconstruction";
+        title = TranslationService.t('cognitive.observation_concluded');
+        sub = TranslationService.t('cognitive.initializing_hypothesis');
+        next = TranslationService.t('cognitive.stage_forensic');
         icon = "🔍";
     } else if (stage === 2) {
-        title = "Hypothesis Phase Concluded";
-        sub = "Causal models constructed. Initializing System Intervention...";
-        next = "Stage 3: Variable Manifold";
+        title = TranslationService.t('cognitive.hypothesis_concluded');
+        sub = TranslationService.t('cognitive.initializing_system');
+        next = TranslationService.t('cognitive.stage_variable');
         icon = "⚙️";
     } else if (stage === 3) {
-        title = "Training Circuit Complete";
-        sub = "Simulation terminated. Compiling Metacognitive Analysis...";
-        next = "Final Phase: Analysis";
+        title = TranslationService.t('cognitive.training_complete');
+        sub = TranslationService.t('cognitive.compiling_analysis');
+        next = TranslationService.t('cognitive.stage_analysis');
         icon = "🧠";
     }
 
@@ -263,7 +296,7 @@ const CognitiveTrainer = ({ userId, onClose }) => {
              </div>
 
              <div className="bg-stone-800/50 p-6 rounded-xl border border-stone-700">
-                <div className="text-sm text-stone-500 uppercase tracking-widest mb-2">Preparing Next Module</div>
+                <div className="text-sm text-stone-500 uppercase tracking-widest mb-2">{TranslationService.t('cognitive.preparing_next')}</div>
                 <div className="text-2xl font-bold text-amber-400">{next}</div>
              </div>
 
@@ -271,7 +304,7 @@ const CognitiveTrainer = ({ userId, onClose }) => {
                 onClick={handleIntermissionProceed}
                 className="px-10 py-4 bg-stone-700 hover:bg-stone-600 text-white font-bold rounded-xl transition-all"
              >
-                Proceed
+                {TranslationService.t('cognitive.proceed')}
              </button>
         </div>
     );
@@ -283,34 +316,33 @@ const CognitiveTrainer = ({ userId, onClose }) => {
   const renderIntro = () => (
     <div className="text-center space-y-6 animate-fadeIn">
       <div className="text-6xl mb-4">🧠</div>
-      <h1 className="text-3xl font-bold text-white">Cognitive Training Laboratory</h1>
+      <h1 className="text-3xl font-bold text-white">{TranslationService.t('cognitive.title')}</h1>
       <p className="text-stone-400 max-w-xl mx-auto">
-        You are about to enter a 3-stage cognitive circuit. 
-        This is not a game to be won, but a gym for your reasoning.
+        {TranslationService.t('cognitive.subtitle')}
       </p>
 
       <div className="flex flex-col gap-4 max-w-lg mx-auto mt-8 text-left">
         <div className="flex items-center gap-4 bg-stone-800/50 p-4 rounded-xl border border-stone-700">
            <div className="bg-amber-900/50 p-3 rounded-lg text-xl">📊</div>
            <div>
-             <div className="text-amber-400 font-bold">1. Signal Detection</div>
-             <div className="text-stone-400 text-sm">Observe patterns in noise before acting.</div>
+             <div className="text-amber-400 font-bold">1. {TranslationService.t('cognitive.signal_detection')}</div>
+             <div className="text-stone-400 text-sm">{TranslationService.t('cognitive.signal_detection_desc')}</div>
            </div>
         </div>
         <div className="w-0.5 h-6 bg-stone-700 mx-8"></div>
         <div className="flex items-center gap-4 bg-stone-800/50 p-4 rounded-xl border border-stone-700">
            <div className="bg-amber-900/50 p-3 rounded-lg text-xl">🔍</div>
            <div>
-             <div className="text-amber-400 font-bold">2. Forensic Reconstruction</div>
-             <div className="text-stone-400 text-sm">Build hypotheses from fragmented evidence.</div>
+             <div className="text-amber-400 font-bold">2. {TranslationService.t('cognitive.forensic_reconstruction')}</div>
+             <div className="text-stone-400 text-sm">{TranslationService.t('cognitive.forensic_reconstruction_desc')}</div>
            </div>
         </div>
          <div className="w-0.5 h-6 bg-stone-700 mx-8"></div>
         <div className="flex items-center gap-4 bg-stone-800/50 p-4 rounded-xl border border-stone-700">
            <div className="bg-amber-900/50 p-3 rounded-lg text-xl">⚙️</div>
            <div>
-             <div className="text-amber-400 font-bold">3. System Intervention</div>
-             <div className="text-stone-400 text-sm">Manage trade-offs in a dynamic system.</div>
+             <div className="text-amber-400 font-bold">3. {TranslationService.t('cognitive.system_intervention_title')}</div>
+             <div className="text-stone-400 text-sm">{TranslationService.t('cognitive.system_intervention_desc')}</div>
            </div>
         </div>
       </div>
@@ -319,7 +351,7 @@ const CognitiveTrainer = ({ userId, onClose }) => {
         onClick={() => setStage(1)}
         className="px-10 py-4 mt-8 bg-gradient-to-r from-amber-600 to-red-600 text-white font-bold rounded-xl text-lg hover:from-amber-500 hover:to-red-500 transition-all shadow-lg shadow-amber-900/20"
       >
-        Enter the Laboratory
+        {TranslationService.t('cognitive.enter_lab')}
       </button>
     </div>
   );

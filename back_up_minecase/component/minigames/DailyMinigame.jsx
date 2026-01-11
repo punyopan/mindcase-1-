@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import TranslationService from '../../services/TranslationService';
 import { X, Lock, CheckCircle, Trophy, Star } from '../icon';
 import LogicGrid from './LogicGrid';
 import WordCipher from './WordCipher';
@@ -291,7 +292,7 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription, onTokens
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="bg-stone-900/60 border-2 border-amber-700/50 rounded-2xl p-8 text-center">
               <div className="animate-spin w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-              <p className="text-white">Loading today's challenges...</p>
+              <p className="text-white">{TranslationService.t('daily.loading')}</p>
             </div>
           </div>
         </div>
@@ -335,7 +336,7 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription, onTokens
             }}
             className="text-[10px] bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded font-medium transition-colors"
           >
-            ⭐ Upgrade
+            ⭐ {TranslationService.t('daily.upgrade')}
           </button>
         )}
       </div>
@@ -345,7 +346,7 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription, onTokens
         {/* Game Selector - Left Column with Scrollable List */}
         <div className="flex flex-col h-full overflow-hidden">
           <h3 className="text-white font-bold mb-2 flex items-center gap-2 text-sm">
-            <span>🎯</span> Today's Challenges
+            <span>🎯</span> {TranslationService.t('daily.todays_challenges')}
           </h3>
           <div className="flex-1 overflow-y-auto space-y-2 pr-2">
             {todaysMinigames.map((game, index) => {
@@ -394,7 +395,7 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription, onTokens
 
             {/* Progress Bar */}
             <div className="bg-stone-900/60 border border-stone-700 rounded-lg p-2 mt-2">
-              <div className="text-stone-300 text-[10px] mb-1">Progress:</div>
+              <div className="text-stone-300 text-[10px] mb-1">{TranslationService.t('daily.progress')}:</div>
               <div className="flex items-center gap-2">
                 <div className="flex-1 bg-stone-800 rounded-full h-1.5">
                   <div
@@ -412,7 +413,7 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription, onTokens
             {!isSubscribed && (
               <div className="bg-blue-900/20 border border-blue-700/30 rounded-lg p-2 mt-2">
                 <p className="text-blue-300 text-[10px] mb-1">
-                  ⭐ Premium: All {allMinigames.length} games!
+                  ⭐ {TranslationService.t('daily.premium_all_games')}
                 </p>
                 <button
                   onClick={() => {
@@ -421,7 +422,7 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription, onTokens
                   }}
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-[10px] font-bold py-1 px-2 rounded hover:from-blue-500 hover:to-purple-500 transition-all"
                 >
-                  Upgrade
+                  {TranslationService.t('daily.upgrade')}
                 </button>
               </div>
             )}
@@ -435,7 +436,7 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription, onTokens
               <>
               {/* Difficulty Selector */}
               <div className="bg-stone-900/60 border border-stone-700 rounded-xl p-3 mb-3 flex-shrink-0">
-              <h4 className="text-white font-semibold mb-2 text-xs">Difficulty:</h4>
+              <h4 className="text-white font-semibold mb-2 text-xs">{TranslationService.t('daily.difficulty')}:</h4>
               <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={() => setSelectedDifficulty('easy')}
@@ -445,7 +446,7 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription, onTokens
                       : 'bg-stone-700 text-stone-300 hover:bg-stone-600'
                   }`}
                 >
-                  Easy
+                  {TranslationService.t('daily.easy')}
                 </button>
                 <button
                   onClick={() => setSelectedDifficulty('medium')}
@@ -455,7 +456,7 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription, onTokens
                       : 'bg-stone-700 text-stone-300 hover:bg-stone-600'
                   }`}
                 >
-                  Medium
+                  {TranslationService.t('daily.medium')}
                 </button>
                 <button
                   onClick={() => setSelectedDifficulty('hard')}
@@ -465,7 +466,7 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription, onTokens
                       : 'bg-stone-700 text-stone-300 hover:bg-stone-600'
                   }`}
                 >
-                  Hard
+                  {TranslationService.t('daily.hard')}
                 </button>
               </div>
             </div>
@@ -486,13 +487,13 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription, onTokens
         ) : (
           <div className="bg-gradient-to-br from-green-900/30 to-amber-900/30 border-2 border-green-500/50 rounded-xl p-8 text-center">
             <Trophy className="w-16 h-16 text-amber-400 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-white mb-2">All Done for Today! 🎉</h3>
+            <h3 className="text-2xl font-bold text-white mb-2">{TranslationService.t('daily.all_done')} 🎉</h3>
             <p className="text-green-200 mb-4">
-              You've completed all 3 daily minigames. Come back tomorrow for new challenges!
+              {TranslationService.t('daily.all_done_desc')}
             </p>
             <div className="bg-black/30 border border-amber-600/30 rounded-lg p-4 mt-4">
               <p className="text-amber-200 text-sm">
-                📅 Next reset: <strong>Tomorrow at midnight</strong>
+                📅 {TranslationService.t('daily.next_reset')}: <strong>{TranslationService.t('daily.tomorrow_midnight')}</strong>
               </p>
             </div>
           </div>

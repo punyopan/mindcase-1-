@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import TranslationService from '../services/TranslationService';
 import { X, Lock, Star, Trophy } from './icon';
 
 const TopicUnlockModal = ({ onClose, topic, topicIndex, onUnlock, onSubscribe, userId, userTokens }) => {
   const [tokens, setTokens] = useState(userTokens || 0);
   const [unlocking, setUnlocking] = useState(false);
   const unlockAllCost = 12; // 12 tokens to unlock all puzzles from this topic
+  const [, setLang] = useState(TranslationService.currentLang);
+
+  useEffect(() => {
+    const unsubscribe = TranslationService.subscribe((lang) => setLang(lang));
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     // Sync with parent's token count
@@ -63,7 +70,7 @@ const TopicUnlockModal = ({ onClose, topic, topicIndex, onUnlock, onSubscribe, u
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-white flex items-center gap-2">
               <Lock className="w-6 h-6" />
-              Unlock Case File
+              {TranslationService.t('modals.unlock_case_title')}
             </h2>
             <button
               onClick={onClose}
@@ -81,7 +88,7 @@ const TopicUnlockModal = ({ onClose, topic, topicIndex, onUnlock, onSubscribe, u
             <h3 className="text-white font-semibold mb-2">{topic.name}</h3>
             <p className="text-stone-300 text-sm">{topic.description || 'Locked case file with mysterious puzzles...'}</p>
             <div className="mt-3 text-stone-400 text-xs">
-              📂 Contains {topic.puzzles?.length || 5} puzzles
+              📂 {TranslationService.t('modals.contains_puzzles', { count: topic.puzzles?.length || 5 })}
             </div>
           </div>
 
@@ -91,19 +98,19 @@ const TopicUnlockModal = ({ onClose, topic, topicIndex, onUnlock, onSubscribe, u
             <div className="bg-gradient-to-br from-green-900/20 to-emerald-900/20 border-2 border-green-600/50 rounded-xl p-5">
               <div className="text-center mb-4">
                 <div className="text-4xl mb-3">🎯</div>
-                <h3 className="text-xl font-bold text-green-400 mb-2">Unlock Entire Case</h3>
+                <h3 className="text-xl font-bold text-green-400 mb-2">{TranslationService.t('modals.unlock_entire')}</h3>
                 <p className="text-stone-300 text-sm mb-4">
-                  Unlock ALL {topic.puzzles?.length || 5} puzzles from this case file
+                  {TranslationService.t('modals.unlock_all_desc', { count: topic.puzzles?.length || 5 })}
                 </p>
               </div>
 
               <div className="bg-black/30 border border-green-700/30 rounded-lg p-4 mb-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-stone-300 text-sm">Cost:</span>
+                  <span className="text-stone-300 text-sm">{TranslationService.t('modals.cost')}:</span>
                   <span className="text-2xl font-bold text-green-400">{unlockAllCost} tokens</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-stone-300 text-sm">Your Balance:</span>
+                  <span className="text-stone-300 text-sm">{TranslationService.t('modals.your_balance')}:</span>
                   <span className={`text-lg font-bold ${canAffordAll ? 'text-green-400' : 'text-red-400'}`}>
                     {tokens} tokens
                   </span>
@@ -113,7 +120,7 @@ const TopicUnlockModal = ({ onClose, topic, topicIndex, onUnlock, onSubscribe, u
               {!canAffordAll && (
                 <div className="mb-4 bg-green-900/30 border border-green-700/30 rounded-lg p-3">
                   <p className="text-green-300 text-xs text-center">
-                    💎 Best value! Save tokens vs unlocking individually
+                    💎 {TranslationService.t('modals.best_value')}
                   </p>
                 </div>
               )}
@@ -127,7 +134,7 @@ const TopicUnlockModal = ({ onClose, topic, topicIndex, onUnlock, onSubscribe, u
                     : 'bg-stone-700 text-stone-500 cursor-not-allowed'
                 }`}
               >
-                {unlocking ? 'Unlocking...' : canAffordAll ? `Unlock ${unlockAllCost} Tokens` : 'Not Enough'}
+                {unlocking ? TranslationService.t('modals.unlocking') : canAffordAll ? TranslationService.t('modals.unlock_btn', { count: unlockAllCost }) : TranslationService.t('modals.not_enough')}
               </button>
             </div>
 
@@ -135,50 +142,50 @@ const TopicUnlockModal = ({ onClose, topic, topicIndex, onUnlock, onSubscribe, u
             <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 border-2 border-blue-600/50 rounded-xl p-5">
               <div className="text-center mb-4">
                 <div className="text-4xl mb-3">⭐</div>
-                <h3 className="text-xl font-bold text-blue-400 mb-2">Premium Access</h3>
+                <h3 className="text-xl font-bold text-blue-400 mb-2">{TranslationService.t('modals.premium_access')}</h3>
                 <p className="text-stone-300 text-sm mb-4">
-                  Get unlimited access to ALL case files and puzzles
+                  {TranslationService.t('modals.premium_desc')}
                 </p>
               </div>
 
               <div className="bg-black/30 border border-blue-700/30 rounded-lg p-4 mb-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Star className="w-4 h-4 text-blue-400" filled />
-                  <span className="text-blue-200 text-sm">Unlimited puzzles</span>
+                  <span className="text-blue-200 text-sm">{TranslationService.t('modals.unlimited_puzzles')}</span>
                 </div>
                 <div className="flex items-center gap-2 mb-2">
                   <Star className="w-4 h-4 text-blue-400" filled />
-                  <span className="text-blue-200 text-sm">Advanced analytics</span>
+                  <span className="text-blue-200 text-sm">{TranslationService.t('modals.advanced_analytics')}</span>
                 </div>
                 <div className="flex items-center gap-2 mb-2">
                   <Star className="w-4 h-4 text-blue-400" filled />
-                  <span className="text-blue-200 text-sm">Priority support</span>
+                  <span className="text-blue-200 text-sm">{TranslationService.t('modals.priority_support')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Star className="w-4 h-4 text-blue-400" filled />
-                  <span className="text-blue-200 text-sm">Ad-free experience</span>
+                  <span className="text-blue-200 text-sm">{TranslationService.t('modals.ad_free')}</span>
                 </div>
               </div>
 
               <div className="text-center mb-4">
-                <div className="text-2xl font-bold text-blue-400">$5.99/month</div>
-                <div className="text-stone-400 text-xs">or $39.99/year (save 44%)</div>
+                <div className="text-2xl font-bold text-blue-400">{TranslationService.t('modals.premium_price')}</div>
+                <div className="text-stone-400 text-xs">{TranslationService.t('modals.premium_save')}</div>
               </div>
 
               <button
                 onClick={handlePremiumUnlock}
                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold py-2 px-3 rounded-lg transition-all text-sm"
               >
-                Get Premium
+                {TranslationService.t('modals.get_premium')}
               </button>
             </div>
           </div>
 
           {/* Info */}
           <div className="bg-stone-800/50 border border-stone-700 rounded-lg p-4 text-center">
-            <p className="text-stone-300 text-sm">
-              💡 <strong>Tip:</strong> Unlock entire case ({unlockAllCost} tokens) or get Premium for unlimited access to all puzzles!
-            </p>
+            <p className="text-stone-300 text-sm" dangerouslySetInnerHTML={{
+              __html: `💡 <strong>${TranslationService.t('modals.tip_unlock', { count: unlockAllCost }).replace('Tip: ', '')}</strong>`
+            }} />
           </div>
         </div>
       </div>

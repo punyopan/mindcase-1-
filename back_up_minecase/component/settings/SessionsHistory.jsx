@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import TranslationService from '../../services/TranslationService';
 import { ChevronLeft, AlertCircle, X, RefreshCw } from '../icon';
 import { AuthService } from '../../services/auth';
 
@@ -30,7 +31,7 @@ const SessionsHistory = ({ user, onBack }) => {
   }, [loadData]);
 
   const handleRevokeSession = async (familyId) => {
-    if (confirm('Are you sure you want to revoke this session?')) {
+    if (confirm(TranslationService.t('settings.revoke_confirm'))) {
       await AuthService.revokeSession(familyId);
       // Refresh sessions list
       const updated = await AuthService.getActiveSessions();
@@ -46,10 +47,10 @@ const SessionsHistory = ({ user, onBack }) => {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    if (diffMins < 1) return TranslationService.t('settings.just_now');
+    if (diffMins < 60) return TranslationService.t('settings.minutes_ago', { count: diffMins });
+    if (diffHours < 24) return TranslationService.t('settings.hours_ago', { count: diffHours });
+    if (diffDays < 7) return TranslationService.t('settings.days_ago', { count: diffDays });
 
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
@@ -77,12 +78,12 @@ const SessionsHistory = ({ user, onBack }) => {
 
   const getActionLabel = (action) => {
     const labels = {
-      login: 'Logged In',
-      logout: 'Logged Out',
-      password_changed: 'Password Changed',
-      '2fa_enabled': '2FA Enabled',
-      '2fa_disabled': '2FA Disabled',
-      session_revoked: 'Session Revoked'
+      login: TranslationService.t('settings.logged_in'),
+      logout: TranslationService.t('settings.logged_out'),
+      password_changed: TranslationService.t('settings.password_changed_action'),
+      '2fa_enabled': TranslationService.t('settings.2fa_enabled_action'),
+      '2fa_disabled': TranslationService.t('settings.2fa_disabled_action'),
+      session_revoked: TranslationService.t('settings.session_revoked_action')
     };
     return labels[action] || action;
   };
@@ -99,8 +100,8 @@ const SessionsHistory = ({ user, onBack }) => {
             <ChevronLeft className="w-6 h-6 text-stone-400" />
           </button>
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-white">Security Activity</h1>
-            <p className="text-stone-400 text-sm">Monitor your account activity</p>
+            <h1 className="text-2xl font-bold text-white">{TranslationService.t('settings.security_activity')}</h1>
+            <p className="text-stone-400 text-sm">{TranslationService.t('settings.monitor_activity')}</p>
           </div>
           <button
             onClick={loadData}
@@ -122,7 +123,7 @@ const SessionsHistory = ({ user, onBack }) => {
                 : 'bg-stone-900/60 text-stone-400 hover:bg-stone-800/60'
             }`}
           >
-            Active Sessions ({sessions.length})
+            {TranslationService.t('settings.active_sessions')} ({sessions.length})
           </button>
           <button
             onClick={() => setView('history')}
@@ -132,7 +133,7 @@ const SessionsHistory = ({ user, onBack }) => {
                 : 'bg-stone-900/60 text-stone-400 hover:bg-stone-800/60'
             }`}
           >
-            Login History
+            {TranslationService.t('settings.login_history')}
           </button>
         </div>
 
@@ -145,7 +146,7 @@ const SessionsHistory = ({ user, onBack }) => {
           <div className="space-y-3">
             {sessions.length === 0 ? (
               <div className="bg-stone-900/60 backdrop-blur-sm border border-stone-700 rounded-xl p-8 text-center">
-                <p className="text-stone-400">No active sessions</p>
+                <p className="text-stone-400">{TranslationService.t('settings.no_active_sessions')}</p>
               </div>
             ) : (
               sessions.map((session) => (
@@ -158,16 +159,16 @@ const SessionsHistory = ({ user, onBack }) => {
                       <span className="text-2xl">{getBrowserIcon(session.browser)}</span>
                       <div>
                         <div className="text-white font-medium">
-                          {session.platform || 'Unknown Device'}
+                          {session.platform || TranslationService.t('settings.unknown_device')}
                         </div>
                         <div className="text-stone-400 text-sm mt-1">
-                          {session.browser ? session.browser.split(' ').slice(0, 3).join(' ') : 'Unknown Browser'}
+                          {session.browser ? session.browser.split(' ').slice(0, 3).join(' ') : TranslationService.t('settings.unknown_browser')}
                         </div>
                         <div className="text-stone-500 text-xs mt-1">
-                          Created: {formatDate(session.created_at)}
+                          {TranslationService.t('settings.created')}: {formatDate(session.created_at)}
                         </div>
                         <div className="text-stone-500 text-xs">
-                          Last active: {formatDate(session.last_active)}
+                          {TranslationService.t('settings.last_active')}: {formatDate(session.last_active)}
                         </div>
                       </div>
                     </div>
@@ -187,7 +188,7 @@ const SessionsHistory = ({ user, onBack }) => {
               <div className="flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-blue-200">
-                  These are devices and browsers where you're currently logged in. If you see any suspicious activity, revoke the session immediately and change your password.
+                  {TranslationService.t('settings.session_tips')}
                 </p>
               </div>
             </div>
@@ -196,7 +197,7 @@ const SessionsHistory = ({ user, onBack }) => {
           <div className="space-y-2">
             {loginHistory.length === 0 ? (
               <div className="bg-stone-900/60 backdrop-blur-sm border border-stone-700 rounded-xl p-8 text-center">
-                <p className="text-stone-400">No login history</p>
+                <p className="text-stone-400">{TranslationService.t('settings.no_login_history')}</p>
               </div>
             ) : (
               loginHistory.map((entry) => (
@@ -213,11 +214,11 @@ const SessionsHistory = ({ user, onBack }) => {
                       </div>
                       {entry.method && (
                         <div className="text-stone-400 text-sm mt-1">
-                          Method: {entry.method}
+                          {TranslationService.t('settings.method')}: {entry.method}
                         </div>
                       )}
                       <div className="text-stone-500 text-xs mt-1">
-                        {entry.platform || 'Unknown Platform'} • {entry.ipAddress || 'Unknown IP'}
+                        {entry.platform || TranslationService.t('settings.unknown_platform')} • {entry.ipAddress || TranslationService.t('settings.unknown_ip')}
                       </div>
                     </div>
                   </div>

@@ -275,6 +275,7 @@
             translationService,
             translationCache,
             contentTranslator,
+            cognitiveTranslator,
             progressAPIService,
             enLocaleData,
             esLocaleData,
@@ -347,6 +348,7 @@
             fetch("services/TranslationService.js").then((r) => r.text()),
             fetch("services/TranslationCache.js").then((r) => r.text()),
             fetch("services/ContentTranslator.js").then((r) => r.text()),
+            fetch("services/CognitiveTranslator.js").then((r) => r.text()),
             fetch("services/progressAPI.js?v=" + Date.now()).then((r) => r.text()),
             fetch("locales/en.json").then((r) => r.text()),
             fetch("locales/es.json").then((r) => r.text()),
@@ -498,6 +500,7 @@
                     ${cleanModule(translationService)}
                     ${cleanModule(translationCache)}
                     ${cleanModule(contentTranslator)}
+                    ${cleanModule(cognitiveTranslator)}
                     ${cleanModule(progressAPIService)}
 
                     // Locales

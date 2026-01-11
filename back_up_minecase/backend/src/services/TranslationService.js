@@ -323,6 +323,129 @@ class TranslationService {
   }
 
   /**
+   * Translate cognitive training scenario
+   * @param {object} scenario - Cognitive scenario object
+   * @param {string} targetLanguage - Target language
+   * @returns {Promise<object>} - Translated scenario
+   */
+  async translateCognitiveScenario(scenario, targetLanguage) {
+    const crypto = require('crypto');
+    const scenarioType = scenario.type || 'unknown';
+    
+    // Create hash of original content for cache key
+    const contentToHash = JSON.stringify({
+      title: scenario.title,
+      briefing: scenario.briefing,
+      correctInsight: scenario.correctInsight
+    });
+    const scenarioHash = crypto.createHash('sha256').update(contentToHash).digest('hex').substring(0, 64);
+
+    // Check DB cache first
+    try {
+      const cached = await db.query(
+        `SELECT title, briefing, correct_insight, evidence_json, variables_json, stakeholders_json, claim, outcome, context
+         FROM t_cognitive_translation_cache 
+         WHERE scenario_type = $1 AND scenario_hash = $2 AND language = $3`,
+        [scenarioType, scenarioHash, targetLanguage.toLowerCase()]
+      );
+      
+      if (cached.rows.length > 0) {
+        console.log(`[Translation] Cognitive cache HIT: ${scenarioType} in ${targetLanguage}`);
+        const row = cached.rows[0];
+        return {
+          ...scenario,
+          title: row.title || scenario.title,
+          briefing: row.briefing || scenario.briefing,
+          correctInsight: row.correct_insight || scenario.correctInsight,
+          evidence: row.evidence_json || scenario.evidence,
+          variables: row.variables_json || scenario.variables,
+          stakeholders: row.stakeholders_json || scenario.stakeholders,
+          claim: row.claim || scenario.claim,
+          outcome: row.outcome || scenario.outcome,
+          context: row.context || scenario.context,
+          _translated: true
+        };
+      }
+    } catch (err) {
+      console.warn('Cognitive cache read failed:', err.message);
+    }
+
+    console.log(`[Translation] Cognitive cache MISS: translating ${scenarioType} to ${targetLanguage}`);
+
+    // Build prompt for cognitive scenario translation
+    const COGNITIVE_PROMPT = `You are a professional translator. Translate the following cognitive training scenario from English to ${targetLanguage}.
+
+IMPORTANT RULES:
+1. Maintain the exact meaning and educational value
+2. Keep technical/domain terms that are better in English
+3. Translate ALL text fields while preserving structure
+4. Return ONLY valid JSON
+
+Scenario content:
+${JSON.stringify({
+  title: scenario.title,
+  briefing: scenario.briefing,
+  correctInsight: scenario.correctInsight,
+  claim: scenario.claim,
+  outcome: scenario.outcome,
+  context: scenario.context,
+  evidence: scenario.evidence?.slice(0, 5), // Limit for token efficiency
+  stakeholders: scenario.stakeholders?.slice(0, 4)
+}, null, 2)}
+
+Return as JSON with same structure but translated values.`;
+
+    try {
+      const response = await this._callAI(COGNITIVE_PROMPT);
+      
+      let jsonStr = response;
+      if (response.includes('```json')) {
+        jsonStr = response.split('```json')[1].split('```')[0];
+      } else if (response.includes('```')) {
+        jsonStr = response.split('```')[1].split('```')[0];
+      }
+
+      const translated = JSON.parse(jsonStr.trim());
+
+      // Save to cache
+      try {
+        await db.query(
+          `INSERT INTO t_cognitive_translation_cache 
+           (scenario_type, scenario_hash, language, title, briefing, correct_insight, evidence_json, variables_json, stakeholders_json, claim, outcome, context)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+           ON CONFLICT (scenario_type, scenario_hash, language) 
+           DO UPDATE SET title = $4, briefing = $5, correct_insight = $6, evidence_json = $7, variables_json = $8, stakeholders_json = $9, claim = $10, outcome = $11, context = $12, updated_at = CURRENT_TIMESTAMP`,
+          [
+            scenarioType,
+            scenarioHash,
+            targetLanguage.toLowerCase(),
+            translated.title,
+            translated.briefing,
+            translated.correctInsight,
+            JSON.stringify(translated.evidence),
+            JSON.stringify(translated.variables),
+            JSON.stringify(translated.stakeholders),
+            translated.claim,
+            translated.outcome,
+            translated.context
+          ]
+        );
+      } catch (err) {
+        console.warn('Cognitive cache write failed:', err.message);
+      }
+
+      return {
+        ...scenario,
+        ...translated,
+        _translated: true
+      };
+    } catch (error) {
+      console.error('[Translation] Cognitive translation failed:', error.message);
+      return { ...scenario, _isFallback: true };
+    }
+  }
+
+  /**
    * Get cache statistics
    */
   async getCacheStats() {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import TranslationService from '../../services/TranslationService';
 import { Shield, Lock, AlertCircle, CheckCircle, X, ChevronLeft, Key } from '../icon';
 import { AuthService } from '../../services/auth';
 
@@ -30,12 +31,14 @@ const SecuritySettings = ({ user, onBack }) => {
     setSuccess('');
 
     if (newPassword !== confirmPassword) {
-      setError('Passwords do not match');
+    if (newPassword !== confirmPassword) {
+      setError(TranslationService.t('settings.passwords_no_match'));
       return;
     }
 
     if (newPassword.length < 8) {
-      setError('Password must be at least 8 characters');
+    if (newPassword.length < 8) {
+      setError(TranslationService.t('settings.password_min_length'));
       return;
     }
 
@@ -44,7 +47,7 @@ const SecuritySettings = ({ user, onBack }) => {
     setLoading(false);
 
     if (result.success) {
-      setSuccess(result.message || 'Password changed successfully');
+      setSuccess(result.message || TranslationService.t('settings.password_changed_success'));
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -92,7 +95,7 @@ const SecuritySettings = ({ user, onBack }) => {
     if (result.success) {
       setTwoFactorEnabled(false);
       setDisablePassword('');
-      setSuccess('Two-factor authentication disabled');
+      setSuccess(TranslationService.t('settings.2fa_disabled_action'));
       setView('main');
     } else {
       setError(result.error);
@@ -115,9 +118,10 @@ const SecuritySettings = ({ user, onBack }) => {
             <div>
               <h1 className="text-2xl font-bold text-white flex items-center gap-2">
                 <Shield className="w-6 h-6 text-amber-500" />
-                Security
+                <Shield className="w-6 h-6 text-amber-500" />
+                {TranslationService.t('settings.security_settings')}
               </h1>
-              <p className="text-stone-400 text-sm">Manage your account security settings</p>
+              <p className="text-stone-400 text-sm">{TranslationService.t('settings.manage_security')}</p>
             </div>
           </div>
 
@@ -139,8 +143,8 @@ const SecuritySettings = ({ user, onBack }) => {
                 <div className="flex items-center gap-3">
                   <Lock className="w-6 h-6 text-amber-500" />
                   <div>
-                    <div className="text-white font-medium">Change Password</div>
-                    <div className="text-stone-400 text-sm">Update your password</div>
+                    <div className="text-white font-medium">{TranslationService.t('settings.change_password')}</div>
+                    <div className="text-stone-400 text-sm">{TranslationService.t('settings.update_password')}</div>
                   </div>
                 </div>
                 <ChevronLeft className="w-5 h-5 text-stone-500 rotate-180" />
@@ -153,9 +157,9 @@ const SecuritySettings = ({ user, onBack }) => {
                 <div className="flex items-center gap-3">
                   <Shield className="w-6 h-6 text-amber-500" />
                   <div>
-                    <div className="text-white font-medium">Two-Factor Authentication</div>
+                    <div className="text-white font-medium">{TranslationService.t('settings.two_factor_auth')}</div>
                     <div className="text-stone-400 text-sm">
-                      {twoFactorEnabled ? 'Enabled' : 'Add an extra layer of security'}
+                      {twoFactorEnabled ? TranslationService.t('settings.2fa_enabled') : TranslationService.t('settings.2fa_add_security')}
                     </div>
                   </div>
                 </div>
@@ -178,12 +182,12 @@ const SecuritySettings = ({ user, onBack }) => {
               <div className="flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
                 <div className="text-sm text-blue-200">
-                  <p className="font-medium mb-1">Security Tips</p>
+                  <p className="font-medium mb-1">{TranslationService.t('settings.security_tips')}</p>
                   <ul className="list-disc list-inside space-y-1 text-blue-300">
-                    <li>Use a strong, unique password</li>
-                    <li>Enable two-factor authentication</li>
-                    <li>Never share your password with anyone</li>
-                    <li>Review your active sessions regularly</li>
+                    <li>{TranslationService.t('settings.tip_strong_password')}</li>
+                    <li>{TranslationService.t('settings.tip_enable_2fa')}</li>
+                    <li>{TranslationService.t('settings.tip_never_share')}</li>
+                    <li>{TranslationService.t('settings.tip_check_sessions')}</li>
                   </ul>
                 </div>
               </div>
@@ -207,7 +211,7 @@ const SecuritySettings = ({ user, onBack }) => {
             >
               <ChevronLeft className="w-6 h-6 text-stone-400" />
             </button>
-            <h1 className="text-2xl font-bold text-white">Change Password</h1>
+            <h1 className="text-2xl font-bold text-white">{TranslationService.t('settings.change_password')}</h1>
           </div>
 
           {/* Form */}
@@ -221,41 +225,41 @@ const SecuritySettings = ({ user, onBack }) => {
 
             <div>
               <label className="block text-sm font-medium text-stone-300 mb-2">
-                Current Password
+                {TranslationService.t('settings.current_password')}
               </label>
               <input
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 className="w-full px-4 py-3 bg-stone-800 border border-stone-700 rounded-lg text-white placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                placeholder="Enter current password"
+                placeholder={TranslationService.t('settings.enter_current_password')}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-stone-300 mb-2">
-                New Password
+                {TranslationService.t('settings.new_password')}
               </label>
               <input
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 className="w-full px-4 py-3 bg-stone-800 border border-stone-700 rounded-lg text-white placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                placeholder="Enter new password"
+                placeholder={TranslationService.t('settings.enter_new_password')}
                 minLength={6}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-stone-300 mb-2">
-                Confirm New Password
+                {TranslationService.t('settings.confirm_new_password')}
               </label>
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full px-4 py-3 bg-stone-800 border border-stone-700 rounded-lg text-white placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                placeholder="Confirm new password"
+                placeholder={TranslationService.t('settings.confirm_new_password_placeholder')}
                 minLength={6}
               />
             </div>
@@ -264,7 +268,7 @@ const SecuritySettings = ({ user, onBack }) => {
               onClick={handlePasswordChange}
               className="w-full bg-gradient-to-r from-red-700 to-red-800 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105"
             >
-              Change Password
+              {TranslationService.t('settings.change_password')}
             </button>
           </div>
         </div>
@@ -285,15 +289,15 @@ const SecuritySettings = ({ user, onBack }) => {
             >
               <ChevronLeft className="w-6 h-6 text-stone-400" />
             </button>
-            <h1 className="text-2xl font-bold text-white">Setup 2FA</h1>
+            <h1 className="text-2xl font-bold text-white">{TranslationService.t('settings.setup_2fa')}</h1>
           </div>
 
           <div className="bg-stone-900/60 backdrop-blur-sm border border-stone-700 rounded-xl p-6 space-y-4">
             <div className="text-center">
               <Shield className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-              <h2 className="text-lg font-bold text-white mb-2">Scan QR Code</h2>
+              <h2 className="text-lg font-bold text-white mb-2">{TranslationService.t('settings.scan_qr')}</h2>
               <p className="text-stone-400 text-sm">
-                Use Google Authenticator or any TOTP app to scan this code
+                {TranslationService.t('settings.scan_qr_desc')}
               </p>
             </div>
 
@@ -307,7 +311,7 @@ const SecuritySettings = ({ user, onBack }) => {
             {/* Verification Code Input */}
             <div>
               <label className="block text-sm font-medium text-stone-300 mb-2">
-                Enter 6-digit code from app
+                {TranslationService.t('settings.enter_6_digit')}
               </label>
               <input
                 type="text"
@@ -333,7 +337,7 @@ const SecuritySettings = ({ user, onBack }) => {
                 loading || verificationCode.length !== 6 ? 'opacity-50 cursor-not-allowed' : 'hover:from-amber-500 hover:to-amber-600'
               }`}
             >
-              {loading ? 'Verifying...' : 'Verify & Enable'}
+              {loading ? TranslationService.t('settings.verifying') : TranslationService.t('settings.verify_enable')}
             </button>
           </div>
         </div>
@@ -347,14 +351,14 @@ const SecuritySettings = ({ user, onBack }) => {
       <div className="min-h-screen bg-gradient-to-br from-stone-950 via-stone-900 to-stone-950 p-6">
         <div className="max-w-md mx-auto">
           <div className="flex items-center gap-4 mb-6">
-            <h1 className="text-2xl font-bold text-white">2FA Enabled!</h1>
+            <h1 className="text-2xl font-bold text-white">{TranslationService.t('settings.2fa_enabled_title')}</h1>
           </div>
 
           <div className="bg-stone-900/60 backdrop-blur-sm border border-green-700/50 rounded-xl p-6 space-y-4">
             <div className="text-center">
               <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-white mb-2">Save Your Backup Codes</h2>
-              <p className="text-stone-400 text-sm">Store these codes securely - you'll need them if you lose your device</p>
+              <h2 className="text-xl font-bold text-white mb-2">{TranslationService.t('settings.save_backup_codes')}</h2>
+              <p className="text-stone-400 text-sm">{TranslationService.t('settings.backup_codes_desc')}</p>
             </div>
 
             <div className="bg-stone-800 border border-stone-700 rounded-lg p-4">
@@ -371,7 +375,7 @@ const SecuritySettings = ({ user, onBack }) => {
               <div className="flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-yellow-200">
-                  Each code can only be used once. Store them securely!
+                  {TranslationService.t('settings.one_time_use')}
                 </p>
               </div>
             </div>
@@ -380,7 +384,7 @@ const SecuritySettings = ({ user, onBack }) => {
               onClick={() => setView('main')}
               className="w-full bg-gradient-to-r from-green-700 to-green-800 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all"
             >
-              Done
+              {TranslationService.t('settings.done')}
             </button>
           </div>
         </div>
@@ -400,13 +404,13 @@ const SecuritySettings = ({ user, onBack }) => {
             >
               <ChevronLeft className="w-6 h-6 text-stone-400" />
             </button>
-            <h1 className="text-2xl font-bold text-white">Disable 2FA</h1>
+            <h1 className="text-2xl font-bold text-white">{TranslationService.t('settings.disable_2fa')}</h1>
           </div>
 
           <div className="bg-stone-900/60 backdrop-blur-sm border border-red-700/50 rounded-xl p-6 space-y-4">
             <div className="text-center">
               <Shield className="w-12 h-12 text-red-500 mx-auto mb-4" />
-              <p className="text-stone-400 text-sm">Enter your password to disable two-factor authentication</p>
+              <p className="text-stone-400 text-sm">{TranslationService.t('settings.disable_2fa_desc')}</p>
             </div>
 
             <div>
@@ -436,7 +440,7 @@ const SecuritySettings = ({ user, onBack }) => {
                 loading || !disablePassword ? 'opacity-50 cursor-not-allowed' : 'hover:from-red-500 hover:to-red-600'
               }`}
             >
-              {loading ? 'Disabling...' : 'Disable 2FA'}
+              {loading ? TranslationService.t('settings.disabling') : TranslationService.t('settings.disable_2fa')}
             </button>
           </div>
         </div>

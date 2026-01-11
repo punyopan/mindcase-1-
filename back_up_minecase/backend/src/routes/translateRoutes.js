@@ -97,4 +97,29 @@ router.post('/feedback', async (req, res) => {
   }
 });
 
+/**
+ * POST /api/translate/cognitive
+ * Translate cognitive training scenario
+ */
+router.post('/cognitive', async (req, res) => {
+  try {
+    const { scenario, targetLanguage } = req.body;
+
+    if (!targetLanguage || targetLanguage === 'English') {
+      return res.json(scenario);
+    }
+
+    if (!scenario || !scenario.type) {
+      return res.status(400).json({ error: 'Missing required field: scenario with type' });
+    }
+
+    const translated = await translationService.translateCognitiveScenario(scenario, targetLanguage);
+
+    res.json(translated);
+  } catch (error) {
+    console.error('Cognitive translation error:', error);
+    res.status(500).json({ error: 'Cognitive translation failed', details: error.message });
+  }
+});
+
 module.exports = router;

@@ -1,4 +1,5 @@
 import { Home, FolderOpen, Puzzle, Play, User, Settings, Brain } from './icon';
+import TranslationService from '../services/TranslationService';
 
 const NavigationBar = ({
   showNavBar,
@@ -31,7 +32,7 @@ const NavigationBar = ({
             }`}
           >
             <Brain className="w-6 h-6" />
-            <span className="text-xs font-medium">Training</span>
+            <span className="text-xs font-medium">{TranslationService.t('nav.training')}</span>
           </button>
 
           <button
@@ -41,7 +42,7 @@ const NavigationBar = ({
             }`}
           >
             <FolderOpen className="w-6 h-6" />
-            <span className="text-xs font-medium">Case Files</span>
+            <span className="text-xs font-medium">{TranslationService.t('nav.case_files')}</span>
           </button>
 
           <button
@@ -57,7 +58,7 @@ const NavigationBar = ({
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse" />
             )}
             <Puzzle className="w-6 h-6" />
-            <span className="text-xs font-medium">Daily</span>
+            <span className="text-xs font-medium">{TranslationService.t('nav.daily')}</span>
           </button>
 
           <button
@@ -68,7 +69,7 @@ const NavigationBar = ({
             }`}
           >
             <Play className="w-6 h-6" />
-            <span className="text-xs font-medium">Continue</span>
+            <span className="text-xs font-medium">{TranslationService.t('nav.continue')}</span>
           </button>
 
           <button
@@ -78,7 +79,7 @@ const NavigationBar = ({
             }`}
           >
             <User className="w-6 h-6" />
-            <span className="text-xs font-medium">Profile</span>
+            <span className="text-xs font-medium">{TranslationService.t('nav.profile')}</span>
           </button>
 
           <button
@@ -88,7 +89,7 @@ const NavigationBar = ({
             }`}
           >
             <Settings className="w-6 h-6" />
-            <span className="text-xs font-medium">Settings</span>
+            <span className="text-xs font-medium">{TranslationService.t('nav.settings')}</span>
           </button>
         </div>
       </div>
@@ -97,3 +98,4 @@ const NavigationBar = ({
 };
 
 export default NavigationBar;
+

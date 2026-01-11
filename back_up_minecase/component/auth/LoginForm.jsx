@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import TranslationService from '../../services/TranslationService';
 import { AlertCircle, LogIn, Loader } from '../icon';
 
 const LoginForm = ({ onLogin, onSwitchToSignup, onSkip }) => {
@@ -30,8 +31,8 @@ const LoginForm = ({ onLogin, onSwitchToSignup, onSkip }) => {
         {/* Logo/Header */}
         <div className="text-center mb-8">
           <div className="text-6xl mb-4">🧠</div>
-          <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-          <p className="text-stone-400">Sign in to continue your investigation</p>
+          <h1 className="text-3xl font-bold text-white mb-2">{TranslationService.t('auth.welcome_back')}</h1>
+          <p className="text-stone-400">{TranslationService.t('auth.sign_in_continue')}</p>
         </div>
 
         {/* Login Form */}
@@ -48,7 +49,7 @@ const LoginForm = ({ onLogin, onSwitchToSignup, onSkip }) => {
             {/* Email Field */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-stone-300 mb-2">
-                Email Address
+                {TranslationService.t('auth.email_address')}
               </label>
               <input
                 id="email"
@@ -65,7 +66,7 @@ const LoginForm = ({ onLogin, onSwitchToSignup, onSkip }) => {
             {/* Password Field */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-stone-300 mb-2">
-                Password
+                {TranslationService.t('auth.password')}
               </label>
               <input
                 id="password"
@@ -89,12 +90,12 @@ const LoginForm = ({ onLogin, onSwitchToSignup, onSkip }) => {
               {isLoading ? (
                 <>
                   <Loader className="w-5 h-5 animate-spin" />
-                  <span>Signing In...</span>
+                  <span>{TranslationService.t('auth.signing_in')}</span>
                 </>
               ) : (
                 <>
                   <LogIn className="w-5 h-5" />
-                  <span>Sign In</span>
+                  <span>{TranslationService.t('auth.sign_in')}</span>
                 </>
               )}
             </button>
@@ -119,7 +120,7 @@ const LoginForm = ({ onLogin, onSwitchToSignup, onSkip }) => {
                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                </svg>
-               <span>Continue with Google</span>
+               <span>{TranslationService.t('auth.continue_google')}</span>
              </button>
 
           </div>
@@ -130,21 +131,21 @@ const LoginForm = ({ onLogin, onSwitchToSignup, onSkip }) => {
               <div className="w-full border-t border-stone-700"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-stone-900 text-stone-400">or</span>
+              <span className="px-4 bg-stone-900 text-stone-400">{TranslationService.t('auth.or')}</span>
             </div>
           </div>
 
           {/* Sign Up Link */}
           <div className="text-center">
             <p className="text-stone-400 text-sm">
-              Don't have an account?{' '}
+              {TranslationService.t('auth.no_account')}{' '}
               <button
                 type="button"
                 onClick={onSwitchToSignup}
                 className="text-amber-400 hover:text-amber-300 font-medium transition-colors"
                 disabled={isLoading}
               >
-                Create Account
+                {TranslationService.t('auth.create_account')}
               </button>
             </p>
           </div>
@@ -158,7 +159,7 @@ const LoginForm = ({ onLogin, onSwitchToSignup, onSkip }) => {
                 className="text-stone-500 hover:text-stone-400 text-sm transition-colors"
                 disabled={isLoading}
               >
-                Continue as Guest
+                {TranslationService.t('auth.continue_guest')}
               </button>
             </div>
           )}
@@ -166,7 +167,7 @@ const LoginForm = ({ onLogin, onSwitchToSignup, onSkip }) => {
 
         {/* Footer Note */}
         <p className="text-center text-stone-600 text-xs mt-6">
-          Your progress will be saved locally on this device
+          {TranslationService.t('auth.progress_saved_locally')}
         </p>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import TranslationService from '../../services/TranslationService';
 
 /**
  * FORENSIC NARRATIVE - Cognitive Training Game
@@ -506,16 +507,14 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
             </div>
 
             <div className="bg-red-900/20 border border-red-700/30 rounded-xl p-4">
-              <h4 className="font-bold text-red-400 mb-2">Warning</h4>
+              <h4 className="font-bold text-red-400 mb-2">{TranslationService.t('cognitive.warning')}</h4>
               <p className="text-stone-300 text-sm">
-                Evidence will contradict itself. Information will be incomplete.
-                You cannot reach certainty. Your task is to build the BEST interpretation
-                given these constraints, while acknowledging what you cannot know.
+                {TranslationService.t('cognitive.evidence_contradicts')}
               </p>
             </div>
 
             <div className="bg-amber-900/30 border border-amber-700/50 rounded-xl p-4">
-              <h4 className="font-bold text-amber-400 mb-2">How This Works</h4>
+              <h4 className="font-bold text-amber-400 mb-2">{TranslationService.t('cognitive.how_this_works')}</h4>
               <ul className="text-stone-300 text-sm space-y-2 text-left">
                 <li>1. Evidence will unlock progressively - don't rush</li>
                 <li>2. Rate each evidence's reliability and take notes</li>
@@ -529,7 +528,7 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
               onClick={() => setPhase('evidence_review')}
               className="px-8 py-3 bg-gradient-to-r from-amber-600 to-red-600 text-white font-bold rounded-xl hover:from-amber-500 hover:to-red-500 transition-all"
             >
-              Begin Evidence Review
+              {TranslationService.t('cognitive.begin_evidence_review')}
             </button>
           </div>
         );
@@ -538,14 +537,14 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
         return (
           <div className="space-y-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-white">Evidence Review</h3>
+              <h3 className="text-xl font-bold text-white">{TranslationService.t('cognitive.evidence_review')}</h3>
               <div className={`px-4 py-2 rounded-lg font-mono ${reviewComplete
                   ? 'bg-green-900/50 text-green-400'
                   : 'bg-stone-800 text-amber-400'
                 }`}>
                 {reviewComplete
-                  ? "All Evidence Revealed"
-                  : `Reviewing: ${Math.floor(reviewTimeRemaining / 60)}:${String(reviewTimeRemaining % 60).padStart(2, '0')}`
+                  ? TranslationService.t('cognitive.all_evidence_revealed')
+                  : `${TranslationService.t('cognitive.reviewing')}: ${Math.floor(reviewTimeRemaining / 60)}:${String(reviewTimeRemaining % 60).padStart(2, '0')}`
                 }
               </div>
             </div>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import TranslationService from '../../services/TranslationService';
 import { AlertCircle, CheckCircle, Loader, User } from '../icon';
 
 const SignupForm = ({ onSignup, onSwitchToLogin, onSkip }) => {
@@ -79,8 +80,8 @@ const SignupForm = ({ onSignup, onSwitchToLogin, onSkip }) => {
         {/* Logo/Header */}
         <div className="text-center mb-8">
           <div className="text-6xl mb-4">🧠</div>
-          <h1 className="text-3xl font-bold text-white mb-2">Join MindCase</h1>
-          <p className="text-stone-400">Create an account to track your progress</p>
+          <h1 className="text-3xl font-bold text-white mb-2">{TranslationService.t('auth.join_mindcase')}</h1>
+          <p className="text-stone-400">{TranslationService.t('auth.create_track_progress')}</p>
         </div>
 
         {/* Signup Form */}
@@ -97,7 +98,7 @@ const SignupForm = ({ onSignup, onSwitchToLogin, onSkip }) => {
             {/* Name Field */}
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-stone-300 mb-2">
-                Full Name
+                {TranslationService.t('auth.full_name')}
               </label>
               <input
                 id="name"
@@ -115,7 +116,7 @@ const SignupForm = ({ onSignup, onSwitchToLogin, onSkip }) => {
             {/* Email Field */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-stone-300 mb-2">
-                Email Address
+                {TranslationService.t('auth.email_address')}
               </label>
               <input
                 id="email"
@@ -133,7 +134,7 @@ const SignupForm = ({ onSignup, onSwitchToLogin, onSkip }) => {
             {/* Password Field */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-stone-300 mb-2">
-                Password
+                {TranslationService.t('auth.password')}
               </label>
               <input
                 id="password"
@@ -175,7 +176,7 @@ const SignupForm = ({ onSignup, onSwitchToLogin, onSkip }) => {
             {/* Confirm Password Field */}
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-stone-300 mb-2">
-                Confirm Password
+                {TranslationService.t('auth.confirm_password')}
               </label>
               <div className="relative">
                 <input
@@ -205,12 +206,12 @@ const SignupForm = ({ onSignup, onSwitchToLogin, onSkip }) => {
               {isLoading ? (
                 <>
                   <Loader className="w-5 h-5 animate-spin" />
-                  <span>Creating Account...</span>
+                  <span>{TranslationService.t('auth.creating_account')}</span>
                 </>
               ) : (
                 <>
                   <User className="w-5 h-5" />
-                  <span>Create Account</span>
+                  <span>{TranslationService.t('auth.create_account')}</span>
                 </>
               )}
             </button>
@@ -222,21 +223,21 @@ const SignupForm = ({ onSignup, onSwitchToLogin, onSkip }) => {
               <div className="w-full border-t border-stone-700"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-stone-900 text-stone-400">or</span>
+              <span className="px-4 bg-stone-900 text-stone-400">{TranslationService.t('auth.or')}</span>
             </div>
           </div>
 
           {/* Login Link */}
           <div className="text-center">
             <p className="text-stone-400 text-sm">
-              Already have an account?{' '}
+              {TranslationService.t('auth.already_have_account')}{' '}
               <button
                 type="button"
                 onClick={onSwitchToLogin}
                 className="text-amber-400 hover:text-amber-300 font-medium transition-colors"
                 disabled={isLoading}
               >
-                Sign In
+                {TranslationService.t('auth.sign_in')}
               </button>
             </p>
           </div>
@@ -250,7 +251,7 @@ const SignupForm = ({ onSignup, onSwitchToLogin, onSkip }) => {
                 className="text-stone-500 hover:text-stone-400 text-sm transition-colors"
                 disabled={isLoading}
               >
-                Continue as Guest
+                {TranslationService.t('auth.continue_guest')}
               </button>
             </div>
           )}
@@ -258,7 +259,7 @@ const SignupForm = ({ onSignup, onSwitchToLogin, onSkip }) => {
 
         {/* Footer Note */}
         <p className="text-center text-stone-600 text-xs mt-6">
-          By creating an account, you agree to our Terms of Service
+          {TranslationService.t('auth.terms_agreement')}
         </p>
       </div>
     </div>

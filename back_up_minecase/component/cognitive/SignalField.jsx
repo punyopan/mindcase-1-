@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import TranslationService from '../../services/TranslationService';
 
 /**
  * SIGNAL FIELD - Cognitive Training Game
@@ -410,19 +411,19 @@ const SignalField = ({ scenario, userId, onComplete }) => {
               <p className="text-stone-200 leading-relaxed">{scenario?.briefing}</p>
             </div>
             <div className="bg-amber-900/30 border border-amber-700/50 rounded-xl p-4">
-              <h4 className="font-bold text-amber-400 mb-2">How This Works</h4>
+              <h4 className="font-bold text-amber-400 mb-2">{TranslationService.t('cognitive.how_this_works')}</h4>
               <ul className="text-stone-300 text-sm space-y-2 text-left">
-                <li>1. You'll observe data for at least 2 minutes before analysis tools unlock</li>
-                <li>2. Form multiple hypotheses about what you observe</li>
-                <li>3. You have limited analysis budget - choose tests wisely</li>
-                <li>4. There is no single "correct" answer - your reasoning process is what matters</li>
+                <li>1. {TranslationService.t('cognitive.instructions_text')}</li>
+                <li>2. {TranslationService.t('cognitive.hypothesis_prompt')}</li>
+                <li>3. {TranslationService.t('cognitive.limited_resources')}</li>
+                <li>4. {TranslationService.t('cognitive.explain_reasoning')}</li>
               </ul>
             </div>
             <button
               onClick={() => setPhase('observation')}
               className="px-8 py-3 bg-gradient-to-r from-amber-600 to-red-600 text-white font-bold rounded-xl hover:from-amber-500 hover:to-red-500 transition-all"
             >
-              Begin Observation
+              {TranslationService.t('cognitive.begin_observation')}
             </button>
           </div>
         );
@@ -431,22 +432,21 @@ const SignalField = ({ scenario, userId, onComplete }) => {
         return (
           <div className="space-y-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-white">Observation Phase</h3>
+              <h3 className="text-xl font-bold text-white">{TranslationService.t('cognitive.observation_phase')}</h3>
               <div className={`px-4 py-2 rounded-lg font-mono ${observationComplete
                   ? 'bg-green-900/50 text-green-400'
                   : 'bg-stone-800 text-amber-400'
                 }`}>
                 {observationComplete
-                  ? "Analysis Unlocked"
-                  : `Observe: ${Math.floor(observationTimeRemaining / 60)}:${String(observationTimeRemaining % 60).padStart(2, '0')}`
+                  ? TranslationService.t('cognitive.analysis_unlocked')
+                  : `${TranslationService.t('cognitive.observe_timer')}: ${Math.floor(observationTimeRemaining / 60)}:${String(observationTimeRemaining % 60).padStart(2, '0')}`
                 }
               </div>
             </div>
 
             <div className="bg-stone-800/30 border border-stone-700 rounded-xl p-4 text-sm text-stone-400 mb-4">
-              <strong>Instructions:</strong> Examine the data. Look for patterns, anomalies, and relationships.
-              Click on rows to mark points of interest. Sort columns to compare values.
-              {!observationComplete && " Analysis tools will unlock after the timer."}
+              <strong>{TranslationService.t('cognitive.instructions')}:</strong> {TranslationService.t('cognitive.instructions_text')}
+              {!observationComplete && ` ${TranslationService.t('cognitive.analysis_unlock_note')}`}
             </div>
 
             <div className="bg-stone-900/50 border border-stone-700 rounded-xl p-4 max-h-96 overflow-y-auto">
@@ -458,12 +458,12 @@ const SignalField = ({ scenario, userId, onComplete }) => {
                 onClick={() => setPhase('hypothesis')}
                 className="w-full py-3 bg-gradient-to-r from-amber-600 to-red-600 text-white font-bold rounded-xl hover:from-amber-500 hover:to-red-500 transition-all"
               >
-                Proceed to Hypothesis Formation
+                {TranslationService.t('cognitive.proceed_hypothesis')}
               </button>
             )}
 
             <div className="text-center text-stone-500 text-sm">
-              {selectedDataPoints.size} data points marked for review
+              {selectedDataPoints.size} {TranslationService.t('cognitive.data_points_marked')}
             </div>
           </div>
         );
@@ -471,17 +471,16 @@ const SignalField = ({ scenario, userId, onComplete }) => {
       case 'hypothesis':
         return (
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-white">Form Hypotheses</h3>
+            <h3 className="text-xl font-bold text-white">{TranslationService.t('cognitive.form_hypotheses')}</h3>
             <p className="text-stone-400 text-sm">
-              Based on your observations, propose multiple explanations for what you've seen.
-              Strong reasoning considers multiple possibilities before committing.
+              {TranslationService.t('cognitive.hypothesis_prompt')}
             </p>
 
             <div className="bg-stone-900/50 border border-stone-700 rounded-xl p-4">
               <textarea
                 value={currentHypothesis}
                 onChange={(e) => setCurrentHypothesis(e.target.value)}
-                placeholder="I hypothesize that... because I observed..."
+                placeholder={TranslationService.t('cognitive.hypothesis_placeholder')}
                 className="w-full h-24 bg-stone-800 border border-stone-600 rounded-lg p-3 text-white placeholder-stone-500 resize-none"
               />
               <button
@@ -489,13 +488,13 @@ const SignalField = ({ scenario, userId, onComplete }) => {
                 disabled={currentHypothesis.trim().length < 10}
                 className="mt-2 px-4 py-2 bg-amber-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Add Hypothesis
+                {TranslationService.t('cognitive.add_hypothesis')}
               </button>
             </div>
 
             {hypotheses.length > 0 && (
               <div className="space-y-2">
-                <h4 className="font-bold text-amber-400">Your Hypotheses:</h4>
+                <h4 className="font-bold text-amber-400">{TranslationService.t('cognitive.your_hypotheses')}:</h4>
                 {hypotheses.map((h, idx) => (
                   <div key={h.id} className="bg-stone-800/50 rounded-lg p-3 flex items-start gap-3">
                     <span className="text-amber-500 font-bold">{idx + 1}.</span>
@@ -514,13 +513,13 @@ const SignalField = ({ scenario, userId, onComplete }) => {
                 onClick={() => setPhase('testing')}
                 className="w-full py-3 bg-gradient-to-r from-amber-600 to-red-600 text-white font-bold rounded-xl hover:from-amber-500 hover:to-red-500 transition-all"
               >
-                Proceed to Testing
+                {TranslationService.t('cognitive.proceed_testing')}
               </button>
             )}
 
             {hypotheses.length < 2 && (
               <p className="text-center text-stone-500 text-sm">
-                Form at least 2 hypotheses before proceeding
+                {TranslationService.t('cognitive.min_hypotheses')}
               </p>
             )}
           </div>
@@ -530,17 +529,16 @@ const SignalField = ({ scenario, userId, onComplete }) => {
         return (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold text-white">Test Your Hypotheses</h3>
+              <h3 className="text-xl font-bold text-white">{TranslationService.t('cognitive.test_hypotheses')}</h3>
               <div className="px-4 py-2 bg-stone-800 rounded-lg">
-                <span className="text-stone-400">Analysis Budget:</span>
+                <span className="text-stone-400">{TranslationService.t('cognitive.analysis_budget')}:</span>
                 <span className="ml-2 font-bold text-amber-400">{testingBudget}</span>
               </div>
             </div>
 
             <div className="bg-amber-900/20 border border-amber-700/30 rounded-xl p-4 text-sm">
               <p className="text-amber-200">
-                <strong>Limited Resources:</strong> You can only run {scenario?.testingBudget || 3} analyses total.
-                With 8 investigation types available, choose strategically which relationships to investigate.
+                <strong>{TranslationService.t('cognitive.limited_resources')}:</strong> {TranslationService.t('cognitive.analysis_budget')}: {scenario?.testingBudget || 3}
               </p>
             </div>
 
@@ -551,8 +549,8 @@ const SignalField = ({ scenario, userId, onComplete }) => {
                 disabled={testingBudget <= 0}
                 className="p-3 bg-stone-800/50 border border-stone-700 rounded-xl text-left hover:border-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <div className="text-amber-400 font-bold mb-1 text-sm">Correlation Analysis</div>
-                <div className="text-stone-400 text-xs">Check relationship strength between two variables</div>
+                <div className="text-amber-400 font-bold mb-1 text-sm">{TranslationService.t('cognitive.correlation_analysis')}</div>
+                <div className="text-stone-400 text-xs">{TranslationService.t('cognitive.correlation_desc')}</div>
               </button>
 
               <button
@@ -560,8 +558,8 @@ const SignalField = ({ scenario, userId, onComplete }) => {
                 disabled={testingBudget <= 0}
                 className="p-3 bg-stone-800/50 border border-stone-700 rounded-xl text-left hover:border-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <div className="text-amber-400 font-bold mb-1 text-sm">Group Comparison</div>
-                <div className="text-stone-400 text-xs">Compare outcomes between different groups</div>
+                <div className="text-amber-400 font-bold mb-1 text-sm">{TranslationService.t('cognitive.group_comparison')}</div>
+                <div className="text-stone-400 text-xs">{TranslationService.t('cognitive.group_comparison_desc')}</div>
               </button>
 
               <button
@@ -569,8 +567,8 @@ const SignalField = ({ scenario, userId, onComplete }) => {
                 disabled={testingBudget <= 0}
                 className="p-3 bg-stone-800/50 border border-stone-700 rounded-xl text-left hover:border-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <div className="text-amber-400 font-bold mb-1 text-sm">Trend Analysis</div>
-                <div className="text-stone-400 text-xs">Look for patterns over time or sequence</div>
+                <div className="text-amber-400 font-bold mb-1 text-sm">{TranslationService.t('cognitive.trend_analysis')}</div>
+                <div className="text-stone-400 text-xs">{TranslationService.t('cognitive.trend_desc')}</div>
               </button>
 
               <button
@@ -578,8 +576,8 @@ const SignalField = ({ scenario, userId, onComplete }) => {
                 disabled={testingBudget <= 0}
                 className="p-3 bg-stone-800/50 border border-stone-700 rounded-xl text-left hover:border-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <div className="text-amber-400 font-bold mb-1 text-sm">Outlier Detection</div>
-                <div className="text-stone-400 text-xs">Identify unusual or extreme data points</div>
+                <div className="text-amber-400 font-bold mb-1 text-sm">{TranslationService.t('cognitive.outlier_detection')}</div>
+                <div className="text-stone-400 text-xs">{TranslationService.t('cognitive.outlier_desc')}</div>
               </button>
 
               <button
@@ -587,8 +585,8 @@ const SignalField = ({ scenario, userId, onComplete }) => {
                 disabled={testingBudget <= 0}
                 className="p-3 bg-stone-800/50 border border-stone-700 rounded-xl text-left hover:border-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <div className="text-amber-400 font-bold mb-1 text-sm">Distribution Analysis</div>
-                <div className="text-stone-400 text-xs">Examine shape and spread of data distribution</div>
+                <div className="text-amber-400 font-bold mb-1 text-sm">{TranslationService.t('cognitive.distribution_analysis')}</div>
+                <div className="text-stone-400 text-xs">{TranslationService.t('cognitive.distribution_desc')}</div>
               </button>
 
               <button
@@ -596,8 +594,8 @@ const SignalField = ({ scenario, userId, onComplete }) => {
                 disabled={testingBudget <= 0}
                 className="p-3 bg-stone-800/50 border border-stone-700 rounded-xl text-left hover:border-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <div className="text-amber-400 font-bold mb-1 text-sm">Subgroup Comparison</div>
-                <div className="text-stone-400 text-xs">Analyze specific subset against population</div>
+                <div className="text-amber-400 font-bold mb-1 text-sm">{TranslationService.t('cognitive.subgroup_comparison')}</div>
+                <div className="text-stone-400 text-xs">{TranslationService.t('cognitive.subgroup_desc')}</div>
               </button>
 
               <button
@@ -605,8 +603,8 @@ const SignalField = ({ scenario, userId, onComplete }) => {
                 disabled={testingBudget <= 0}
                 className="p-3 bg-stone-800/50 border border-stone-700 rounded-xl text-left hover:border-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <div className="text-amber-400 font-bold mb-1 text-sm">Interaction Effects</div>
-                <div className="text-stone-400 text-xs">Test if variables influence each other</div>
+                <div className="text-amber-400 font-bold mb-1 text-sm">{TranslationService.t('cognitive.interaction_effects')}</div>
+                <div className="text-stone-400 text-xs">{TranslationService.t('cognitive.interaction_desc')}</div>
               </button>
 
               <button
@@ -614,15 +612,15 @@ const SignalField = ({ scenario, userId, onComplete }) => {
                 disabled={testingBudget <= 0}
                 className="p-3 bg-stone-800/50 border border-stone-700 rounded-xl text-left hover:border-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <div className="text-amber-400 font-bold mb-1 text-sm">Temporal Clustering</div>
-                <div className="text-stone-400 text-xs">Find time-based patterns or phases</div>
+                <div className="text-amber-400 font-bold mb-1 text-sm">{TranslationService.t('cognitive.temporal_clustering')}</div>
+                <div className="text-stone-400 text-xs">{TranslationService.t('cognitive.temporal_desc')}</div>
               </button>
             </div>
 
             {/* Analysis Results */}
             {analysisResults.length > 0 && (
               <div className="space-y-2">
-                <h4 className="font-bold text-white">Analysis Results:</h4>
+                <h4 className="font-bold text-white">{TranslationService.t('cognitive.analysis_results')}:</h4>
                 {analysisResults.map((result) => (
                   <div key={result.id} className="bg-stone-800/50 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
@@ -640,7 +638,7 @@ const SignalField = ({ scenario, userId, onComplete }) => {
               onClick={() => setPhase('synthesis')}
               className="w-full py-3 bg-gradient-to-r from-amber-600 to-red-600 text-white font-bold rounded-xl hover:from-amber-500 hover:to-red-500 transition-all"
             >
-              Proceed to Synthesis
+              {TranslationService.t('cognitive.proceed_synthesis')}
             </button>
           </div>
         );
@@ -648,29 +646,29 @@ const SignalField = ({ scenario, userId, onComplete }) => {
       case 'synthesis':
         return (
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-white">Synthesize Your Understanding</h3>
+            <h3 className="text-xl font-bold text-white">{TranslationService.t('cognitive.synthesize_understanding')}</h3>
 
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
               <label className="block text-amber-400 font-bold mb-2">
-                What is your interpretation of this data?
+                {TranslationService.t('cognitive.interpretation_prompt')}
               </label>
               <textarea
                 value={synthesisResponse}
                 onChange={(e) => setSynthesisResponse(e.target.value)}
-                placeholder="Based on my observation and analysis, I believe... However, I'm uncertain about... because..."
+                placeholder={TranslationService.t('cognitive.interpretation_placeholder')}
                 className="w-full h-40 bg-stone-900 border border-stone-600 rounded-lg p-3 text-white placeholder-stone-500 resize-none"
               />
               <p className="text-stone-500 text-sm mt-2">
-                Explain your reasoning, not just your conclusion. What evidence supports it? What are you uncertain about?
+                {TranslationService.t('cognitive.explain_reasoning')}
               </p>
             </div>
 
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
               <label className="block text-amber-400 font-bold mb-4">
-                How confident are you in this interpretation?
+                {TranslationService.t('cognitive.confidence_prompt')}
               </label>
               <div className="flex items-center gap-4">
-                <span className="text-red-400 text-sm">Very Uncertain</span>
+                <span className="text-red-400 text-sm">{TranslationService.t('cognitive.very_uncertain')}</span>
                 <input
                   type="range"
                   min="0"
@@ -679,7 +677,7 @@ const SignalField = ({ scenario, userId, onComplete }) => {
                   onChange={(e) => setUncertaintyLevel(parseInt(e.target.value))}
                   className="flex-1 accent-amber-500"
                 />
-                <span className="text-green-400 text-sm">Very Confident</span>
+                <span className="text-green-400 text-sm">{TranslationService.t('cognitive.very_confident')}</span>
               </div>
               <div className="text-center text-2xl font-bold text-amber-400 mt-2">
                 {uncertaintyLevel}%

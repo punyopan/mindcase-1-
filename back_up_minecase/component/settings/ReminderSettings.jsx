@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import TranslationService from '../../services/TranslationService';
 import { Bell, Clock, X } from '../icon';
 
 const ReminderSettings = ({ onBack }) => {
@@ -124,14 +125,14 @@ const ReminderSettings = ({ onBack }) => {
           <button onClick={onBack} className="p-2 hover:bg-stone-700 rounded-lg transition-colors">
             <X className="w-5 h-5 text-stone-400" />
           </button>
-          <h3 className="text-lg font-bold text-white">Daily Reminders</h3>
+          <h3 className="text-lg font-bold text-white">{TranslationService.t('settings.daily_reminders')}</h3>
         </div>
 
         <div className="bg-red-900/20 border border-red-700/50 rounded-xl p-6 text-center">
           <Bell className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <h4 className="text-red-400 font-bold text-lg mb-2">Notifications Not Supported</h4>
+          <h4 className="text-red-400 font-bold text-lg mb-2">{TranslationService.t('settings.notifications_not_supported')}</h4>
           <p className="text-stone-300 text-sm">
-            Your browser doesn't support notifications. Please use a modern browser like Chrome, Firefox, or Edge.
+            {TranslationService.t('settings.browser_not_support')}
           </p>
         </div>
       </div>
@@ -145,7 +146,7 @@ const ReminderSettings = ({ onBack }) => {
         <button onClick={onBack} className="p-2 hover:bg-stone-700 rounded-lg transition-colors">
           <X className="w-5 h-5 text-stone-400" />
         </button>
-        <h3 className="text-lg font-bold text-white">Daily Reminders</h3>
+        <h3 className="text-lg font-bold text-white">{TranslationService.t('settings.daily_reminders')}</h3>
       </div>
 
       {/* Enable/Disable Toggle */}
@@ -154,8 +155,8 @@ const ReminderSettings = ({ onBack }) => {
           <div className="flex items-center gap-3">
             <Bell className={`w-6 h-6 ${settings.enabled ? 'text-green-400' : 'text-stone-400'}`} />
             <div>
-              <h4 className="font-bold text-white text-sm">Daily Reminders</h4>
-              <p className="text-stone-400 text-xs">Get notified to practice critical thinking</p>
+              <h4 className="font-bold text-white text-sm">{TranslationService.t('settings.daily_reminders')}</h4>
+              <p className="text-stone-400 text-xs">{TranslationService.t('settings.reminder_desc')}</p>
             </div>
           </div>
           <button

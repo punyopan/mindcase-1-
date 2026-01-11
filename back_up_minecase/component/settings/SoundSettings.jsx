@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import TranslationService from '../../services/TranslationService';
 import { SoundService } from '../../services/sound';
 import { ChevronLeft } from '../icon';
 
@@ -85,15 +86,15 @@ const SoundSettings = ({ onBack }) => {
         >
           <ChevronLeft className="w-5 h-5 text-amber-400" />
         </button>
-        <h2 className="text-2xl font-bold text-white">🎵 Sound Settings</h2>
+        <h2 className="text-2xl font-bold text-white">🎵 {TranslationService.t('settings.sound_settings')}</h2>
       </div>
 
       {/* Background Music Section */}
       <div className="bg-stone-800 rounded-lg p-5 border border-stone-700">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-white font-semibold mb-1">Background Music</h3>
-            <p className="text-stone-400 text-sm">Ambient detective music while you investigate</p>
+            <h3 className="text-white font-semibold mb-1">{TranslationService.t('settings.background_music')}</h3>
+            <p className="text-stone-400 text-sm">{TranslationService.t('settings.music_desc')}</p>
           </div>
           <button
             onClick={handleBgMusicToggle}
@@ -114,7 +115,7 @@ const SoundSettings = ({ onBack }) => {
             {/* Volume Control */}
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
-                <label className="text-stone-300 text-sm">Volume</label>
+                <label className="text-stone-300 text-sm">{TranslationService.t('settings.volume')}</label>
                 <span className="text-amber-400 text-sm font-medium">
                   {Math.round(settings.bgMusicVolume * 100)}%
                 </span>
@@ -132,7 +133,7 @@ const SoundSettings = ({ onBack }) => {
 
             {/* Music Selection */}
             <div>
-              <label className="text-stone-300 text-sm mb-2 block">Music Theme</label>
+              <label className="text-stone-300 text-sm mb-2 block">{TranslationService.t('settings.music_theme')}</label>
               <div className="grid grid-cols-1 gap-2">
                 {[
                   { id: 'detective', name: '🕵️ Detective Theme', desc: 'Deep ocean mystery' },
@@ -166,8 +167,8 @@ const SoundSettings = ({ onBack }) => {
       <div className="bg-stone-800 rounded-lg p-5 border border-stone-700">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-white font-semibold mb-1">Sound Effects</h3>
-            <p className="text-stone-400 text-sm">Interaction sounds and feedback</p>
+            <h3 className="text-white font-semibold mb-1">{TranslationService.t('settings.sound_effects')}</h3>
+            <p className="text-stone-400 text-sm">{TranslationService.t('settings.sfx_desc')}</p>
           </div>
           <button
             onClick={handleSfxToggle}
@@ -188,7 +189,7 @@ const SoundSettings = ({ onBack }) => {
             {/* Volume Control */}
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
-                <label className="text-stone-300 text-sm">Volume</label>
+                <label className="text-stone-300 text-sm">{TranslationService.t('settings.volume')}</label>
                 <span className="text-amber-400 text-sm font-medium">
                   {Math.round(settings.sfxVolume * 100)}%
                 </span>
@@ -206,7 +207,7 @@ const SoundSettings = ({ onBack }) => {
 
             {/* Test Sounds */}
             <div>
-              <label className="text-stone-300 text-sm mb-2 block">Test Sounds</label>
+              <label className="text-stone-300 text-sm mb-2 block">{TranslationService.t('settings.test_sounds')}</label>
               <div className="grid grid-cols-2 gap-2">
                 {[
                   { id: 'buttonClick', name: 'Button Click' },

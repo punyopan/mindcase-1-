@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import TranslationService from '../services/TranslationService';
 import { X, Lock, CheckCircle } from './icon';
 
 const TokenShop = ({ onClose, puzzleId, puzzleName, onUnlock, userId, userTokens }) => {
@@ -52,7 +53,7 @@ const TokenShop = ({ onClose, puzzleId, puzzleName, onUnlock, userId, userTokens
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-white flex items-center gap-2">
               <Lock className="w-6 h-6" />
-              Unlock Puzzle
+              {TranslationService.t('shop.unlock_puzzle')}
             </h2>
             <button
               onClick={onClose}
@@ -67,21 +68,21 @@ const TokenShop = ({ onClose, puzzleId, puzzleName, onUnlock, userId, userTokens
         <div className="p-6 space-y-6">
           {/* Puzzle Info */}
           <div className="bg-stone-800/50 border border-stone-700 rounded-lg p-4">
-            <h3 className="text-white font-semibold mb-2">Puzzle Details</h3>
+            <h3 className="text-white font-semibold mb-2">{TranslationService.t('shop.puzzle_details')}</h3>
             <p className="text-stone-300 text-sm">{puzzleName || 'Premium Puzzle'}</p>
           </div>
 
           {/* Cost Display */}
           <div className="bg-gradient-to-br from-amber-900/20 to-yellow-900/20 border-2 border-amber-600/50 rounded-lg p-6 text-center">
             <div className="text-5xl mb-3">💰</div>
-            <div className="text-3xl font-bold text-amber-400 mb-2">{unlockCost} Tokens</div>
-            <p className="text-stone-300 text-sm">Required to unlock this puzzle</p>
+            <div className="text-3xl font-bold text-amber-400 mb-2">{unlockCost} {TranslationService.t('shop.tokens')}</div>
+            <p className="text-stone-300 text-sm">{TranslationService.t('shop.required_unlock')}</p>
           </div>
 
           {/* User Balance */}
           <div className="bg-stone-800/50 border border-stone-700 rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-stone-300 text-sm">Your Balance:</span>
+              <span className="text-stone-300 text-sm">{TranslationService.t('shop.your_balance')}:</span>
               <span className={`text-xl font-bold ${canAfford ? 'text-green-400' : 'text-red-400'}`}>
                 {tokens} tokens
               </span>
@@ -104,7 +105,7 @@ const TokenShop = ({ onClose, puzzleId, puzzleName, onUnlock, userId, userTokens
               onClick={onClose}
               className="flex-1 bg-stone-700 hover:bg-stone-600 text-white font-semibold py-3 px-4 rounded-lg transition-all"
             >
-              Cancel
+              {TranslationService.t('shop.cancel')}
             </button>
             <button
               onClick={handleUnlock}
@@ -115,17 +116,17 @@ const TokenShop = ({ onClose, puzzleId, puzzleName, onUnlock, userId, userTokens
                   : 'bg-stone-700 text-stone-500 cursor-not-allowed'
               }`}
             >
-              {unlocking ? 'Unlocking...' : canAfford ? 'Unlock Puzzle' : 'Not Enough Tokens'}
+              {unlocking ? TranslationService.t('shop.unlocking') : canAfford ? TranslationService.t('shop.unlock_puzzle') : TranslationService.t('shop.not_enough')}
             </button>
           </div>
 
           {/* Premium Alternative */}
           <div className="bg-blue-900/20 border border-blue-700/30 rounded-lg p-4">
             <p className="text-blue-300 text-xs text-center mb-2">
-              ⭐ <strong>Premium Members</strong> get unlimited access to all puzzles!
+              ⭐ <strong>{TranslationService.t('shop.premium_unlimited')}</strong>
             </p>
             <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-bold py-2 px-3 rounded-lg hover:from-blue-500 hover:to-purple-500 transition-all">
-              Upgrade to Premium
+              {TranslationService.t('shop.upgrade_premium')}
             </button>
           </div>
         </div>

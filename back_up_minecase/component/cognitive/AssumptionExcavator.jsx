@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import TranslationService from '../../services/TranslationService';
 
 /**
  * ASSUMPTION EXCAVATOR - Premium Cognitive Training Game
@@ -20,6 +21,12 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
   // Game phases
   const [phase, setPhase] = useState('briefing');
   const [excavationStarted, setExcavationStarted] = useState(false);
+  const [, setLang] = useState(TranslationService.currentLang);
+
+  useEffect(() => {
+    const unsubscribe = TranslationService.subscribe((lang) => setLang(lang));
+    return () => unsubscribe();
+  }, []);
 
   // Assumption tracking
   const [assumptions, setAssumptions] = useState([]);
@@ -42,23 +49,23 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
   const startTimeRef = useRef(Date.now());
 
   const ASSUMPTION_CATEGORIES = [
-    { id: 'factual', label: 'Factual', description: 'Assumes certain facts are true' },
-    { id: 'causal', label: 'Causal', description: 'Assumes X causes Y' },
-    { id: 'value', label: 'Value/Priority', description: 'Assumes what matters or should matter' },
-    { id: 'definitional', label: 'Definitional', description: 'Assumes meaning of terms' },
-    { id: 'scope', label: 'Scope/Boundary', description: 'Assumes what is/isn\'t included' },
-    { id: 'temporal', label: 'Temporal', description: 'Assumes timing, sequence, or duration' }
+    { id: 'factual', label: TranslationService.t('excavator.cat_factual'), description: TranslationService.t('excavator.cat_factual_desc') },
+    { id: 'causal', label: TranslationService.t('excavator.cat_causal'), description: TranslationService.t('excavator.cat_causal_desc') },
+    { id: 'value', label: TranslationService.t('excavator.cat_value'), description: TranslationService.t('excavator.cat_value_desc') },
+    { id: 'definitional', label: TranslationService.t('excavator.cat_definitional'), description: TranslationService.t('excavator.cat_definitional_desc') },
+    { id: 'scope', label: TranslationService.t('excavator.cat_scope'), description: TranslationService.t('excavator.cat_scope_desc') },
+    { id: 'temporal', label: TranslationService.t('excavator.cat_temporal'), description: TranslationService.t('excavator.cat_temporal_desc') }
   ];
 
   const EXCAVATION_PROMPTS = [
-    "What must be true about the WORLD for this claim to hold?",
-    "What must be true about PEOPLE for this to work?",
-    "What does this claim IGNORE or leave out?",
-    "What DEFINITIONS are being assumed?",
-    "What CAUSE-EFFECT relationships are implied?",
-    "What VALUES or PRIORITIES are embedded?",
-    "What TIME assumptions are made?",
-    "Who BENEFITS if we accept this claim uncritically?"
+    TranslationService.t('excavator.prompt_0'),
+    TranslationService.t('excavator.prompt_1'),
+    TranslationService.t('excavator.prompt_2'),
+    TranslationService.t('excavator.prompt_3'),
+    TranslationService.t('excavator.prompt_4'),
+    TranslationService.t('excavator.prompt_5'),
+    TranslationService.t('excavator.prompt_6'),
+    TranslationService.t('excavator.prompt_7')
   ];
 
   // Log interaction
@@ -151,15 +158,15 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
     } else if (assumptions.length >= 2) {
       score += 10;
     } else {
-      evaluation.feedback.push("Most claims rest on multiple hidden assumptions. Try to find at least 4.");
+      evaluation.feedback.push(TranslationService.t('excavator.feedback_count'));
     }
 
     // Used multiple categories
-    if (evaluation.categoriesUsed >= 3) {
+    if (uniqueCategories.size >= 2) {
       score += 15;
       evaluation.cognitiveGrowth.push('multi_dimensional_analysis');
     } else {
-      evaluation.feedback.push("Assumptions come in different types - factual, causal, value-based. Explore different categories.");
+      evaluation.feedback.push(TranslationService.t('excavator.feedback_variety'));
     }
 
     // Tested assumptions
@@ -242,7 +249,7 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
               onClick={() => removeAssumption(assumption.id)}
               className="text-stone-500 hover:text-red-400 text-sm"
             >
-              Remove
+              {TranslationService.t('cognitive.remove')}
             </button>
           )}
         </div>
@@ -260,7 +267,7 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
           <div className="mt-3 pt-3 border-t border-stone-700">
             <div className="flex items-center gap-4 text-sm">
               <div>
-                <span className="text-stone-500">Criticality: </span>
+                <span className="text-stone-500">{TranslationService.t('cognitive.criticality')}: </span>
                 <span className={`font-bold ${
                   testData.criticality >= 4 ? 'text-red-400' :
                   testData.criticality >= 3 ? 'text-amber-400' : 'text-green-400'
@@ -269,7 +276,7 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
                 </span>
               </div>
               <div>
-                <span className="text-stone-500">Likely True: </span>
+                <span className="text-stone-500">{TranslationService.t('cognitive.likely_true')}: </span>
                 <span className="text-stone-300">{testData.likelihood}%</span>
               </div>
             </div>
@@ -289,10 +296,10 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
         return (
           <div className="space-y-6 text-center max-w-2xl mx-auto">
             <div className="text-6xl mb-4">🔍</div>
-            <h2 className="text-2xl font-bold text-amber-400">Assumption Excavator</h2>
+            <h2 className="text-2xl font-bold text-amber-400">{TranslationService.t('excavator.title')}</h2>
 
             <div className="bg-stone-800/50 rounded-xl p-6 text-left">
-              <div className="text-stone-400 text-sm uppercase tracking-wider mb-2">The Claim</div>
+              <div className="text-stone-400 text-sm uppercase tracking-wider mb-2">{TranslationService.t('excavator.claim')}</div>
               <p className="text-xl text-white font-medium leading-relaxed">
                 "{scenario?.claim}"
               </p>
@@ -302,20 +309,19 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
             </div>
 
             <div className="bg-amber-900/20 border border-amber-700/30 rounded-xl p-4">
-              <h4 className="font-bold text-amber-400 mb-2">Your Mission</h4>
+              <h4 className="font-bold text-amber-400 mb-2">{TranslationService.t('excavator.mission_title')}</h4>
               <p className="text-stone-300 text-sm">
-                Every claim rests on hidden assumptions. Your job is to excavate them.
-                What must be TRUE for this claim to be valid? What is being ASSUMED but not stated?
+                {TranslationService.t('excavator.mission_desc')}
               </p>
             </div>
 
             <div className="bg-stone-800/30 border border-stone-700 rounded-xl p-4">
-              <h4 className="font-bold text-white mb-3">How This Works</h4>
+              <h4 className="font-bold text-white mb-3">{TranslationService.t('excavator.how_works')}</h4>
               <ul className="text-stone-300 text-sm space-y-2 text-left">
-                <li>1. <strong>Excavate</strong> - Identify the hidden assumptions</li>
-                <li>2. <strong>Categorize</strong> - What type of assumption is it?</li>
-                <li>3. <strong>Test</strong> - How critical is each assumption? How likely is it true?</li>
-                <li>4. <strong>Report</strong> - How fragile is the original claim?</li>
+                <li>{TranslationService.t('excavator.step_1')}</li>
+                <li>{TranslationService.t('excavator.step_2')}</li>
+                <li>{TranslationService.t('excavator.step_3')}</li>
+                <li>{TranslationService.t('excavator.step_4')}</li>
               </ul>
             </div>
 
@@ -326,7 +332,7 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
               }}
               className="px-8 py-3 bg-gradient-to-r from-amber-600 to-red-600 text-white font-bold rounded-xl hover:from-amber-500 hover:to-red-500 transition-all"
             >
-              Begin Excavation
+              {TranslationService.t('excavator.begin_btn')}
             </button>
           </div>
         );
@@ -335,17 +341,17 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
         return (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold text-white">Excavate Assumptions</h3>
+              <h3 className="text-xl font-bold text-white">{TranslationService.t('excavator.excavate_title')}</h3>
               <div className="flex items-center gap-4">
                 <button
                   onClick={getHint}
                   disabled={hintsUsed >= EXCAVATION_PROMPTS.length}
                   className="px-3 py-1 bg-stone-700 text-stone-300 text-sm rounded-lg hover:bg-stone-600 disabled:opacity-50"
                 >
-                  Get Prompt ({EXCAVATION_PROMPTS.length - hintsUsed} left)
+                  {TranslationService.t('excavator.get_prompt', { count: EXCAVATION_PROMPTS.length - hintsUsed })}
                 </button>
                 <span className="text-stone-400 text-sm">
-                  Found: <span className="text-amber-400 font-bold">{assumptions.length}</span>
+                  {TranslationService.t('excavator.found_count', { count: assumptions.length })}
                 </span>
               </div>
             </div>
@@ -359,14 +365,14 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
             {/* Hint display */}
             {currentHint && (
               <div className="bg-purple-900/20 border border-purple-700/30 rounded-xl p-4 animate-fadeIn">
-                <div className="text-purple-400 text-sm font-bold mb-1">Excavation Prompt:</div>
+                <div className="text-purple-400 text-sm font-bold mb-1">{TranslationService.t('excavator.hint_label')}</div>
                 <p className="text-purple-200">{currentHint}</p>
               </div>
             )}
 
             {/* Add assumption form */}
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
-              <div className="text-amber-400 font-bold text-sm mb-3">Add Hidden Assumption</div>
+              <div className="text-amber-400 font-bold text-sm mb-3">{TranslationService.t('excavator.add_title')}</div>
 
               <div className="flex flex-wrap gap-2 mb-3">
                 {ASSUMPTION_CATEGORIES.map(cat => (
@@ -390,7 +396,7 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
                   type="text"
                   value={currentAssumption}
                   onChange={(e) => setCurrentAssumption(e.target.value)}
-                  placeholder="This claim assumes that..."
+                  placeholder={TranslationService.t('excavator.placeholder')}
                   className="flex-1 bg-stone-900 border border-stone-600 rounded-lg px-3 py-2 text-white placeholder-stone-500"
                   onKeyPress={(e) => e.key === 'Enter' && addAssumption()}
                 />
@@ -399,7 +405,7 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
                   disabled={currentAssumption.trim().length < 10}
                   className="px-4 py-2 bg-amber-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Add
+                  {TranslationService.t('excavator.add_btn')}
                 </button>
               </div>
             </div>
@@ -407,7 +413,7 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
             {/* Assumptions list */}
             {assumptions.length > 0 && (
               <div className="space-y-3">
-                <h4 className="text-white font-bold">Discovered Assumptions:</h4>
+                <h4 className="text-white font-bold">{TranslationService.t('excavator.discovered_title')}</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {assumptions.map(a => renderAssumptionCard(a))}
                 </div>
@@ -419,13 +425,13 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
                 onClick={() => setPhase('testing')}
                 className="w-full py-3 bg-gradient-to-r from-amber-600 to-red-600 text-white font-bold rounded-xl hover:from-amber-500 hover:to-red-500 transition-all"
               >
-                Proceed to Testing ({assumptions.length} assumptions)
+                {TranslationService.t('excavator.proceed_testing', { count: assumptions.length })}
               </button>
             )}
 
             {assumptions.length < 2 && (
               <p className="text-center text-stone-500 text-sm">
-                Find at least 2 assumptions before proceeding
+                {TranslationService.t('excavator.find_more')}
               </p>
             )}
           </div>
@@ -437,23 +443,20 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
         return (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold text-white">Test Assumptions</h3>
+              <h3 className="text-xl font-bold text-white">{TranslationService.t('excavator.test_title')}</h3>
               <div className="text-stone-400 text-sm">
-                Tested: <span className="text-green-400 font-bold">
-                  {Object.keys(testedAssumptions).length}/{assumptions.length}
-                </span>
+                {TranslationService.t('excavator.tested_count', { count: Object.keys(testedAssumptions).length, total: assumptions.length })}
               </div>
             </div>
 
             <div className="bg-stone-800/30 border border-stone-700 rounded-xl p-4">
-              <div className="text-stone-500 text-xs uppercase mb-1">The Claim</div>
+              <div className="text-stone-500 text-xs uppercase mb-1">{TranslationService.t('excavator.claim')}</div>
               <p className="text-stone-200">"{scenario?.claim}"</p>
             </div>
 
             <div className="bg-amber-900/20 border border-amber-700/30 rounded-xl p-4 text-sm">
               <p className="text-amber-200">
-                For each assumption, evaluate: <strong>How CRITICAL</strong> is it to the claim?
-                And <strong>How LIKELY</strong> is it to actually be true?
+                {TranslationService.t('excavator.test_intro')}
               </p>
             </div>
 
@@ -466,7 +469,7 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
                 onClick={() => setPhase('foundation')}
                 className="w-full py-3 bg-gradient-to-r from-amber-600 to-red-600 text-white font-bold rounded-xl hover:from-amber-500 hover:to-red-500 transition-all"
               >
-                Generate Foundation Report
+                {TranslationService.t('excavator.generate_report')}
               </button>
             )}
           </div>
@@ -475,26 +478,26 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
       case 'foundation':
         return (
           <div className="space-y-6 max-w-2xl mx-auto">
-            <h3 className="text-xl font-bold text-white text-center">Foundation Report</h3>
+            <h3 className="text-xl font-bold text-white text-center">{TranslationService.t('excavator.report_title')}</h3>
 
             <div className="bg-stone-800/30 border border-stone-700 rounded-xl p-4">
-              <div className="text-stone-500 text-xs uppercase mb-1">The Claim</div>
+              <div className="text-stone-500 text-xs uppercase mb-1">{TranslationService.t('excavator.claim')}</div>
               <p className="text-stone-200">"{scenario?.claim}"</p>
             </div>
 
             {/* Summary of findings */}
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
-              <h4 className="text-amber-400 font-bold text-sm mb-3">Excavation Summary</h4>
+              <h4 className="text-amber-400 font-bold text-sm mb-3">{TranslationService.t('excavator.summary_title')}</h4>
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
                   <div className="text-2xl font-bold text-white">{assumptions.length}</div>
-                  <div className="text-stone-400 text-xs">Assumptions Found</div>
+                  <div className="text-stone-400 text-xs">{TranslationService.t('excavator.assumptions_found')}</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-red-400">
                     {Object.values(testedAssumptions).filter(t => t.criticality >= 4).length}
                   </div>
-                  <div className="text-stone-400 text-xs">Critical Dependencies</div>
+                  <div className="text-stone-400 text-xs">{TranslationService.t('excavator.critical_deps')}</div>
                 </div>
               </div>
             </div>
@@ -502,10 +505,10 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
             {/* Fragility Rating */}
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
               <label className="block text-amber-400 font-bold mb-4">
-                How FRAGILE is this claim's foundation?
+                {TranslationService.t('excavator.fragility_question')}
               </label>
               <div className="flex items-center gap-4">
-                <span className="text-green-400 text-sm">Solid</span>
+                <span className="text-green-400 text-sm">{TranslationService.t('excavator.solid')}</span>
                 <input
                   type="range"
                   min="0"
@@ -514,7 +517,7 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
                   onChange={(e) => setFragilityRating(parseInt(e.target.value))}
                   className="flex-1 accent-amber-500"
                 />
-                <span className="text-red-400 text-sm">Fragile</span>
+                <span className="text-red-400 text-sm">{TranslationService.t('excavator.fragile')}</span>
               </div>
               <div className="text-center text-2xl font-bold text-amber-400 mt-2">
                 {fragilityRating}%
@@ -524,12 +527,12 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
             {/* Reasoning */}
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
               <label className="block text-amber-400 font-bold mb-2">
-                Why this fragility rating?
+                {TranslationService.t('excavator.why_fragility')}
               </label>
               <textarea
                 value={fragilityReasoning}
                 onChange={(e) => setFragilityReasoning(e.target.value)}
-                placeholder="The claim is fragile/solid because..."
+                placeholder={TranslationService.t('excavator.fragility_placeholder')}
                 className="w-full h-24 bg-stone-900 border border-stone-600 rounded-lg p-3 text-white placeholder-stone-500 resize-none"
               />
             </div>
@@ -537,12 +540,12 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
             {/* Key vulnerability */}
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
               <label className="block text-amber-400 font-bold mb-2">
-                What is the SINGLE biggest vulnerability?
+                {TranslationService.t('excavator.vulnerability_question')}
               </label>
               <textarea
                 value={keyVulnerability}
                 onChange={(e) => setKeyVulnerability(e.target.value)}
-                placeholder="If one thing could break this claim, it would be..."
+                placeholder={TranslationService.t('excavator.vulnerability_placeholder')}
                 className="w-full h-20 bg-stone-900 border border-stone-600 rounded-lg p-3 text-white placeholder-stone-500 resize-none"
               />
             </div>
@@ -550,7 +553,7 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
             {/* Final verdict */}
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
               <label className="block text-amber-400 font-bold mb-3">
-                After excavating these assumptions, do you still believe the claim?
+                {TranslationService.t('excavator.final_verdict')}
               </label>
               <div className="flex gap-3">
                 {['yes', 'partially', 'no'].map(option => (
@@ -565,9 +568,9 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
                         : 'bg-stone-700 text-stone-300 hover:bg-stone-600'
                     }`}
                   >
-                    {option === 'yes' ? 'Yes, Still Believe' :
-                     option === 'partially' ? 'Partially' :
-                     'No, Now Skeptical'}
+                    {option === 'yes' ? TranslationService.t('excavator.verdict_yes') :
+                     option === 'partially' ? TranslationService.t('excavator.verdict_partial') :
+                     TranslationService.t('excavator.verdict_no')}
                   </button>
                 ))}
               </div>
@@ -578,7 +581,7 @@ const AssumptionExcavator = ({ scenario, userId, onComplete }) => {
                 onClick={completeSession}
                 className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-xl hover:from-green-500 hover:to-emerald-500 transition-all"
               >
-                Complete Excavation
+                {TranslationService.t('excavator.complete_btn')}
               </button>
             )}
           </div>
@@ -631,7 +634,7 @@ const AssumptionTester = ({ assumption, onTest }) => {
         onClick={() => setExpanded(true)}
         className="w-full py-2 bg-amber-900/30 border border-amber-700/50 text-amber-400 rounded-lg text-sm hover:bg-amber-900/50 transition-colors"
       >
-        Test This Assumption
+        {TranslationService.t('excavator.test_assumption_btn')}
       </button>
     );
   }
@@ -640,7 +643,7 @@ const AssumptionTester = ({ assumption, onTest }) => {
     <div className="space-y-3 mt-3 pt-3 border-t border-stone-700 animate-fadeIn">
       <div>
         <label className="text-stone-400 text-xs block mb-1">
-          How CRITICAL is this to the claim? (1=minor, 5=essential)
+          {TranslationService.t('excavator.criticality_q')}
         </label>
         <div className="flex gap-2">
           {[1, 2, 3, 4, 5].map(n => (
@@ -662,7 +665,7 @@ const AssumptionTester = ({ assumption, onTest }) => {
 
       <div>
         <label className="text-stone-400 text-xs block mb-1">
-          How LIKELY is this assumption to be true?
+          {TranslationService.t('excavator.likelihood_q')}
         </label>
         <input
           type="range"
@@ -680,7 +683,7 @@ const AssumptionTester = ({ assumption, onTest }) => {
           type="text"
           value={reasoning}
           onChange={(e) => setReasoning(e.target.value)}
-          placeholder="Brief reasoning (optional)"
+          placeholder={TranslationService.t('excavator.reasoning_placeholder')}
           className="w-full bg-stone-900 border border-stone-600 rounded-lg px-3 py-2 text-sm text-white placeholder-stone-500"
         />
       </div>
@@ -689,7 +692,7 @@ const AssumptionTester = ({ assumption, onTest }) => {
         onClick={handleTest}
         className="w-full py-2 bg-green-600 text-white rounded-lg text-sm font-bold hover:bg-green-500 transition-colors"
       >
-        Confirm Test
+        {TranslationService.t('excavator.confirm_test')}
       </button>
     </div>
   );

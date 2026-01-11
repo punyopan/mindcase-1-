@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import TranslationService from '../services/TranslationService';
 import { X, TrendingUp, Trophy, Target, BarChart2, Lock, Brain, Clock, Award, Zap, Book, Calendar, CheckCircle, Lightbulb } from './icon';
 
 const AdvancedAnalytics = ({ onClose, userId }) => {
@@ -6,6 +7,12 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
   const [isPremium, setIsPremium] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
+  const [, setLang] = useState(TranslationService.currentLang); // Force re-render on lang change
+
+  useEffect(() => {
+    const unsubscribe = TranslationService.subscribe((lang) => setLang(lang));
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     loadAnalytics();
@@ -40,7 +47,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
         <div className="bg-stone-900 border-2 border-amber-700/50 rounded-2xl p-8 text-center">
           <div className="animate-spin w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-white">Loading analytics...</p>
+          <p className="text-white">{TranslationService.t('advanced_analytics.loading')}</p>
         </div>
       </div>
     );
@@ -56,7 +63,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                 <BarChart2 className="w-6 h-6" />
-                Analytics Dashboard
+                {TranslationService.t('advanced_analytics.dashboard_title')}
               </h2>
               <div className="flex items-center gap-2">
                 <button
@@ -68,7 +75,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                   title="Refresh analytics data"
                 >
                   <Zap className="w-4 h-4" />
-                  Refresh
+                  {TranslationService.t('advanced_analytics.refresh')}
                 </button>
                 <button
                   onClick={onClose}
@@ -85,19 +92,19 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-stone-800/50 border border-stone-700 rounded-lg p-4 text-center">
                 <div className="text-3xl font-bold text-amber-400">{analytics?.totalAnswers || 0}</div>
-                <div className="text-stone-400 text-xs mt-1">Total Answers</div>
+                <div className="text-stone-400 text-xs mt-1">{TranslationService.t('advanced_analytics.total_answers')}</div>
               </div>
               <div className="bg-stone-800/50 border border-stone-700 rounded-lg p-4 text-center">
                 <div className="text-3xl font-bold text-green-400">{analytics?.averageScore || 0}%</div>
-                <div className="text-stone-400 text-xs mt-1">Avg Score</div>
+                <div className="text-stone-400 text-xs mt-1">{TranslationService.t('advanced_analytics.avg_score')}</div>
               </div>
               <div className="bg-stone-800/50 border border-stone-700 rounded-lg p-4 text-center">
                 <div className="text-3xl font-bold text-blue-400">{analytics?.streak || 0}</div>
-                <div className="text-stone-400 text-xs mt-1">Day Streak</div>
+                <div className="text-stone-400 text-xs mt-1">{TranslationService.t('advanced_analytics.day_streak')}</div>
               </div>
               <div className="bg-stone-800/50 border border-stone-700 rounded-lg p-4 text-center">
                 <div className="text-3xl font-bold text-purple-400">{analytics?.totalPuzzlesCompleted || 0}</div>
-                <div className="text-stone-400 text-xs mt-1">Puzzles Done</div>
+                <div className="text-stone-400 text-xs mt-1">{TranslationService.t('advanced_analytics.puzzles_done')}</div>
               </div>
             </div>
 
@@ -109,30 +116,30 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
 
               <Trophy className="w-16 h-16 text-blue-400 mx-auto mb-4" />
 
-              <h3 className="text-2xl font-bold text-white mb-3">Advanced Analytics</h3>
+              <h3 className="text-2xl font-bold text-white mb-3">{TranslationService.t('advanced_analytics.premium_title')}</h3>
 
               <p className="text-blue-200 mb-6 max-w-md mx-auto">
-                Unlock detailed insights including performance trends, skill type analysis, topic mastery breakdown, learning patterns, achievements, and personalized recommendations!
+                {TranslationService.t('advanced_analytics.premium_desc')}
               </p>
 
               <div className="grid grid-cols-2 gap-3 mb-6 max-w-md mx-auto">
                 <div className="bg-black/30 border border-blue-700/30 rounded-lg p-3">
                   <TrendingUp className="w-6 h-6 text-blue-400 mx-auto mb-2" />
-                  <p className="text-blue-200 text-xs">Performance Trends</p>
+                  <p className="text-blue-200 text-xs">{TranslationService.t('advanced_analytics.performance_trends')}</p>
                 </div>
 
                 <div className="bg-black/30 border border-blue-700/30 rounded-lg p-3">
                   <Clock className="w-6 h-6 text-blue-400 mx-auto mb-2" />
-                  <p className="text-blue-200 text-xs">Learning Patterns</p>
+                  <p className="text-blue-200 text-xs">{TranslationService.t('advanced_analytics.learning_patterns')}</p>
                 </div>
               </div>
 
               <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-105 shadow-lg">
-                ⭐ Upgrade to Premium - $5.99/month
+                ⭐ {TranslationService.t('advanced_analytics.upgrade_btn')}
               </button>
 
               <p className="text-blue-300 text-xs mt-4">
-                Also includes unlimited puzzles, priority support, and ad-free experience!
+                {TranslationService.t('advanced_analytics.upgrade_note')}
               </p>
             </div>
           </div>
@@ -143,11 +150,11 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
 
   // Get skill names
   const skillNames = {
-    logical: 'Logical Reasoning',
-    decision: 'Decision Making',
-    adaptive: 'Adaptive Learning',
-    source: 'Source Evaluation',
-    bias: 'Bias Detection'
+    logical: TranslationService.t('advanced_analytics.skill_logical'),
+    decision: TranslationService.t('advanced_analytics.skill_decision'),
+    adaptive: TranslationService.t('advanced_analytics.skill_adaptive'),
+    source: TranslationService.t('advanced_analytics.skill_source'),
+    bias: TranslationService.t('advanced_analytics.skill_bias')
   };
 
   // Premium Analytics Dashboard
@@ -160,9 +167,9 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
             <div>
               <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                 <BarChart2 className="w-6 h-6" />
-                Advanced Analytics Dashboard
+                {TranslationService.t('advanced_analytics.adv_dashboard_title')}
               </h2>
-              <p className="text-amber-200 text-sm mt-1">Premium Feature</p>
+              <p className="text-amber-200 text-sm mt-1">{TranslationService.t('advanced_analytics.premium_feature')}</p>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -174,7 +181,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                 title="Refresh analytics data"
               >
                 <Zap className="w-4 h-4" />
-                Refresh
+                {TranslationService.t('advanced_analytics.refresh')}
               </button>
               <button
                 onClick={onClose}
@@ -190,11 +197,11 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
         <div className="border-b border-stone-700 px-6">
           <div className="flex gap-2 overflow-x-auto">
             {[
-              { id: 'overview', label: 'Overview', icon: BarChart2 },
-              { id: 'training', label: 'Cognitive Training', icon: Lightbulb },
-              { id: 'cognitive', label: 'Cognitive Profile', icon: Brain },
-              { id: 'patterns', label: 'Learning Patterns', icon: Clock },
-              { id: 'achievements', label: 'Achievements', icon: Trophy }
+              { id: 'overview', label: TranslationService.t('advanced_analytics.tab_overview'), icon: BarChart2 },
+              { id: 'training', label: TranslationService.t('advanced_analytics.tab_training'), icon: Lightbulb },
+              { id: 'cognitive', label: TranslationService.t('advanced_analytics.tab_cognitive'), icon: Brain },
+              { id: 'patterns', label: TranslationService.t('advanced_analytics.tab_patterns'), icon: Clock },
+              { id: 'achievements', label: TranslationService.t('advanced_analytics.tab_achievements'), icon: Trophy }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -222,27 +229,27 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
               <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
                 <div className="bg-gradient-to-br from-amber-900/30 to-amber-800/20 border border-amber-700/50 rounded-lg p-4 text-center">
                   <div className="text-3xl font-bold text-amber-400">{analytics?.totalAnswers || 0}</div>
-                  <div className="text-stone-400 text-xs mt-1">Total Answers</div>
+                  <div className="text-stone-400 text-xs mt-1">{TranslationService.t('advanced_analytics.total_answers')}</div>
                 </div>
                 <div className="bg-gradient-to-br from-green-900/30 to-green-800/20 border border-green-700/50 rounded-lg p-4 text-center">
                   <div className="text-3xl font-bold text-green-400">{analytics?.averageScore || 0}%</div>
-                  <div className="text-stone-400 text-xs mt-1">Average Score</div>
+                  <div className="text-stone-400 text-xs mt-1">{TranslationService.t('advanced_analytics.avg_score')}</div>
                 </div>
                 <div className="bg-gradient-to-br from-blue-900/30 to-blue-800/20 border border-blue-700/50 rounded-lg p-4 text-center">
                   <div className="text-3xl font-bold text-blue-400">{analytics?.streak || 0}</div>
-                  <div className="text-stone-400 text-xs mt-1">Day Streak</div>
+                  <div className="text-stone-400 text-xs mt-1">{TranslationService.t('advanced_analytics.day_streak')}</div>
                 </div>
                 <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/20 border border-purple-700/50 rounded-lg p-4 text-center">
                   <div className="text-3xl font-bold text-purple-400">{analytics?.totalPuzzlesCompleted || 0}</div>
-                  <div className="text-stone-400 text-xs mt-1">Puzzles Done</div>
+                  <div className="text-stone-400 text-xs mt-1">{TranslationService.t('advanced_analytics.puzzles_done')}</div>
                 </div>
                 <div className="bg-gradient-to-br from-pink-900/30 to-pink-800/20 border border-pink-700/50 rounded-lg p-4 text-center">
                   <div className="text-3xl font-bold text-pink-400">{analytics?.timeSpent || 0}m</div>
-                  <div className="text-stone-400 text-xs mt-1">Time Spent</div>
+                  <div className="text-stone-400 text-xs mt-1">{TranslationService.t('advanced_analytics.time_spent')}</div>
                 </div>
                 <div className="bg-gradient-to-br from-cyan-900/30 to-cyan-800/20 border border-cyan-700/50 rounded-lg p-4 text-center">
                   <div className="text-3xl font-bold text-cyan-400">{analytics?.totalMinigamesCompleted || 0}</div>
-                  <div className="text-stone-400 text-xs mt-1">Minigames</div>
+                  <div className="text-stone-400 text-xs mt-1">{TranslationService.t('advanced_analytics.minigames')}</div>
                 </div>
               </div>
 
@@ -252,16 +259,16 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-white font-bold flex items-center gap-2">
                       <TrendingUp className="w-5 h-5 text-green-400" />
-                      Performance Trend
+                      {TranslationService.t('advanced_analytics.performance_trends')}
                     </h3>
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                       analytics.trend.trend === 'improving' ? 'bg-green-900/30 text-green-400 border border-green-700/50' :
                       analytics.trend.trend === 'declining' ? 'bg-red-900/30 text-red-400 border border-red-700/50' :
                       'bg-blue-900/30 text-blue-400 border border-blue-700/50'
                     }`}>
-                      {analytics.trend.trend === 'improving' ? '📈 Improving' :
-                       analytics.trend.trend === 'declining' ? '📉 Declining' :
-                       '➡️ Stable'}
+                      {analytics.trend.trend === 'improving' ? `📈 ${TranslationService.t('advanced_analytics.trend_improving')}` :
+                       analytics.trend.trend === 'declining' ? `📉 ${TranslationService.t('advanced_analytics.trend_declining')}` :
+                       `➡️ ${TranslationService.t('advanced_analytics.trend_stable')}`}
                     </span>
                   </div>
 
@@ -269,23 +276,23 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="bg-stone-900/50 rounded-lg p-4">
-                      <div className="text-stone-400 text-sm mb-1">Recent Average</div>
+                      <div className="text-stone-400 text-sm mb-1">{TranslationService.t('advanced_analytics.recent_avg')}</div>
                       <div className="text-2xl font-bold text-white">{analytics.trend.recentAverage || 0}%</div>
                     </div>
                     <div className="bg-stone-900/50 rounded-lg p-4">
-                      <div className="text-stone-400 text-sm mb-1">Improvement</div>
+                      <div className="text-stone-400 text-sm mb-1">{TranslationService.t('advanced_analytics.improvement')}</div>
                       <div className={`text-2xl font-bold ${analytics.trend.improvement >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                         {analytics.trend.improvement >= 0 ? '+' : ''}{analytics.trend.improvement || 0}%
                       </div>
                     </div>
                     <div className="bg-stone-900/50 rounded-lg p-4">
-                      <div className="text-stone-400 text-sm mb-1">Volatility</div>
+                      <div className="text-stone-400 text-sm mb-1">{TranslationService.t('advanced_analytics.volatility')}</div>
                       <div className={`text-2xl font-bold ${analytics.trend.volatility < 15 ? 'text-green-400' : analytics.trend.volatility < 25 ? 'text-yellow-400' : 'text-red-400'}`}>
                         {analytics.trend.volatility || 0}%
                       </div>
                     </div>
                     <div className="bg-stone-900/50 rounded-lg p-4">
-                      <div className="text-stone-400 text-sm mb-1">Confidence</div>
+                      <div className="text-stone-400 text-sm mb-1">{TranslationService.t('advanced_analytics.confidence')}</div>
                       <div className="text-2xl font-bold text-blue-400">{analytics.trend.confidence || 0}%</div>
                     </div>
                   </div>
@@ -297,7 +304,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                 <div className="bg-gradient-to-br from-blue-900/20 to-purple-900/20 border border-blue-700/30 rounded-lg p-6">
                   <h3 className="text-white font-bold mb-4 flex items-center gap-2">
                     <Zap className="w-5 h-5 text-yellow-400" />
-                    Personalized Insights
+                    {TranslationService.t('advanced_analytics.personalized_insights')}
                   </h3>
                   <div className="space-y-3">
                     {analytics.insights.map((insight, idx) => (
@@ -336,7 +343,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
               <div className="bg-stone-800/50 border border-stone-700 rounded-lg p-6">
                 <h3 className="text-white font-bold flex items-center gap-2 mb-4">
                   <Trophy className="w-5 h-5 text-purple-400" />
-                  Minigame Statistics
+                  {TranslationService.t('advanced_analytics.minigame_stats')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {analytics?.minigameStats && Object.entries(analytics.minigameStats).length > 0 ? (
@@ -347,9 +354,9 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                           <span className="text-green-400 font-bold text-sm">{Math.round(stats.successRate)}%</span>
                         </div>
                         <div className="flex items-center gap-2 text-xs text-stone-400">
-                          <span>{stats.completed} played</span>
+                          <span>{stats.completed} {TranslationService.t('advanced_analytics.played')}</span>
                           <span>•</span>
-                          <span>{Math.round(stats.avgTime)}s avg</span>
+                          <span>{Math.round(stats.avgTime)}s {TranslationService.t('advanced_analytics.avg')}</span>
                         </div>
                         <div className="mt-2 bg-stone-800 rounded-full h-2">
                           <div
@@ -376,21 +383,21 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                   <div>
                     <h3 className="text-2xl font-bold text-white flex items-center gap-3">
                       <Brain className="w-7 h-7 text-purple-400" />
-                      Cognitive Profile
+                      {TranslationService.t('advanced_analytics.tab_cognitive')}
                     </h3>
-                    <p className="text-purple-200 text-sm mt-1">Based on your minigame performance</p>
+                    <p className="text-purple-200 text-sm mt-1">{TranslationService.t('advanced_analytics.cognitive_profile_desc')}</p>
                   </div>
                   <div className="text-right">
                     <div className="text-4xl font-bold text-purple-400">{analytics?.minigameCognition?.overallCognitiveScore || 0}%</div>
-                    <div className="text-purple-300 text-xs">Overall Score</div>
+                    <div className="text-purple-300 text-xs">{TranslationService.t('advanced_analytics.overall_score')}</div>
                   </div>
                 </div>
 
                 {/* Game Variety */}
                 <div className="bg-black/20 rounded-lg p-4 mb-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-stone-300 text-sm">Game Variety</span>
-                    <span className="text-purple-400 font-bold">{analytics?.minigameCognition?.gamesPlayed || 0}/{analytics?.minigameCognition?.totalGamesAvailable || 14} games</span>
+                    <span className="text-stone-300 text-sm">{TranslationService.t('advanced_analytics.game_variety')}</span>
+                    <span className="text-purple-400 font-bold">{analytics?.minigameCognition?.gamesPlayed || 0}/{analytics?.minigameCognition?.totalGamesAvailable || 14} {TranslationService.t('advanced_analytics.games')}</span>
                   </div>
                   <div className="bg-stone-800 rounded-full h-2">
                     <div
@@ -403,7 +410,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                 {/* Strength & Focus Areas */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-green-900/20 border border-green-700/30 rounded-lg p-4">
-                    <div className="text-green-400 text-xs font-semibold mb-2 uppercase tracking-wide">Strengths</div>
+                    <div className="text-green-400 text-xs font-semibold mb-2 uppercase tracking-wide">{TranslationService.t('advanced_analytics.strengths')}</div>
                     <div className="space-y-1">
                       {analytics?.minigameCognition?.strongestAreas?.length > 0 ? (
                         analytics.minigameCognition.strongestAreas.slice(0, 2).map((area, i) => (
@@ -415,7 +422,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                     </div>
                   </div>
                   <div className="bg-amber-900/20 border border-amber-700/30 rounded-lg p-4">
-                    <div className="text-amber-400 text-xs font-semibold mb-2 uppercase tracking-wide">Focus Areas</div>
+                    <div className="text-amber-400 text-xs font-semibold mb-2 uppercase tracking-wide">{TranslationService.t('advanced_analytics.focus_areas')}</div>
                     <div className="space-y-1">
                       {analytics?.minigameCognition?.weakestAreas?.length > 0 ? (
                         analytics.minigameCognition.weakestAreas.slice(0, 2).map((area, i) => (
@@ -433,7 +440,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
               <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-6">
                 <h4 className="text-white font-bold mb-4 flex items-center gap-2">
                   <Zap className="w-5 h-5 text-yellow-400" />
-                  Cognitive Abilities Breakdown
+                  {TranslationService.t('advanced_analytics.cognitive_breakdown')}
                 </h4>
 
                 <div className="space-y-4">
@@ -456,10 +463,10 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                             metric.trajectory === 'declining' || metric.trajectory === 'slight_decline' ? 'bg-red-900/50 text-red-400' :
                             'bg-stone-700/50 text-stone-400'
                           }`}>
-                            {metric.trajectory === 'rapidly_improving' ? '🚀 Rapid Growth' :
-                             metric.trajectory === 'improving' ? '📈 Improving' :
-                             metric.trajectory === 'declining' ? '📉 Declining' :
-                             metric.trajectory === 'slight_decline' ? '↘ Slight Dip' : '→ Stable'}
+                            {metric.trajectory === 'rapidly_improving' ? `🚀 ${TranslationService.t('advanced_analytics.rapid_growth')}` :
+                             metric.trajectory === 'improving' ? `📈 ${TranslationService.t('advanced_analytics.trend_improving')}` :
+                             metric.trajectory === 'declining' ? `📉 ${TranslationService.t('advanced_analytics.trend_declining')}` :
+                             metric.trajectory === 'slight_decline' ? `↘ ${TranslationService.t('advanced_analytics.slight_dip')}` : `→ ${TranslationService.t('advanced_analytics.trend_stable')}`}
                           </span>
                         </div>
                         <span className="text-2xl font-bold text-amber-400">{metric.score}%</span>
@@ -478,14 +485,14 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                       </div>
 
                       <div className="flex items-center justify-between text-xs text-stone-400">
-                        <span>{metric.sessions} sessions</span>
-                        <span>Consistency: {metric.consistency}%</span>
-                        <span>Best: {metric.bestScore}%</span>
+                        <span>{metric.sessions} {TranslationService.t('advanced_analytics.sessions')}</span>
+                        <span>{TranslationService.t('advanced_analytics.consistency')}: {metric.consistency}%</span>
+                        <span>{TranslationService.t('advanced_analytics.best')}: {metric.bestScore}%</span>
                       </div>
 
                       {metric.recentScores && metric.recentScores.length > 0 && (
                         <div className="flex items-center gap-2 mt-3">
-                          <span className="text-stone-500 text-xs">Recent:</span>
+                          <span className="text-stone-500 text-xs">{TranslationService.t('advanced_analytics.recent')}:</span>
                           <div className="flex gap-1">
                             {metric.recentScores.map((score, idx) => (
                               <div
@@ -519,7 +526,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                 <div className="bg-gradient-to-br from-blue-900/20 to-purple-900/20 border border-blue-700/30 rounded-xl p-6">
                   <h4 className="text-white font-bold mb-4 flex items-center gap-2">
                     <Zap className="w-5 h-5 text-yellow-400" />
-                    Cognitive Insights
+                    {TranslationService.t('advanced_analytics.cognitive_insights')}
                   </h4>
                   <div className="space-y-3">
                     {analytics.minigameCognition.cognitiveInsights.map((insight, idx) => (
@@ -558,7 +565,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
               <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-6">
                 <h4 className="text-white font-bold mb-4 flex items-center gap-2">
                   <Trophy className="w-5 h-5 text-amber-400" />
-                  Minigame Performance by Game
+                  {TranslationService.t('advanced_analytics.minigame_breakdown')}
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {analytics?.minigameStats && Object.entries(analytics.minigameStats).length > 0 ? (
@@ -571,8 +578,8 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                           <span className="text-green-400 font-bold text-sm">{Math.round(stats.successRate)}%</span>
                         </div>
                         <div className="flex items-center gap-2 text-xs text-stone-400 mb-2">
-                          <span>{stats.completed} games</span>
-                          {stats.bestScore && <span>• Best: {stats.bestScore}</span>}
+                          <span>{stats.completed} {TranslationService.t('advanced_analytics.games')}</span>
+                          {stats.bestScore && <span>• {TranslationService.t('advanced_analytics.best')}: {stats.bestScore}</span>}
                         </div>
                         <div className="bg-stone-800 rounded-full h-2">
                           <div
@@ -596,26 +603,26 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
               <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-purple-700/30 rounded-lg p-6">
                 <h3 className="text-white font-bold mb-4 flex items-center gap-2">
                   <Brain className="w-5 h-5 text-purple-400" />
-                  Critical Thinking Skills Breakdown
+                  {TranslationService.t('advanced_analytics.skill_breakdown')}
                 </h3>
 
                 {analytics?.skillAnalysis ? (
                   <>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                       <div className="bg-green-900/20 border border-green-700/30 rounded-lg p-4 text-center">
-                        <div className="text-green-400 font-semibold text-sm mb-2">Strongest Skill</div>
+                        <div className="text-green-400 font-semibold text-sm mb-2">{TranslationService.t('advanced_analytics.strongest_skill')}</div>
                         <div className="text-white text-lg font-bold">
                           {analytics.skillAnalysis.strongestSkill ? skillNames[analytics.skillAnalysis.strongestSkill] : 'N/A'}
                         </div>
                       </div>
                       <div className="bg-amber-900/20 border border-amber-700/30 rounded-lg p-4 text-center">
-                        <div className="text-amber-400 font-semibold text-sm mb-2">Focus Area</div>
+                        <div className="text-amber-400 font-semibold text-sm mb-2">{TranslationService.t('advanced_analytics.focus_areas')}</div>
                         <div className="text-white text-lg font-bold">
                           {analytics.skillAnalysis.weakestSkill ? skillNames[analytics.skillAnalysis.weakestSkill] : 'N/A'}
                         </div>
                       </div>
                       <div className="bg-blue-900/20 border border-blue-700/30 rounded-lg p-4 text-center">
-                        <div className="text-blue-400 font-semibold text-sm mb-2">Most Practiced</div>
+                        <div className="text-blue-400 font-semibold text-sm mb-2">{TranslationService.t('advanced_analytics.most_practiced')}</div>
                         <div className="text-white text-lg font-bold">
                           {analytics.skillAnalysis.mostPracticedSkill ? skillNames[analytics.skillAnalysis.mostPracticedSkill] : 'N/A'}
                         </div>
@@ -643,8 +650,8 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                               </div>
 
                               <div className="flex items-center gap-4 text-xs text-stone-400 mb-2">
-                                <span>{data.attempts} attempts</span>
-                                <span>Recent: {data.recentAvg}%</span>
+                                <span>{data.attempts} {TranslationService.t('advanced_analytics.attempts')}</span>
+                                <span>{TranslationService.t('advanced_analytics.recent')}: {data.recentAvg}%</span>
                               </div>
 
                               <div className="bg-stone-800 rounded-full h-3">
@@ -664,16 +671,16 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                       ) : (
                         <div className="text-center py-8 text-stone-400">
                           <Brain className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                          <p>Complete puzzles to see your skill breakdown!</p>
+                          <p>{TranslationService.t('advanced_analytics.complete_puzzles_skill')}</p>
                         </div>
                       )}
                     </div>
                   </>
                 ) : (
-                  <div className="text-center py-12 text-stone-400">
+                   <div className="text-center py-12 text-stone-400">
                     <Brain className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                    <p className="text-lg mb-2">No skill data yet</p>
-                    <p className="text-sm">Complete puzzles to analyze your critical thinking skills!</p>
+                    <p className="text-lg mb-2">{TranslationService.t('advanced_analytics.no_skill_data')}</p>
+                    <p className="text-sm">{TranslationService.t('advanced_analytics.complete_puzzles_skill')}</p>
                   </div>
                 )}
               </div>
@@ -686,7 +693,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
               <div className="bg-stone-800/50 border border-stone-700 rounded-lg p-6">
                 <h3 className="text-white font-bold flex items-center gap-2 mb-4">
                   <Target className="w-5 h-5 text-amber-400" />
-                  Topic Mastery Overview
+                  {TranslationService.t('advanced_analytics.topic_mastery')}
                 </h3>
 
                 <div className="space-y-4">
@@ -716,11 +723,11 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                             </div>
 
                             <div className="flex items-center gap-4 text-sm text-stone-400">
-                              <span>{data.attempts} attempts</span>
+                              <span>{data.attempts} {TranslationService.t('advanced_analytics.attempts')}</span>
                               <span>•</span>
-                              <span>Avg: {Math.round(data.avgScore)}%</span>
+                              <span>{TranslationService.t('advanced_analytics.avg')}: {Math.round(data.avgScore)}%</span>
                               <span>•</span>
-                              <span>Consistency: {data.consistency}%</span>
+                              <span>{TranslationService.t('advanced_analytics.consistency')}: {data.consistency}%</span>
                             </div>
                           </div>
 
@@ -738,7 +745,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
 
                         {data.recentScores && data.recentScores.length > 0 && (
                           <div className="flex items-center gap-2">
-                            <span className="text-stone-400 text-xs">Recent scores:</span>
+                            <span className="text-stone-400 text-xs">{TranslationService.t('advanced_analytics.recent_scores')}:</span>
                             <div className="flex gap-1">
                               {data.recentScores.slice(-5).map((score, idx) => (
                                 <div
@@ -760,7 +767,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                         {data.needsPractice && (
                           <div className="mt-3 bg-amber-900/20 border border-amber-700/30 rounded-lg p-3">
                             <p className="text-amber-300 text-xs">
-                              💡 This topic needs more practice to build mastery
+                              💡 {TranslationService.t('advanced_analytics.needs_practice')}
                             </p>
                           </div>
                         )}
@@ -769,8 +776,8 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                   ) : (
                     <div className="text-center py-12 text-stone-400">
                       <Target className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                      <p className="text-lg mb-2">No topic data yet</p>
-                      <p className="text-sm">Complete puzzles across different topics to see your mastery!</p>
+                      <p className="text-lg mb-2">{TranslationService.t('advanced_analytics.no_topic_data')}</p>
+                      <p className="text-sm">{TranslationService.t('advanced_analytics.complete_puzzles_topic')}</p>
                     </div>
                   )}
                 </div>
@@ -784,7 +791,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
               <div className="bg-stone-800/50 border border-stone-700 rounded-lg p-6">
                 <h3 className="text-white font-bold flex items-center gap-2 mb-4">
                   <Clock className="w-5 h-5 text-blue-400" />
-                  When You Learn Best
+                  {TranslationService.t('advanced_analytics.when_learn_best')}
                 </h3>
 
                 {analytics?.learningPatterns && !analytics.learningPatterns.insufficient ? (
@@ -793,7 +800,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                       {/* Best Hours */}
                       {analytics.learningPatterns.bestHours && analytics.learningPatterns.bestHours.length > 0 && (
                         <div className="bg-stone-900/50 rounded-lg p-5">
-                          <div className="text-amber-400 font-semibold mb-3">🕐 Best Times of Day</div>
+                          <div className="text-amber-400 font-semibold mb-3">🕐 {TranslationService.t('advanced_analytics.best_times')}</div>
                           <div className="space-y-2">
                             {analytics.learningPatterns.bestHours.map((time, idx) => {
                               const period = time.hour >= 12 ? 'PM' : 'AM';
@@ -803,7 +810,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                                   <span className="text-white font-medium">{displayHour}:00 {period}</span>
                                   <div className="flex items-center gap-2">
                                     <span className="text-green-400 font-bold">{time.avgScore}%</span>
-                                    <span className="text-stone-500 text-xs">({time.count} sessions)</span>
+                                    <span className="text-stone-500 text-xs">({time.count} {TranslationService.t('advanced_analytics.sessions')})</span>
                                   </div>
                                 </div>
                               );
@@ -815,14 +822,14 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                       {/* Best Days */}
                       {analytics.learningPatterns.bestDays && analytics.learningPatterns.bestDays.length > 0 && (
                         <div className="bg-stone-900/50 rounded-lg p-5">
-                          <div className="text-blue-400 font-semibold mb-3">📅 Best Days of Week</div>
+                          <div className="text-blue-400 font-semibold mb-3">📅 {TranslationService.t('advanced_analytics.best_days')}</div>
                           <div className="space-y-2">
                             {analytics.learningPatterns.bestDays.map((day, idx) => (
                               <div key={idx} className="flex items-center justify-between bg-stone-800/50 rounded-lg p-3">
                                 <span className="text-white font-medium">{day.day}</span>
                                 <div className="flex items-center gap-2">
                                   <span className="text-green-400 font-bold">{day.avgScore}%</span>
-                                  <span className="text-stone-500 text-xs">({day.count} sessions)</span>
+                                  <span className="text-stone-500 text-xs">({day.count} {TranslationService.t('advanced_analytics.sessions')})</span>
                                 </div>
                               </div>
                             ))}
@@ -833,18 +840,18 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
 
                     <div className="grid grid-cols-2 gap-4 mb-6">
                       <div className="bg-purple-900/20 border border-purple-700/30 rounded-lg p-4 text-center">
-                        <div className="text-purple-400 text-sm mb-2">Avg Session Length</div>
+                        <div className="text-purple-400 text-sm mb-2">{TranslationService.t('advanced_analytics.avg_session_length')}</div>
                         <div className="text-white text-2xl font-bold">{analytics.learningPatterns.avgSessionLength || 0} puzzles</div>
                       </div>
                       <div className="bg-cyan-900/20 border border-cyan-700/30 rounded-lg p-4 text-center">
-                        <div className="text-cyan-400 text-sm mb-2">Total Sessions</div>
+                        <div className="text-cyan-400 text-sm mb-2">{TranslationService.t('advanced_analytics.total_sessions')}</div>
                         <div className="text-white text-2xl font-bold">{analytics.learningPatterns.totalSessions || 0}</div>
                       </div>
                     </div>
 
                     {analytics.learningPatterns.recommendation && analytics.learningPatterns.recommendation.length > 0 && (
                       <div className="bg-blue-900/20 border border-blue-700/30 rounded-lg p-5">
-                        <div className="text-blue-400 font-semibold mb-3">💡 Recommendations</div>
+                        <div className="text-blue-400 font-semibold mb-3">💡 {TranslationService.t('advanced_analytics.recommendations')}</div>
                         <ul className="space-y-2">
                           {analytics.learningPatterns.recommendation.map((rec, idx) => (
                             <li key={idx} className="text-blue-200 text-sm flex items-start gap-2">
@@ -859,9 +866,9 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                 ) : (
                   <div className="text-center py-12 text-stone-400">
                     <Clock className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                    <p className="text-lg mb-2">Not enough data yet</p>
-                    <p className="text-sm">Complete more puzzles at different times to discover your optimal learning patterns!</p>
-                    <p className="text-xs mt-4 text-stone-500">We need at least 10 puzzle sessions to analyze patterns.</p>
+                    <p className="text-lg mb-2">{TranslationService.t('advanced_analytics.not_enough_data')}</p>
+                    <p className="text-sm">{TranslationService.t('advanced_analytics.complete_more_puzzles')}</p>
+                    <p className="text-xs mt-4 text-stone-500">{TranslationService.t('advanced_analytics.need_10_sessions')}</p>
                   </div>
                 )}
               </div>
@@ -878,17 +885,17 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                     <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/20 border border-purple-700/50 rounded-lg p-6 text-center">
                       <Award className="w-8 h-8 text-purple-400 mx-auto mb-2" />
                       <div className="text-3xl font-bold text-white mb-1">{analytics.achievements.unlocked || 0}</div>
-                      <div className="text-stone-400 text-sm">Unlocked</div>
+                      <div className="text-stone-400 text-sm">{TranslationService.t('advanced_analytics.unlocked')}</div>
                     </div>
                     <div className="bg-gradient-to-br from-blue-900/30 to-blue-800/20 border border-blue-700/50 rounded-lg p-6 text-center">
                       <Trophy className="w-8 h-8 text-blue-400 mx-auto mb-2" />
                       <div className="text-3xl font-bold text-white mb-1">{analytics.achievements.total || 0}</div>
-                      <div className="text-stone-400 text-sm">Total</div>
+                      <div className="text-stone-400 text-sm">{TranslationService.t('advanced_analytics.total')}</div>
                     </div>
                     <div className="bg-gradient-to-br from-green-900/30 to-green-800/20 border border-green-700/50 rounded-lg p-6 text-center">
                       <Target className="w-8 h-8 text-green-400 mx-auto mb-2" />
                       <div className="text-3xl font-bold text-white mb-1">{analytics.achievements.total > 0 ? Math.round((analytics.achievements.unlocked / analytics.achievements.total) * 100) : 0}%</div>
-                      <div className="text-stone-400 text-sm">Completion</div>
+                      <div className="text-stone-400 text-sm">{TranslationService.t('advanced_analytics.completion')}</div>
                     </div>
                   </div>
 
@@ -896,7 +903,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                   <div className="bg-stone-800/50 border border-stone-700 rounded-lg p-6">
                     <h3 className="text-white font-bold mb-4 flex items-center gap-2">
                       <Trophy className="w-5 h-5 text-amber-400" />
-                      Unlocked Achievements
+                      {TranslationService.t('advanced_analytics.unlocked_achievements')}
                     </h3>
 
                     {analytics.achievements.achievements && analytics.achievements.achievements.length > 0 ? (
@@ -917,8 +924,8 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                     ) : (
                       <div className="text-center py-8 text-stone-400">
                         <Trophy className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                        <p>No achievements unlocked yet!</p>
-                        <p className="text-sm mt-1">Keep playing to earn achievements.</p>
+                        <p>{TranslationService.t('advanced_analytics.no_achievements')}</p>
+                        <p className="text-sm mt-1">{TranslationService.t('advanced_analytics.keep_playing')}</p>
                       </div>
                     )}
                   </div>
@@ -928,7 +935,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                     <div className="bg-stone-800/50 border border-stone-700 rounded-lg p-6">
                       <h3 className="text-white font-bold mb-4 flex items-center gap-2">
                         <Target className="w-5 h-5 text-blue-400" />
-                        Next Achievements
+                        {TranslationService.t('advanced_analytics.next_achievements')}
                       </h3>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -977,18 +984,18 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                       </div>
                       <div className="text-right">
                         <div className="text-4xl font-bold text-purple-400">{analytics.cognitiveTraining.averageProcessScore || 0}%</div>
-                        <div className="text-purple-300 text-xs">Avg Process Score</div>
+                        <div className="text-purple-300 text-xs">{TranslationService.t('advanced_analytics.avg_process_score')}</div>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="bg-black/20 rounded-lg p-4 text-center">
                         <div className="text-2xl font-bold text-white">{analytics.cognitiveTraining.totalSessions || 0}</div>
-                        <div className="text-purple-300 text-xs">Total Sessions</div>
+                        <div className="text-purple-300 text-xs">{TranslationService.t('advanced_analytics.total_sessions')}</div>
                       </div>
                       <div className="bg-black/20 rounded-lg p-4 text-center">
                         <div className="text-2xl font-bold text-white">{analytics.cognitiveTraining.gameTypePerformance?.length || 0}/3</div>
-                        <div className="text-purple-300 text-xs">Game Types Tried</div>
+                        <div className="text-purple-300 text-xs">{TranslationService.t('advanced_analytics.game_types_tried')}</div>
                       </div>
                       <div className="bg-black/20 rounded-lg p-4 text-center">
                         <span className={`text-2xl font-bold ${
@@ -1002,11 +1009,11 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                            analytics.cognitiveTraining.processTrend === 'improving' ? '📈' :
                            analytics.cognitiveTraining.processTrend === 'declining' ? '📉' : '➡️'}
                         </span>
-                        <div className="text-purple-300 text-xs">Process Trend</div>
+                        <div className="text-purple-300 text-xs">{TranslationService.t('advanced_analytics.process_trend')}</div>
                       </div>
                       <div className="bg-black/20 rounded-lg p-4 text-center">
                         <div className="text-2xl font-bold text-white">{analytics.cognitiveTraining.bestGameType?.avgScore || 0}%</div>
-                        <div className="text-purple-300 text-xs">Best Game Score</div>
+                        <div className="text-purple-300 text-xs">{TranslationService.t('advanced_analytics.best_game_score')}</div>
                       </div>
                     </div>
                   </div>
@@ -1015,7 +1022,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                   <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-6">
                     <h4 className="text-white font-bold mb-4 flex items-center gap-2">
                       <Target className="w-5 h-5 text-amber-400" />
-                      Training Type Performance
+                      {TranslationService.t('advanced_analytics.training_type_performance')}
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {analytics.cognitiveTraining.gameTypePerformance?.length > 0 ? (
@@ -1025,7 +1032,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                               <span className="text-white font-medium">{game.name}</span>
                               <span className="text-amber-400 font-bold">{game.avgScore}%</span>
                             </div>
-                            <div className="text-stone-400 text-xs mb-2">{game.sessions} sessions</div>
+                            <div className="text-stone-400 text-xs mb-2">{game.sessions} {TranslationService.t('advanced_analytics.sessions')}</div>
                             <div className="bg-stone-800 rounded-full h-2">
                               <div
                                 className="bg-gradient-to-r from-purple-600 to-blue-500 h-2 rounded-full transition-all"
@@ -1035,7 +1042,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                           </div>
                         ))
                       ) : (
-                        <p className="text-stone-400 text-center py-4 col-span-3">Complete training sessions to see performance data</p>
+                        <p className="text-stone-400 text-center py-4 col-span-3">{TranslationService.t('advanced_analytics.complete_training')}</p>
                       )}
                     </div>
                   </div>
@@ -1044,44 +1051,44 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                   <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-6">
                     <h4 className="text-white font-bold mb-4 flex items-center gap-2">
                       <Brain className="w-5 h-5 text-purple-400" />
-                      Cognitive Primitive Development
+                      {TranslationService.t('advanced_analytics.primitive_development')}
                     </h4>
                     <p className="text-stone-400 text-sm mb-4">
-                      These are the core reasoning skills being developed through training:
+                      {TranslationService.t('advanced_analytics.primitive_desc')}
                     </p>
 
                     <div className="grid grid-cols-2 gap-4">
                       {/* Strengths */}
                       <div className="bg-green-900/20 border border-green-700/30 rounded-lg p-4">
-                        <div className="text-green-400 text-xs font-semibold mb-3 uppercase tracking-wide">Growing Strengths</div>
+                        <div className="text-green-400 text-xs font-semibold mb-3 uppercase tracking-wide">{TranslationService.t('advanced_analytics.growing_strengths')}</div>
                         {analytics.cognitiveTraining.strongestPrimitives?.length > 0 ? (
                           <div className="space-y-2">
                             {analytics.cognitiveTraining.strongestPrimitives.map((prim, i) => (
                               <div key={i} className="flex items-center justify-between">
                                 <span className="text-white text-sm">{prim.name}</span>
-                                <span className="text-green-400 text-xs">{prim.count} growth instances</span>
+                                <span className="text-green-400 text-xs">{prim.count} {TranslationService.t('advanced_analytics.growth_instances')}</span>
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <div className="text-stone-500 text-sm">Complete more sessions to identify</div>
+                          <div className="text-stone-500 text-sm">{TranslationService.t('advanced_analytics.complete_more')}</div>
                         )}
                       </div>
 
                       {/* Focus Areas */}
                       <div className="bg-amber-900/20 border border-amber-700/30 rounded-lg p-4">
-                        <div className="text-amber-400 text-xs font-semibold mb-3 uppercase tracking-wide">Development Areas</div>
+                        <div className="text-amber-400 text-xs font-semibold mb-3 uppercase tracking-wide">{TranslationService.t('advanced_analytics.development_areas')}</div>
                         {analytics.cognitiveTraining.weakestPrimitives?.length > 0 ? (
                           <div className="space-y-2">
                             {analytics.cognitiveTraining.weakestPrimitives.map((prim, i) => (
                               <div key={i} className="flex items-center justify-between">
                                 <span className="text-white text-sm">{prim.name}</span>
-                                <span className="text-amber-400 text-xs">{prim.count} growth instances</span>
+                                <span className="text-amber-400 text-xs">{prim.count} {TranslationService.t('advanced_analytics.growth_instances')}</span>
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <div className="text-stone-500 text-sm">Complete more sessions to identify</div>
+                          <div className="text-stone-500 text-sm">{TranslationService.t('advanced_analytics.complete_more')}</div>
                         )}
                       </div>
                     </div>
@@ -1092,7 +1099,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                     <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-6">
                       <h4 className="text-white font-bold mb-4 flex items-center gap-2">
                         <Clock className="w-5 h-5 text-blue-400" />
-                        Recent Training Sessions
+                        {TranslationService.t('advanced_analytics.recent_training')}
                       </h4>
                       <div className="space-y-2">
                         {analytics.cognitiveTraining.recentSessions.slice(0, 5).map((session, i) => (
@@ -1121,7 +1128,7 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
                     <div className="bg-gradient-to-br from-blue-900/20 to-purple-900/20 border border-blue-700/30 rounded-xl p-6">
                       <h4 className="text-white font-bold mb-4 flex items-center gap-2">
                         <Zap className="w-5 h-5 text-yellow-400" />
-                        Training Insights
+                        {TranslationService.t('advanced_analytics.training_insights')}
                       </h4>
                       <div className="space-y-3">
                         {analytics.cognitiveTraining.insights.map((insight, idx) => (
@@ -1157,26 +1164,25 @@ const AdvancedAnalytics = ({ onClose, userId }) => {
               ) : (
                 <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-purple-700/30 rounded-xl p-8 text-center">
                   <Lightbulb className="w-16 h-16 text-purple-400 mx-auto mb-4 opacity-50" />
-                  <h3 className="text-xl font-bold text-white mb-2">No Cognitive Training Data Yet</h3>
+                  <h3 className="text-xl font-bold text-white mb-2">{TranslationService.t('advanced_analytics.no_training_data')}</h3>
                   <p className="text-purple-200 mb-6 max-w-md mx-auto">
-                    Complete cognitive training sessions to see your reasoning development analytics here.
-                    Training focuses on building critical thinking through Signal Field, Forensic Narrative, and Variable Manifold exercises.
+                    {TranslationService.t('advanced_analytics.training_data_desc')}
                   </p>
                   <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto text-left">
                     <div className="bg-black/20 rounded-lg p-3">
                       <div className="text-xl mb-1">📊</div>
                       <div className="text-purple-300 text-xs font-medium">Signal Field</div>
-                      <div className="text-stone-400 text-xs">Pattern detection</div>
+                      <div className="text-stone-400 text-xs">{TranslationService.t('advanced_analytics.signal_field_desc')}</div>
                     </div>
                     <div className="bg-black/20 rounded-lg p-3">
                       <div className="text-xl mb-1">🔍</div>
                       <div className="text-purple-300 text-xs font-medium">Forensic Narrative</div>
-                      <div className="text-stone-400 text-xs">Evidence synthesis</div>
+                      <div className="text-stone-400 text-xs">{TranslationService.t('advanced_analytics.forensic_narrative_desc')}</div>
                     </div>
                     <div className="bg-black/20 rounded-lg p-3">
                       <div className="text-xl mb-1">⚙️</div>
                       <div className="text-purple-300 text-xs font-medium">Variable Manifold</div>
-                      <div className="text-stone-400 text-xs">Systems thinking</div>
+                      <div className="text-stone-400 text-xs">{TranslationService.t('advanced_analytics.variable_manifold_desc')}</div>
                     </div>
                   </div>
                 </div>
