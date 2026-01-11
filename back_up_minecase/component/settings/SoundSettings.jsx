@@ -136,10 +136,10 @@ const SoundSettings = ({ onBack }) => {
               <div className="grid grid-cols-1 gap-2">
                 {[
                   { id: 'detective', name: '🕵️ Detective Theme', desc: 'Deep ocean mystery' },
-                  { id: 'mystery', name: '🌙 Mystery Theme', desc: 'Dark, suspenseful heart' },
+                  { id: 'morning', name: '🌅 Morning Routine', desc: 'Relaxing lofi study beats' },
                   { id: 'thinking', name: '🧠 Thinking Theme', desc: 'Calm, dreamy focus' },
                   { id: 'mission', name: '🎯 Mission Theme', desc: 'Epic, driven atmosphere' },
-                  { id: 'streets', name: '🌃 Streets Theme', desc: 'Gritty urban noir' },
+                  { id: 'calm', name: '🌸 Calm Flowers', desc: 'Peaceful floral ambiance' },
                   { id: 'chill', name: '🍯 Chill Theme', desc: 'Smooth, relaxed vibe' },
                   { id: 'mud', name: '🎵 Mud Theme', desc: 'Raw, grounded feel' }
                 ].map((theme) => (

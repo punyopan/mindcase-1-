@@ -35,10 +35,10 @@ class SoundServiceClass {
       // Create background music tracks from MP3 files
       this.bgMusic = {
         detective: this.createAudioElement('bgmusic/Ocean Bloom - Mystery (freetouse.com).mp3'),
-        mystery: this.createAudioElement('bgmusic/Walen - Dark Heart (freetouse.com).mp3'),
+        morning: this.createAudioElement('bgmusic/Morning-Routine-Lofi-Study-Music(chosic.com).mp3'),
         thinking: this.createAudioElement('bgmusic/Lukrembo - Dreaming After Work (freetouse.com).mp3'),
         mission: this.createAudioElement('bgmusic/Epic Spectrum - Mission (freetouse.com).mp3'),
-        streets: this.createAudioElement('bgmusic/Dagored - Dirty Streets (freetouse.com).mp3'),
+        calm: this.createAudioElement('bgmusic/Colorful-Flowers(chosic.com).mp3'),
         chill: this.createAudioElement('bgmusic/massobeats - honey jam (freetouse.com).mp3'),
         mud: this.createAudioElement('bgmusic/Dagored - Mud (freetouse.com).mp3')
       };
