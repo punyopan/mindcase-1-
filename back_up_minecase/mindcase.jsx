@@ -48,6 +48,7 @@ import {
   Settings
 } from './component/icon';
 import TranslationService from './services/TranslationService';
+import ContentTranslator from './services/ContentTranslator';
 import enLocale from './locales/en.json';
 import esLocale from './locales/es.json';
 import zhLocale from './locales/zh.json';
@@ -111,6 +112,10 @@ const MindCaseApp = () => {
 
   const handleLanguageChange = (lang) => {
     TranslationService.setLanguage(lang);
+    // Persist to server if user is logged in
+    if (user?.id) {
+       ProgressService.updateSettings(user.id, { selectedLanguage: lang, reminderEnabled });
+    }
   };
 
   const [reminderEnabled, setReminderEnabled] = useState(false);
@@ -188,8 +193,8 @@ const MindCaseApp = () => {
           setTotalScore(progress.totalScore);
           setDailyPuzzleStreak(progress.dailyPuzzle.currentStreak);
           setReminderEnabled(progress.settings.reminderEnabled);
-          // Note: transitionDuration is a constant, not state
-          setSelectedLanguage(progress.settings.selectedLanguage);
+          // Don't overwrite language from server progress - prioritize local device preference (TranslationService)
+          // valid: setSelectedLanguage(progress.settings.selectedLanguage);
 
           // Check URL params for OAuth or Payment callbacks
           const urlParams = new URLSearchParams(window.location.search);
@@ -423,13 +428,26 @@ const MindCaseApp = () => {
     }
   };
 
-  // Handle puzzle selection with animation
-  const openPuzzle = (puzzle) => {
-    setSelectedPuzzle(puzzle);
+  // Handle puzzle selection with animation and translation
+  const openPuzzle = async (puzzle) => {
     setLastOpenedPuzzle(puzzle);
     setAttemptCount(0);
     setPuzzleStartTime(Date.now()); // Track start time for analytics
     setModalAnimating(true);
+
+    // Translate puzzle content if not English
+    const currentLang = TranslationService.getLanguage();
+    let displayPuzzle = puzzle;
+    
+    if (currentLang !== 'English') {
+      try {
+        displayPuzzle = await ContentTranslator.getTranslatedPuzzle(puzzle, currentLang);
+      } catch (err) {
+        console.warn('Translation failed, using original:', err);
+      }
+    }
+
+    setSelectedPuzzle(displayPuzzle);
     setTimeout(() => {
       setModalVisible(true);
       setModalAnimating(false);

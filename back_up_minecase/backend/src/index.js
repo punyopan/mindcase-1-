@@ -8,8 +8,10 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const adRoutes = require('./routes/adRoutes');
 const authRoutes = require('./routes/authRoutes');
 const progressRoutes = require('./routes/progressRoutes');
+const translateRoutes = require('./routes/translateRoutes');
 const passport = require('./config/passport');
 const session = require('express-session');
+const runMigrations = require('../auto-migrate');
 
 // Only load .env for local development (doppler injects vars in production)
 if (!process.env.DOPPLER_ENVIRONMENT) {
@@ -80,6 +82,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/ads', adRoutes);
 app.use('/api/progress', progressRoutes);
+app.use('/api/translate', translateRoutes);
 
 // Health Check
 app.get('/', (req, res) => {
@@ -90,8 +93,18 @@ app.get('/', (req, res) => {
     });
 });
 
-// Start Server
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📦 Stripe: ${process.env.STRIPE_SECRET_KEY ? 'Configured' : '⚠️ Missing STRIPE_SECRET_KEY'}`);
-});
+// Start Server (with auto-migration)
+async function startServer() {
+    try {
+        await runMigrations();
+    } catch (err) {
+        console.warn('Migration warning:', err.message);
+    }
+    
+    app.listen(PORT, () => {
+        console.log(`🚀 Server running on port ${PORT}`);
+        console.log(`📦 Stripe: ${process.env.STRIPE_SECRET_KEY ? 'Configured' : '⚠️ Missing STRIPE_SECRET_KEY'}`);
+    });
+}
+
+startServer();

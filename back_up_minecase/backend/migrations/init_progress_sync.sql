@@ -3,7 +3,7 @@
 
 CREATE TABLE IF NOT EXISTS t_user_progress_sync (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL UNIQUE REFERENCES t_users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL UNIQUE REFERENCES t_users(id) ON DELETE CASCADE,
     progress_data JSONB NOT NULL DEFAULT '{}',
     analytics_data JSONB NOT NULL DEFAULT '{}',
     last_synced_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

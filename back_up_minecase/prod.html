@@ -273,6 +273,8 @@
             cognitiveGameEngineService,
             cognitiveGradingEngineService,
             translationService,
+            translationCache,
+            contentTranslator,
             progressAPIService,
             enLocaleData,
             esLocaleData,
@@ -343,6 +345,8 @@
             fetch("services/cognitiveGameEngine.js").then((r) => r.text()),
             fetch("services/CognitiveGradingEngine.js").then((r) => r.text()),
             fetch("services/TranslationService.js").then((r) => r.text()),
+            fetch("services/TranslationCache.js").then((r) => r.text()),
+            fetch("services/ContentTranslator.js").then((r) => r.text()),
             fetch("services/progressAPI.js?v=" + Date.now()).then((r) => r.text()),
             fetch("locales/en.json").then((r) => r.text()),
             fetch("locales/es.json").then((r) => r.text()),
@@ -492,6 +496,8 @@
                     ${cleanModule(cognitiveGameEngineService)}
                     ${cleanModule(cognitiveGradingEngineService)}
                     ${cleanModule(translationService)}
+                    ${cleanModule(translationCache)}
+                    ${cleanModule(contentTranslator)}
                     ${cleanModule(progressAPIService)}
 
                     // Locales

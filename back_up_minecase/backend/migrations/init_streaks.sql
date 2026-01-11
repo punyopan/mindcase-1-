@@ -3,7 +3,7 @@
 
 CREATE TABLE IF NOT EXISTS t_user_streaks (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL UNIQUE REFERENCES t_users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL UNIQUE REFERENCES t_users(id) ON DELETE CASCADE,
     current_streak INTEGER DEFAULT 0,
     max_streak INTEGER DEFAULT 0,
     last_activity_date DATE,
