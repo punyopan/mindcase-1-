@@ -514,12 +514,12 @@ const CognitiveTrainer = ({ userId, onClose }) => {
           <div className="flex items-center gap-3">
             <span className="text-2xl">🧠</span>
             <div className="flex flex-col">
-                 <span className="text-lg font-bold text-white leading-none">Cognitive Trainer</span>
-                 <span className="text-xs text-stone-500 font-mono tracking-wider">SESSION ID: {Date.now().toString().slice(-6)}</span>
+                 <span className="text-lg font-bold text-white leading-none">{TranslationService.t('cognitive.trainer_title')}</span>
+                 <span className="text-xs text-stone-500 font-mono tracking-wider">{TranslationService.t('cognitive.session_id')}: {Date.now().toString().slice(-6)}</span>
             </div>
             {hasSavedSession && stage > 0 && (
               <span className="ml-2 px-2 py-1 bg-green-900/50 border border-green-700/50 text-green-400 text-xs rounded-lg">
-                Resumed
+                {TranslationService.t('cognitive.status_resumed')}
               </span>
             )}
           </div>
@@ -564,14 +564,14 @@ const CognitiveTrainer = ({ userId, onClose }) => {
                 className="px-4 py-2 text-red-400 hover:text-red-300 transition-colors border border-transparent hover:border-red-700/50 rounded-lg text-sm"
                 title="Reset all training progress and start fresh"
               >
-                Reset
+                {TranslationService.t('cognitive.reset')}
               </button>
             )}
             <button
               onClick={handleAbort}
               className="px-4 py-2 text-stone-400 hover:text-white transition-colors border border-transparent hover:border-stone-700 rounded-lg"
             >
-              {stage > 0 ? 'Save & Exit' : 'Exit'}
+              {stage > 0 ? TranslationService.t('cognitive.save_exit') : TranslationService.t('cognitive.exit')}
             </button>
           </div>
         </div>
@@ -587,7 +587,7 @@ const CognitiveTrainer = ({ userId, onClose }) => {
               {stage === 1 && (
                 <div className="animate-slideUp">
                     <div className="mb-4 text-center">
-                        <h2 className="text-xl text-amber-500 font-bold uppercase tracking-widest text-sm">Phase 1: Observation</h2>
+                        <h2 className="text-xl text-amber-500 font-bold uppercase tracking-widest text-sm">{TranslationService.t('cognitive.phase_1_title')}</h2>
                     </div>
                     <SignalField 
                         scenario={scenarios.signal || window.CognitiveGameEngine?.generateSignalFieldScenario('medium')} 
@@ -600,7 +600,7 @@ const CognitiveTrainer = ({ userId, onClose }) => {
               {stage === 2 && (
                 <div className="animate-slideUp">
                     <div className="mb-4 text-center">
-                        <h2 className="text-xl text-amber-500 font-bold uppercase tracking-widest text-sm">Phase 2: Hypothesis</h2>
+                        <h2 className="text-xl text-amber-500 font-bold uppercase tracking-widest text-sm">{TranslationService.t('cognitive.phase_2_title')}</h2>
                     </div>
                     <ForensicNarrative 
                         scenario={scenarios.forensic || window.CognitiveGameEngine?.generateForensicNarrativeScenario('medium')} 
@@ -613,7 +613,7 @@ const CognitiveTrainer = ({ userId, onClose }) => {
               {stage === 3 && (
                 <div className="animate-slideUp">
                     <div className="mb-4 text-center">
-                        <h2 className="text-xl text-amber-500 font-bold uppercase tracking-widest text-sm">Phase 3: Integration</h2>
+                        <h2 className="text-xl text-amber-500 font-bold uppercase tracking-widest text-sm">{TranslationService.t('cognitive.phase_3_title')}</h2>
                     </div>
                     <VariableManifold 
                         scenario={scenarios.variable || window.CognitiveGameEngine?.generateVariableManifoldScenario('medium')} 
@@ -636,9 +636,9 @@ const CognitiveTrainer = ({ userId, onClose }) => {
                 <div className="animate-slideUp">
                     <div className="mb-4 text-center">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-900/30 border border-amber-700/50 rounded-full mb-2">
-                          <span className="text-amber-400 text-xs">⭐ Premium</span>
+                          <span className="text-amber-400 text-xs">⭐ {TranslationService.t('cognitive.premium_badge')}</span>
                         </div>
-                        <h2 className="text-xl text-emerald-500 font-bold uppercase tracking-widest text-sm">Assumption Excavator</h2>
+                        <h2 className="text-xl text-emerald-500 font-bold uppercase tracking-widest text-sm">{TranslationService.t('cognitive.game_assumption')}</h2>
                     </div>
                     <AssumptionExcavator
                         scenario={scenarios.assumption || window.CognitiveGameEngine?.generateAssumptionExcavatorScenario?.('medium')}

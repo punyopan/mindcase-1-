@@ -135,8 +135,11 @@ class _TranslationService {
       value = this.getValue(this.fallbackLang, keys);
     }
     
-    // Return key if still missing
+    // Return default value or key if still missing
     if (!value) {
+      if (params && params.defaultValue) {
+        return params.defaultValue;
+      }
       return key;
     }
     
@@ -184,5 +187,11 @@ class _TranslationService {
 
 // Create and export singleton instance
 const TranslationService = new _TranslationService();
+
+// Expose to window for non-module legacy code (like CognitiveGameEngine)
+if (typeof window !== 'undefined') {
+  window.TranslationService = TranslationService;
+}
+
 export default TranslationService;
 

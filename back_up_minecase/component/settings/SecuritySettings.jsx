@@ -31,12 +31,10 @@ const SecuritySettings = ({ user, onBack }) => {
     setSuccess('');
 
     if (newPassword !== confirmPassword) {
-    if (newPassword !== confirmPassword) {
       setError(TranslationService.t('settings.passwords_no_match'));
       return;
     }
 
-    if (newPassword.length < 8) {
     if (newPassword.length < 8) {
       setError(TranslationService.t('settings.password_min_length'));
       return;
@@ -117,7 +115,6 @@ const SecuritySettings = ({ user, onBack }) => {
             </button>
             <div>
               <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                <Shield className="w-6 h-6 text-amber-500" />
                 <Shield className="w-6 h-6 text-amber-500" />
                 {TranslationService.t('settings.security_settings')}
               </h1>

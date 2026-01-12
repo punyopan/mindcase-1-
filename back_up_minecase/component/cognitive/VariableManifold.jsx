@@ -317,13 +317,13 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
             <div className="text-stone-400 text-xs">{variable.description}</div>
           </div>
           {variable.isOutcome && (
-            <span className="text-xs px-2 py-1 bg-purple-900/50 text-purple-300 rounded">Outcome</span>
+            <span className="text-xs px-2 py-1 bg-purple-900/50 text-purple-300 rounded">{TranslationService.t('cognitive.outcome')}</span>
           )}
         </div>
 
         <div className="mt-3">
           <div className="flex items-center justify-between text-sm mb-1">
-            <span className="text-stone-400">Current</span>
+            <span className="text-stone-400">{TranslationService.t('cognitive.current')}</span>
             <span className={`font-bold ${recentChange
                 ? recentChange.direction === 'increase'
                   ? 'text-green-400'
@@ -376,11 +376,11 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
             <div className="bg-amber-900/30 border border-amber-700/50 rounded-xl p-4">
               <h4 className="font-bold text-amber-400 mb-2">{TranslationService.t('cognitive.how_this_works')}</h4>
               <ul className="text-stone-300 text-sm space-y-2 text-left">
-                <li>1. Explore the system to understand how variables connect</li>
-                <li>2. Make interventions (you have limited changes)</li>
-                <li>3. Watch how changes ripple through the system</li>
-                <li>4. Identify the fundamental tensions you cannot resolve</li>
-                <li>5. Defend your configuration as a reasonable trade-off</li>
+                <li>1. {TranslationService.t('cognitive.variable_step_1')}</li>
+                <li>2. {TranslationService.t('cognitive.variable_step_2')}</li>
+                <li>3. {TranslationService.t('cognitive.variable_step_3')}</li>
+                <li>4. {TranslationService.t('cognitive.variable_step_4')}</li>
+                <li>5. {TranslationService.t('cognitive.variable_step_5')}</li>
               </ul>
             </div>
 
@@ -404,8 +404,7 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
             </div>
 
             <div className="bg-stone-800/30 border border-stone-700 rounded-xl p-4 text-sm text-stone-400 mb-4">
-              <strong>Instructions:</strong> Study how the variables connect. Click on variables to see their relationships.
-              Take time to understand the system before making changes.
+              <strong>{TranslationService.t('cognitive.instructions')}:</strong> {TranslationService.t('cognitive.exploration_instructions')}
             </div>
 
             {/* System diagram placeholder */}
@@ -435,7 +434,7 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
                     {t.nature}
                   </li>
                 ))}
-                <li className="text-stone-500 text-sm italic">...more tensions to discover</li>
+                <li className="text-stone-500 text-sm italic">{TranslationService.t('cognitive.more_tensions')}</li>
               </ul>
             </div>
 
@@ -444,13 +443,13 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
                 onClick={() => setPhase('intervention')}
                 className="w-full py-3 bg-gradient-to-r from-amber-600 to-red-600 text-white font-bold rounded-xl hover:from-amber-500 hover:to-red-500 transition-all"
               >
-                Begin Interventions
+                {TranslationService.t('cognitive.begin_interventions')}
               </button>
             )}
 
             {explorationTime < 30 && (
               <p className="text-center text-stone-500 text-sm">
-                Continue exploring for at least 30 seconds
+                {TranslationService.t('cognitive.explore_minimum')}
               </p>
             )}
           </div>
@@ -460,10 +459,10 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
         return (
           <div className="space-y-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-white">Make Interventions</h3>
+              <h3 className="text-xl font-bold text-white">{TranslationService.t('cognitive.make_interventions')}</h3>
               <div className="flex items-center gap-4">
                 <div className="px-4 py-2 bg-stone-800 rounded-lg">
-                  <span className="text-stone-400">Interventions:</span>
+                  <span className="text-stone-400">{TranslationService.t('cognitive.interventions_label')}:</span>
                   <span className="ml-2 font-bold text-amber-400">{interventionCount}/{maxInterventions}</span>
                 </div>
               </div>
@@ -473,12 +472,12 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
             {showConsequences && lastConsequences.length > 0 && (
               <div className="bg-amber-900/20 border border-amber-700/30 rounded-xl p-4 mb-4">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-bold text-amber-400">Ripple Effects</h4>
+                  <h4 className="font-bold text-amber-400">{TranslationService.t('cognitive.ripple_effects')}</h4>
                   <button
                     onClick={() => setShowConsequences(false)}
                     className="text-stone-400 hover:text-white text-sm"
                   >
-                    Dismiss
+                    {TranslationService.t('cognitive.dismiss')}
                   </button>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -501,7 +500,7 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
             {/* Constraint violations */}
             {checkConstraints().length > 0 && (
               <div className="bg-red-900/30 border border-red-700/50 rounded-xl p-4 mb-4">
-                <h4 className="font-bold text-red-400 mb-2">Constraint Violations</h4>
+                <h4 className="font-bold text-red-400 mb-2">{TranslationService.t('cognitive.constraint_violations')}</h4>
                 <ul className="space-y-1">
                   {checkConstraints().map((v, idx) => (
                     <li key={idx} className="text-red-300 text-sm">{v}</li>
@@ -519,12 +518,12 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
             {selectedVariable && (
               <div className="bg-stone-800/50 border border-amber-700/50 rounded-xl p-4">
                 <h4 className="font-bold text-amber-400 mb-3">
-                  Adjusting: {selectedVariable.name}
+                  {TranslationService.t('cognitive.adjusting')}: {selectedVariable.name}
                 </h4>
 
                 <div className="mb-4">
                   <label className="block text-stone-400 text-sm mb-2">
-                    New Value: {proposedValue} {selectedVariable.unit}
+                    {TranslationService.t('cognitive.new_value')}: {proposedValue} {selectedVariable.unit}
                   </label>
                   <input
                     type="range"
@@ -536,27 +535,27 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
                   />
                   <div className="flex justify-between text-xs text-stone-500">
                     <span>{selectedVariable.range[0]}</span>
-                    <span>Current: {selectedVariable.currentValue}</span>
+                    <span>{TranslationService.t('cognitive.current')}: {selectedVariable.currentValue}</span>
                     <span>{selectedVariable.range[1]}</span>
                   </div>
                 </div>
 
                 <div className="mb-4">
                   <label className="block text-stone-400 text-sm mb-2">
-                    Why are you making this change?
+                    {TranslationService.t('cognitive.change_reason')}
                   </label>
                   <input
                     type="text"
                     value={interventionReason}
                     onChange={(e) => setInterventionReason(e.target.value)}
-                    placeholder="I'm increasing this because..."
+                    placeholder={TranslationService.t('cognitive.change_placeholder')}
                     className="w-full bg-stone-900 border border-stone-600 rounded-lg px-3 py-2 text-white placeholder-stone-500"
                   />
                 </div>
 
                 <div className="mb-4">
                   <label className="block text-stone-400 text-sm mb-2">
-                    Predict the consequences (optional but valuable):
+                    {TranslationService.t('cognitive.predict_consequences')}:
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     {variables.filter(v => v.id !== selectedVariable.id).slice(0, 4).map(v => (
@@ -568,9 +567,9 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
                           className="flex-1 bg-stone-800 border border-stone-600 rounded px-2 py-1 text-sm text-white"
                         >
                           <option value="">?</option>
-                          <option value="increase">Increase</option>
-                          <option value="decrease">Decrease</option>
-                          <option value="stable">No change</option>
+                          <option value="increase">{TranslationService.t('cognitive.increase')}</option>
+                          <option value="decrease">{TranslationService.t('cognitive.decrease')}</option>
+                          <option value="stable">{TranslationService.t('cognitive.no_change')}</option>
                         </select>
                       </div>
                     ))}
@@ -582,7 +581,7 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
                   disabled={interventionCount >= maxInterventions}
                   className="w-full py-2 bg-amber-600 text-white font-bold rounded-lg disabled:opacity-50"
                 >
-                  Apply Intervention
+                  {TranslationService.t('cognitive.apply_intervention')}
                 </button>
               </div>
             )}
@@ -592,7 +591,7 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
                 onClick={() => setPhase('tension_articulation')}
                 className="w-full py-3 bg-gradient-to-r from-amber-600 to-red-600 text-white font-bold rounded-xl hover:from-amber-500 hover:to-red-500 transition-all"
               >
-                Articulate Tensions
+                {TranslationService.t('cognitive.articulate_tensions')}
               </button>
             )}
           </div>
@@ -601,22 +600,21 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
       case 'tension_articulation':
         return (
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-white">Articulate Irreducible Tensions</h3>
+            <h3 className="text-xl font-bold text-white">{TranslationService.t('cognitive.irreducible_tensions')}</h3>
             <p className="text-stone-400 text-sm">
-              This system has fundamental tensions that cannot be resolved.
-              Name them explicitly. What trade-offs are unavoidable?
+              {TranslationService.t('cognitive.tensions_explanation')}
             </p>
 
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
               <label className="block text-amber-400 font-bold mb-2">
-                What tensions did you discover?
+                {TranslationService.t('cognitive.tensions_discovered')}
               </label>
               <div className="flex gap-2 mb-4">
                 <input
                   type="text"
                   value={currentTension}
                   onChange={(e) => setCurrentTension(e.target.value)}
-                  placeholder="Tension: Increasing X requires sacrificing Y because..."
+                  placeholder={TranslationService.t('cognitive.tension_placeholder')}
                   className="flex-1 bg-stone-900 border border-stone-600 rounded-lg px-3 py-2 text-white placeholder-stone-500"
                 />
                 <button
@@ -624,7 +622,7 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
                   disabled={currentTension.trim().length < 20}
                   className="px-4 py-2 bg-amber-600 text-white rounded-lg disabled:opacity-50"
                 >
-                  Add
+                  {TranslationService.t('cognitive.add')}
                 </button>
               </div>
 
@@ -642,7 +640,7 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
 
             {/* Hint: known tensions */}
             <div className="bg-amber-900/20 border border-amber-700/30 rounded-xl p-4">
-              <h4 className="font-bold text-amber-400 mb-2">Hint: Core System Tensions</h4>
+              <h4 className="font-bold text-amber-400 mb-2">{TranslationService.t('cognitive.hint_tensions')}</h4>
               <ul className="space-y-1 text-stone-400 text-sm">
                 {scenario?.irresolvableTensions?.map((t, idx) => (
                   <li key={idx}>{t}</li>
@@ -652,24 +650,24 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
 
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
               <label className="block text-amber-400 font-bold mb-2">
-                Analyze your trade-offs:
+                {TranslationService.t('cognitive.analyze_tradeoffs')}:
               </label>
               <textarea
                 value={tradeoffAnalysis}
                 onChange={(e) => setTradeoffAnalysis(e.target.value)}
-                placeholder="In my configuration, I chose to prioritize X over Y because... This means that Z will suffer, which I accept because... There is no way to have both X and Y at high levels without..."
+                placeholder={TranslationService.t('cognitive.tradeoff_placeholder')}
                 className="w-full h-32 bg-stone-900 border border-stone-600 rounded-lg p-3 text-white placeholder-stone-500 resize-none"
               />
             </div>
 
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
               <label className="block text-amber-400 font-bold mb-2">
-                Final Reflection: Why is your configuration defensible?
+                {TranslationService.t('cognitive.final_reflection_prompt')}
               </label>
               <textarea
                 value={finalReflection}
                 onChange={(e) => setFinalReflection(e.target.value)}
-                placeholder="My configuration is defensible because... I acknowledge that someone could disagree and prioritize differently by... But I chose this approach because..."
+                placeholder={TranslationService.t('cognitive.defensible_placeholder')}
                 className="w-full h-32 bg-stone-900 border border-stone-600 rounded-lg p-3 text-white placeholder-stone-500 resize-none"
               />
             </div>
@@ -679,13 +677,13 @@ const VariableManifold = ({ scenario, userId, onComplete }) => {
                 onClick={completeSession}
                 className="w-full py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-xl hover:from-green-500 hover:to-emerald-500 transition-all"
               >
-                Complete Session
+                {TranslationService.t('cognitive.complete_session')}
               </button>
             )}
 
             {(identifiedTensions.length < 2 || tradeoffAnalysis.length < 50) && (
               <p className="text-center text-stone-500 text-sm">
-                Identify at least 2 tensions and provide trade-off analysis
+                {TranslationService.t('cognitive.tensions_minimum')}
               </p>
             )}
           </div>

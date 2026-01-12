@@ -15,7 +15,10 @@
     "main_menu": "Menú Principal",
     "select_investigation": "Selecciona Tu Investigación",
     "investigation_desc": "Cada expediente contiene 5 acertijos. Escribe tu razonamiento, obtén retroalimentación de IA.",
-    "progress": "Progreso"
+    "progress": "Progreso",
+    "case_files": "Archivos del Caso",
+    "classic_puzzles": "Acertijos Clásicos",
+    "interview_favorites": "Favoritos de Entrevista"
   },
   "settings": {
     "title": "Ajustes",
@@ -38,13 +41,124 @@
     "on": "Activado",
     "export_data": "Exportar Datos",
     "import_data": "Importar Datos",
-    "reset_progress": "Reiniciar Progreso",
+    "reset_progress": "Restablecer Todo el Progreso",
     "change_password": "Cambiar Contraseña",
     "enable_2fa": "Activar Autenticación de Dos Factores",
-    "disable_2fa": "Desactivar Autenticación de Dos Factores",
+    "disable_2fa": "Deshabilitar 2FA",
     "current_password": "Contraseña Actual",
     "new_password": "Nueva Contraseña",
-    "confirm_password": "Confirmar Contraseña"
+    "confirm_password": "Confirmar Contraseña",
+    "sound_settings": "Configuración de Sonido",
+    "background_music": "Música de Fondo",
+    "music_desc": "Música ambiental de detective mientras investigas",
+    "volume": "Volumen",
+    "music_theme": "Tema Musical",
+    "sound_effects": "Efectos de Sonido",
+    "sfx_desc": "Sonidos de interacción y retroalimentación",
+    "test_sounds": "Probar Sonidos",
+    "tip_music": "La música de fondo ayuda a crear una atmósfera inmersiva de detective. ¡Elige entre 7 pistas cuidadosamente seleccionadas para que coincidan con tu estado de ánimo de investigación!",
+    "data_desc": "Exportar, importar o restablecer tus datos de progreso",
+    "export_progress": "Exportar Progreso",
+    "export_desc": "Descarga tus datos de progreso como archivo JSON. Usa esto para hacer copias de seguridad o transferir a otro dispositivo.",
+    "import_progress": "Importar Progreso",
+    "import_desc": "Restaura tu progreso desde un archivo JSON exportado anteriormente. Esto sobrescribirá tu progreso actual.",
+    "reset_desc": "Eliminar permanentemente todos tus datos de progreso incluyendo puzzles completados, puntuaciones y estadísticas.",
+    "premium_preserved": "Tu suscripción premium se conservará.",
+    "cannot_undo": "Esta acción no se puede deshacer.",
+    "type_reset": "Escribe RESET para confirmar:",
+    "confirm_reset": "Confirmar Restablecimiento",
+    "daily_reminders": "Recordatorios Diarios",
+    "reminder_desc": "Recibe notificaciones para practicar pensamiento crítico",
+    "reminder_time": "Hora del Recordatorio",
+    "reminder_time_desc": "Elige cuándo te gustaría recibir tu recordatorio diario",
+    "hour": "Hora",
+    "minute": "Minuto",
+    "current_reminder_time": "Hora actual del recordatorio",
+    "update_reminder_time": "Actualizar Hora del Recordatorio",
+    "next_reminder": "Próximo Recordatorio",
+    "test_notifications": "Probar Notificaciones",
+    "test_notifications_desc": "Envía una notificación de prueba para ver cómo se verán los recordatorios",
+    "send_test": "Enviar Notificación de Prueba",
+    "popular_times": "Horarios Populares de Recordatorio",
+    "morning": "Mañana",
+    "lunch": "Almuerzo",
+    "evening": "Tarde",
+    "night": "Noche",
+    "reminder_tip": "La práctica diaria ayuda a construir hábitos de pensamiento crítico fuertes. ¡Activa los recordatorios para ser constante en tu aprendizaje!",
+    "notifications_blocked": "Las notificaciones están bloqueadas. Por favor, actívalas en la configuración de tu navegador.",
+    "grant_permission": "Se te pedirá permiso para notificaciones cuando actives los recordatorios.",
+    "notifications_not_supported": "Notificaciones No Soportadas",
+    "browser_not_support": "Tu navegador no soporta notificaciones. Por favor, usa un navegador moderno como Chrome, Firefox o Edge.",
+    "security_settings": "Configuración de Seguridad",
+    "manage_security": "Administra la configuración de seguridad de tu cuenta",
+    "update_password": "Actualiza tu contraseña",
+    "confirm_new_password": "Confirmar Nueva Contraseña",
+    "enter_current_password": "Ingresa contraseña actual",
+    "enter_new_password": "Ingresa nueva contraseña",
+    "confirm_new_password_placeholder": "Confirma nueva contraseña",
+    "password_changed_success": "Contraseña cambiada exitosamente",
+    "passwords_no_match": "Las contraseñas no coinciden",
+    "password_min_length": "La contraseña debe tener al menos 8 caracteres",
+    "two_factor_auth": "Autenticación de Dos Factores",
+    "2fa_enabled": "Habilitada",
+    "2fa_add_security": "Añade una capa extra de seguridad",
+    "setup_2fa": "Configurar 2FA",
+    "scan_qr": "Escanear Código QR",
+    "scan_qr_desc": "Usa Google Authenticator o cualquier app TOTP para escanear este código",
+    "enter_6_digit": "Ingresa el código de 6 dígitos de la app",
+    "verify_enable": "Verificar y Habilitar",
+    "verifying": "Verificando...",
+    "2fa_enabled_title": "¡2FA Habilitada!",
+    "save_backup_codes": "Guarda tus Códigos de Respaldo",
+    "backup_codes_desc": "Guarda estos códigos de forma segura - los necesitarás si pierdes tu dispositivo",
+    "one_time_use": "Cada código solo puede usarse una vez. ¡Guárdalos seguros!",
+    "done": "Hecho",
+    "disable_2fa_desc": "Ingresa tu contraseña para deshabilitar la autenticación de dos factores",
+    "disabling": "Deshabilitando...",
+    "security_tips": "Consejos de Seguridad",
+    "tip_strong_password": "Usa una contraseña fuerte y única",
+    "tip_enable_2fa": "Habilita la autenticación de dos factores",
+    "tip_never_share": "Nunca compartas tu contraseña con nadie",
+    "tip_check_sessions": "Revisa tus sesiones activas regularmente",
+    "security_activity": "Actividad de Seguridad",
+    "monitor_activity": "Monitorea la actividad de tu cuenta",
+    "active_sessions": "Sesiones Activas",
+    "login_history": "Historial de Inicio de Sesión",
+    "no_active_sessions": "No hay sesiones activas",
+    "unknown_device": "Dispositivo Desconocido",
+    "unknown_browser": "Navegador Desconocido",
+    "created": "Creado",
+    "last_active": "Última actividad",
+    "revoke_session": "Revocar sesión",
+    "revoke_confirm": "¿Estás seguro de que quieres revocar esta sesión?",
+    "session_tips": "Estos son dispositivos y navegadores donde has iniciado sesión actualmente. Si ves alguna actividad sospechosa, revoca la sesión inmediatamente y cambia tu contraseña.",
+    "no_login_history": "Sin historial de inicio de sesión",
+    "logged_in": "Sesión Iniciada",
+    "logged_out": "Sesión Cerrada",
+    "password_changed_action": "Contraseña Cambiada",
+    "2fa_enabled_action": "2FA Habilitada",
+    "2fa_disabled_action": "2FA Deshabilitada",
+    "session_revoked_action": "Sesión Revocada",
+    "method": "Método",
+    "unknown_platform": "Plataforma Desconocida",
+    "unknown_ip": "IP Desconocida",
+    "just_now": "Justo ahora",
+    "minutes_ago": "hace {count} minuto(s)",
+    "hours_ago": "hace {count} hora(s)",
+    "days_ago": "hace {count} día(s)",
+    "login_signup": "Iniciar Sesión / Registrarse",
+    "free_plan": "Gratis",
+    "plan": "Plan",
+    "sessions_history": "Sesiones e Historial",
+    "sound_music": "Sonido y Música",
+    "reminders_desc": "Recibe notificaciones para practicar el pensamiento crítico",
+    "legal": "Legal",
+    "privacy_policy": "Política de Privacidad",
+    "terms_service": "Términos de Servicio",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "login_action": "Iniciar Sesión",
+    "demo_text": "Demo: Usa cualquier correo y contraseña para entrar"
   },
   "auth": {
     "logged_in_as": "Conectado como",
@@ -58,8 +172,31 @@
     "forgot_password": "¿Olvidaste tu contraseña?",
     "continue_as_guest": "Continuar como Invitado",
     "or": "o",
-    "already_have_account": "¿Ya tienes una cuenta?",
-    "dont_have_account": "¿No tienes una cuenta?"
+    "already_have_account": "¿Ya tienes cuenta?",
+    "dont_have_account": "¿No tienes una cuenta?",
+    "welcome_back": "Bienvenido de Nuevo",
+    "sign_in_continue": "Inicia sesión para continuar tu investigación",
+    "email_address": "Correo Electrónico",
+    "signing_in": "Iniciando Sesión...",
+    "sign_in": "Iniciar Sesión",
+    "continue_google": "Continuar con Google",
+    "no_account": "¿No tienes cuenta?",
+    "create_account": "Crear Cuenta",
+    "continue_guest": "Continuar como Invitado",
+    "progress_saved_locally": "Tu progreso se guardará localmente en este dispositivo",
+    "join_mindcase": "Únete a MindCase",
+    "create_track_progress": "Crea una cuenta para seguir tu progreso",
+    "full_name": "Nombre Completo",
+    "confirm_password": "Confirmar Contraseña",
+    "creating_account": "Creando Cuenta...",
+    "terms_agreement": "Al crear una cuenta, aceptas nuestros Términos de Servicio",
+    "name_required": "El nombre es obligatorio",
+    "email_required": "El correo electrónico es obligatorio",
+    "password_min": "La contraseña debe tener al menos 6 caracteres",
+    "passwords_no_match": "Las contraseñas no coinciden",
+    "weak": "débil",
+    "medium": "medio",
+    "strong": "fuerte"
   },
   "common": {
     "loading": "Cargando...",
@@ -74,9 +211,145 @@
     "done": "Hecho",
     "retry": "Reintentar",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "solved": "Resuelto"
   },
   "puzzles": {
+    "1": {
+      "title": "El Dinero Desaparecido"
+    },
+    "2": {
+      "title": "Los Ensayos Idénticos"
+    },
+    "3": {
+      "title": "El Patrón de la Fila Trasera"
+    },
+    "4": {
+      "title": "La Crisis Presupuestaria"
+    },
+    "5": {
+      "title": "El Método Maravilla"
+    },
+    "6": {
+      "title": "La Estadística Viral"
+    },
+    "7": {
+      "title": "El Video del Director"
+    },
+    "8": {
+      "title": "El Influencer Experto"
+    },
+    "9": {
+      "title": "El Consenso de los Comentarios"
+    },
+    "10": {
+      "title": "El Eco del Algoritmo"
+    },
+    "11": {
+      "title": "La Culpa del Trabajo Remoto"
+    },
+    "12": {
+      "title": "El Rompecabezas de la Promoción"
+    },
+    "13": {
+      "title": "La Paradoja de la Reunión"
+    },
+    "14": {
+      "title": "El Discurso del Proveedor de IA"
+    },
+    "15": {
+      "title": "La Trampa de la Encuesta"
+    },
+    "16": {
+      "title": "El Suplemento Milagroso"
+    },
+    "17": {
+      "title": "El Debate de la Dieta"
+    },
+    "18": {
+      "title": "El Estudio del Desayuno"
+    },
+    "19": {
+      "title": "Las Historias de Éxito"
+    },
+    "20": {
+      "title": "La Etiqueta Natural"
+    },
+    "21": {
+      "title": "El Consejo Bursátil"
+    },
+    "22": {
+      "title": "El Dilema del Curso"
+    },
+    "23": {
+      "title": "El Trato del Coche"
+    },
+    "24": {
+      "title": "La Cartera Tecnológica"
+    },
+    "25": {
+      "title": "La Decisión del Aumento"
+    },
+    "26": {
+      "title": "La Paradoja de la Prueba de Detección"
+    },
+    "27": {
+      "title": "La Correlación de la Vacunación"
+    },
+    "28": {
+      "title": "La Cura de la Celebridad"
+    },
+    "29": {
+      "title": "El Estudio de los Analgésicos"
+    },
+    "30": {
+      "title": "La Falacia del Rastreador de Fitness"
+    },
+    "31": {
+      "title": "El Argumento del Invierno Frío"
+    },
+    "32": {
+      "title": "La Contradicción del Reciclaje"
+    },
+    "33": {
+      "title": "La Promesa Corporativa"
+    },
+    "34": {
+      "title": "La Prohibición de las Pajitas de Plástico"
+    },
+    "35": {
+      "title": "El Movimiento de Comida Local"
+    },
+    "36": {
+      "title": "La Confianza del Testigo Ocular"
+    },
+    "37": {
+      "title": "El Algoritmo de Reincidencia"
+    },
+    "38": {
+      "title": "La Presión del Acuerdo de Culpabilidad"
+    },
+    "39": {
+      "title": "La Ley de Mano Dura"
+    },
+    "40": {
+      "title": "La Bomba de Tiempo de la Tortura"
+    },
+    "41": {
+      "title": "El Trato de la App Gratuita"
+    },
+    "42": {
+      "title": "El Hackeo de la Casa Inteligente"
+    },
+    "43": {
+      "title": "El Debate del Mensaje Cifrado"
+    },
+    "44": {
+      "title": "El Feed Personalizado"
+    },
+    "45": {
+      "title": "La Evidencia Deepfake"
+    },
     "correct": "¡Correcto!",
     "incorrect": "Incorrecto",
     "skip": "Saltar",
@@ -257,9 +530,7 @@
     "subgroup_desc": "Analizar subconjunto específico contra la población",
     "interaction_desc": "Probar si las variables se influyen mutuamente",
     "temporal_desc": "Encontrar patrones o fases basados en el tiempo",
-    "signal_detection": "Detección de Señales",
     "signal_detection_desc": "Observar patrones en el ruido antes de actuar.",
-    "forensic_reconstruction": "Reconstrucción Forense",
     "forensic_reconstruction_desc": "Construir hipótesis a partir de evidencia fragmentada.",
     "system_intervention_title": "Intervención del Sistema",
     "system_intervention_desc": "Gestionar compromisos en un sistema dinámico.",
@@ -273,7 +544,114 @@
     "stage_variable": "Etapa 3: Manifold de Variables",
     "stage_analysis": "Fase Final: Análisis",
     "preparing_next": "Preparando Siguiente Módulo",
-    "proceed": "Continuar"
+    "challenge_response_placeholder": "Responde a este desafío...",
+    "source": "Fuente",
+    "reliability_question": "¿Qué tan confiable es esta evidencia?",
+    "how_step_1": "Las evidencias se desbloquearán progresivamente - no te apresures",
+    "how_step_2": "Califica la confiabilidad de cada evidencia y toma notas",
+    "how_step_3": "Construye una narrativa que explique la evidencia",
+    "how_step_4": "Desafiaré tu narrativa - defiéndela o revísala",
+    "how_step_5": "No hay una única respuesta 'correcta'",
+    "forensic_instructions": "Examina cada pieza de evidencia cuidadosamente. Califica su confiabilidad (1-5), anota observaciones y busca contradicciones.",
+    "rate_minimum": "Califica al menos 3 evidencias antes de continuar",
+    "narrative_instruction": "Basándote en la evidencia, construye una interpretación de lo que sucedió. Conecta las evidencias para apoyar tu narrativa.",
+    "interpretation_placeholder_forensic": "Basándome en la evidencia, creo que... La evidencia clave que apoya esto es... Sin embargo, reconozco que...",
+    "reference_evidence": "Haz referencia a evidencias específicas. Reconoce contradicciones y vacíos.",
+    "confidence_question": "¿Qué tan seguro estás de esta interpretación?",
+    "challenge": "Desafío",
+    "challenge_interpretation": "Desafío Tu Interpretación:",
+    "defense_placeholder": "Defiendo mi posición porque... O reconozco esta debilidad porque...",
+    "defense_hint": "Puedes defender, revisar o reconocer debilidades. Se valora la honestidad intelectual.",
+    "uncertainty_explanation": "El buen razonamiento incluye saber lo que NO sabes. Lista las cosas de las que sigues inseguro.",
+    "uncertain_placeholder": "No estoy seguro de...",
+    "uncertainties_minimum": "Nombra al menos 2 incertidumbres antes de completar",
+    "outcome": "Resultado",
+    "variable_step_1": "Explora el sistema para entender cómo se conectan las variables",
+    "variable_step_2": "Realiza intervenciones (tienes cambios limitados)",
+    "variable_step_3": "Observa cómo los cambios se propagan por el sistema",
+    "variable_step_4": "Identifica las tensiones fundamentales que no puedes resolver",
+    "variable_step_5": "Defiende tu configuración como un compromiso razonable",
+    "exploration_instructions": "Estudia cómo se conectan las variables. Haz clic en las variables para ver sus relaciones. Tómate tiempo para entender el sistema antes de hacer cambios.",
+    "explore_minimum": "Continúa explorando por al menos 30 segundos",
+    "interventions_label": "Intervenciones",
+    "change_reason": "¿Por qué estás haciendo este cambio?",
+    "change_placeholder": "Estoy aumentando esto porque...",
+    "irreducible_tensions": "Articula las Tensiones Irreducibles",
+    "tensions_explanation": "Este sistema tiene tensiones fundamentales que no se pueden resolver. Nómbralas explícitamente. ¿Qué compromisos son inevitables?",
+    "hint_tensions": "Pista: Tensiones del Sistema Central",
+    "defensible_placeholder": "Mi configuración es defendible porque... Reconozco que alguien podría estar en desacuerdo y priorizar diferente... Pero elegí este enfoque porque...",
+    "tensions_minimum": "Identifica al menos 2 tensiones y proporciona análisis de compromisos",
+    "log": "REGISTRO",
+    "statement": "DECLARACIÓN",
+    "witness": "TESTIGO",
+    "document": "DOCUMENTO",
+    "digital_trace": "RASTRO DIGITAL",
+    "physical": "FÍSICO",
+    "scenarios": {
+      "education_title": "Análisis del Rendimiento Estudiantil",
+      "education_briefing": "Has recibido datos de rendimiento de una clase. Los administradores creen haber identificado la causa de las diferencias en las calificaciones y quieren implementar cambios. Examina los datos antes de que actúen.",
+      "education_insight": "El patrón aparente se confunde con diferencias preexistentes",
+      "health_title": "Análisis de Resultados de Tratamiento",
+      "health_briefing": "La junta del hospital está a punto de exigir el Tratamiento C basándose en su análisis de que tiene los mejores resultados. Tienes acceso al conjunto de datos completo. ¿Qué está pasando realmente?",
+      "health_insight": "La selección del tratamiento se confunde con la gravedad del paciente",
+      "business_title": "Estudio de Productividad en Trabajo Remoto",
+      "business_briefing": "El CEO quiere terminar con el trabajo remoto porque los empleados de oficina parecen más productivos. RRHH ha proporcionado este conjunto de datos. Analízalo antes del anuncio de la política.",
+      "business_insight": "Las diferencias en la ubicación del trabajo se explican por la calidad de la gestión",
+      "val_front": "Frente",
+      "val_front_mid": "Frente-Medio",
+      "val_middle": "Medio",
+      "val_back_mid": "Atrás-Medio",
+      "val_back": "Atrás",
+      "val_morning": "Mañana",
+      "val_midday": "Mediodía",
+      "val_afternoon": "Tarde",
+      "val_high_school": "Secundaria",
+      "val_college": "Universidad",
+      "val_graduate": "Posgrado",
+      "city_title": "Simulador de Política Urbana",
+      "city_briefing": "Estás gestionando un sistema urbano complejo. Las intervenciones en un área afectarán a otras. Encuentra una configuración estable.",
+      "ecosystem_title": "Equilibrio del Ecosistema",
+      "ecosystem_briefing": "Estás gestionando un sistema de ecosistema complejo. Las intervenciones en un área afectarán a otras. Encuentra una configuración estable.",
+      "corp_title": "Estrategia Corporativa",
+      "corp_briefing": "Estás gestionando un sistema corporativo complejo. Las intervenciones en un área afectarán a otras. Encuentra una configuración estable.",
+      "manifold_briefing_template": "Estás gestionando un sistema [SYSTEM] complejo. Las intervenciones en un área afectarán a otras. Encuentra una configuración estable."
+    },
+    "cols": {
+      "testScore": "Puntaje de Prueba",
+      "seatPosition": "Posición del Asiento",
+      "classTime": "Hora de Clase",
+      "attendance": "Asistencia",
+      "reportedStudyHours": "Horas de Estudio",
+      "priorGradeLevel": "Calificación Anterior",
+      "extraCurricular": "Extracurriculares",
+      "partTimeJob": "Trabajo Parcial",
+      "parentsEducation": "Educación de Padres",
+      "recoveryScore": "Puntaje de Recuperación",
+      "age": "Edad",
+      "treatmentType": "Tipo de Tratamiento",
+      "hoursToTreatment": "Horas para Tratamiento",
+      "hospitalSize": "Tamaño del Hospital",
+      "hasInsurance": "Seguro",
+      "comorbidities": "Comorbilidades",
+      "doctorExperience": "Exp. del Doctor",
+      "productivityScore": "Productividad",
+      "workLocation": "Ubicación",
+      "yearsAtCompany": "Antigüedad",
+      "teamSize": "Tamaño del Equipo",
+      "meetingsPerWeek": "Reuniones/Semana",
+      "performanceReviews": "Revisiones de Desempeño",
+      "department": "Departamento",
+      "managerId": "ID de Gerente",
+      "trainingHours": "Horas de Capacitación"
+    },
+    "trainer_title": "Entrenador Cognitivo",
+    "session_id": "ID DE SESIÓN",
+    "status_resumed": "Reanudado",
+    "phase_1_title": "Fase 1: Observación",
+    "phase_2_title": "Fase 2: Hipótesis",
+    "phase_3_title": "Fase 3: Integración",
+    "premium_badge": "Premium",
+    "game_assumption": "Excavadora de Suposiciones"
   },
   "profile": {
     "title": "Perfil",
@@ -286,7 +664,32 @@
     "decision_making": "Toma de Decisiones",
     "adaptive_learning": "Aprendizaje Adaptativo",
     "source_evaluation": "Evaluación de Fuentes",
-    "bias_detection": "Detección de Sesgos"
+    "bias_detection": "Detección de Sesgos",
+    "member_since": "Miembro desde",
+    "detective": "Detective",
+    "cases_solved": "Casos Resueltos",
+    "total_points": "Puntos Totales",
+    "view_advanced_analytics": "Ver Análisis Avanzado",
+    "premium_feature": "Función Premium",
+    "premium_upgrade": "Función Premium - Actualiza para desbloquear",
+    "your_skill_profile": "Tu Perfil de Habilidades",
+    "logical_desc": "Tu capacidad para construir argumentos sólidos, analizar sistemas complejos e identificar conclusiones válidas a partir de premisas.",
+    "decision_desc": "Tu capacidad para evaluar opciones, sopesar compromisos y tomar decisiones razonadas bajo incertidumbre.",
+    "adaptive_desc": "Tu capacidad para reconocer patrones, integrar nueva información y actualizar tus modelos mentales mientras aprendes.",
+    "source_desc": "Tu competencia para evaluar la credibilidad, fiabilidad y validez de las fuentes de información y afirmaciones de investigación.",
+    "bias_desc": "Tu conciencia de los sesgos cognitivos, las falacias lógicas y cómo pueden distorsionar los procesos de razonamiento y toma de decisiones.",
+    "token_balance": "Saldo de Tokens",
+    "token_description": "Gana tokens completando minijuegos diarios. ¡Usa 5 tokens para desbloquear un nuevo puzzle!",
+    "logical": "Razonamiento Lógico",
+    "decision": "Toma de Decisiones",
+    "adaptive": "Aprendizaje Adaptativo",
+    "source": "Evaluación de Fuentes",
+    "bias": "Detección de Sesgos",
+    "skill_logical": "Razonamiento\nLógico",
+    "skill_decision": "Toma de\nDecisiones",
+    "skill_adaptive": "Aprendizaje\nAdaptativo",
+    "skill_source": "Evaluación\nde Fuentes",
+    "skill_bias": "Detección\nde Sesgos"
   },
   "daily": {
     "title": "Minijuegos Diarios",
@@ -308,8 +711,7 @@
     "total_tokens": "Tokens totales",
     "today_tokens": "Hoy",
     "daily_limit_reached": "Límite diario de tokens alcanzado. ¡Vuelve mañana para más tokens!",
-    "back_to_menu": "Volver al menú principal"
-  },
+    "back_to_menu": "Volver al menú principal",
     "challenge": "Desafío Diario",
     "completed": "Completado",
     "streak_bonus": "Bonificación por Racha",
@@ -338,7 +740,7 @@
     },
     "5": {
       "name": "Misterios de Dinero",
-      "description": "Puzzles de educación financiera sobre inversiones, estafas y decisiones de dinero."
+      "description": "Rompecabezas de educación financiera sobre inversiones, estafas y decisiones monetarias."
     },
     "6": {
       "name": "Salud y Bienestar",
@@ -366,142 +768,6 @@
     "locked_case": "Expediente Bloqueado",
     "unlock_case": "Desbloquear Caso",
     "complete_previous": "Completar casos anteriores"
-  },
-  "settings": {
-    "sound_settings": "Configuración de Sonido",
-    "background_music": "Música de Fondo",
-    "music_desc": "Música ambiental de detective mientras investigas",
-    "volume": "Volumen",
-    "music_theme": "Tema Musical",
-    "sound_effects": "Efectos de Sonido",
-    "sfx_desc": "Sonidos de interacción y retroalimentación",
-    "test_sounds": "Probar Sonidos",
-    "tip_music": "La música de fondo ayuda a crear una atmósfera inmersiva de detective. ¡Elige entre 7 pistas cuidadosamente seleccionadas para que coincidan con tu estado de ánimo de investigación!",
-    "data_management": "Gestión de Datos",
-    "data_desc": "Exportar, importar o restablecer tus datos de progreso",
-    "export_progress": "Exportar Progreso",
-    "export_desc": "Descarga tus datos de progreso como archivo JSON. Usa esto para hacer copias de seguridad o transferir a otro dispositivo.",
-    "export_data": "Exportar Datos",
-    "import_progress": "Importar Progreso",
-    "import_desc": "Restaura tu progreso desde un archivo JSON exportado anteriormente. Esto sobrescribirá tu progreso actual.",
-    "import_data": "Importar Datos",
-    "reset_progress": "Restablecer Todo el Progreso",
-    "reset_desc": "Eliminar permanentemente todos tus datos de progreso incluyendo puzzles completados, puntuaciones y estadísticas.",
-    "premium_preserved": "Tu suscripción premium se conservará.",
-    "cannot_undo": "Esta acción no se puede deshacer.",
-    "type_reset": "Escribe RESET para confirmar:",
-    "confirm_reset": "Confirmar Restablecimiento",
-    "daily_reminders": "Recordatorios Diarios",
-    "reminder_desc": "Recibe notificaciones para practicar pensamiento crítico",
-    "reminder_time": "Hora del Recordatorio",
-    "reminder_time_desc": "Elige cuándo te gustaría recibir tu recordatorio diario",
-    "hour": "Hora",
-    "minute": "Minuto",
-    "current_reminder_time": "Hora actual del recordatorio",
-    "update_reminder_time": "Actualizar Hora del Recordatorio",
-    "next_reminder": "Próximo Recordatorio",
-    "test_notifications": "Probar Notificaciones",
-    "test_notifications_desc": "Envía una notificación de prueba para ver cómo se verán los recordatorios",
-    "send_test": "Enviar Notificación de Prueba",
-    "popular_times": "Horarios Populares de Recordatorio",
-    "morning": "Mañana",
-    "lunch": "Almuerzo",
-    "evening": "Tarde",
-    "night": "Noche",
-    "reminder_tip": "La práctica diaria ayuda a construir hábitos de pensamiento crítico fuertes. ¡Activa los recordatorios para ser constante en tu aprendizaje!",
-    "notifications_blocked": "Las notificaciones están bloqueadas. Por favor, actívalas en la configuración de tu navegador.",
-    "grant_permission": "Se te pedirá permiso para notificaciones cuando actives los recordatorios.",
-    "notifications_not_supported": "Notificaciones No Soportadas",
-    "browser_not_support": "Tu navegador no soporta notificaciones. Por favor, usa un navegador moderno como Chrome, Firefox o Edge.",
-    "security_settings": "Configuración de Seguridad",
-    "manage_security": "Administra la configuración de seguridad de tu cuenta",
-    "change_password": "Cambiar Contraseña",
-    "update_password": "Actualiza tu contraseña",
-    "current_password": "Contraseña Actual",
-    "new_password": "Nueva Contraseña",
-    "confirm_new_password": "Confirmar Nueva Contraseña",
-    "enter_current_password": "Ingresa contraseña actual",
-    "enter_new_password": "Ingresa nueva contraseña",
-    "confirm_new_password_placeholder": "Confirma nueva contraseña",
-    "password_changed_success": "Contraseña cambiada exitosamente",
-    "passwords_no_match": "Las contraseñas no coinciden",
-    "password_min_length": "La contraseña debe tener al menos 8 caracteres",
-    "two_factor_auth": "Autenticación de Dos Factores",
-    "2fa_enabled": "Habilitada",
-    "2fa_add_security": "Añade una capa extra de seguridad",
-    "setup_2fa": "Configurar 2FA",
-    "scan_qr": "Escanear Código QR",
-    "scan_qr_desc": "Usa Google Authenticator o cualquier app TOTP para escanear este código",
-    "enter_6_digit": "Ingresa el código de 6 dígitos de la app",
-    "verify_enable": "Verificar y Habilitar",
-    "verifying": "Verificando...",
-    "2fa_enabled_title": "¡2FA Habilitada!",
-    "save_backup_codes": "Guarda tus Códigos de Respaldo",
-    "backup_codes_desc": "Guarda estos códigos de forma segura - los necesitarás si pierdes tu dispositivo",
-    "one_time_use": "Cada código solo puede usarse una vez. ¡Guárdalos seguros!",
-    "done": "Hecho",
-    "disable_2fa": "Deshabilitar 2FA",
-    "disable_2fa_desc": "Ingresa tu contraseña para deshabilitar la autenticación de dos factores",
-    "disabling": "Deshabilitando...",
-    "security_tips": "Consejos de Seguridad",
-    "tip_strong_password": "Usa una contraseña fuerte y única",
-    "tip_enable_2fa": "Habilita la autenticación de dos factores",
-    "tip_never_share": "Nunca compartas tu contraseña con nadie",
-    "tip_check_sessions": "Revisa tus sesiones activas regularmente",
-    "security_activity": "Actividad de Seguridad",
-    "monitor_activity": "Monitorea la actividad de tu cuenta",
-    "active_sessions": "Sesiones Activas",
-    "login_history": "Historial de Inicio de Sesión",
-    "no_active_sessions": "No hay sesiones activas",
-    "unknown_device": "Dispositivo Desconocido",
-    "unknown_browser": "Navegador Desconocido",
-    "created": "Creado",
-    "last_active": "Última actividad",
-    "revoke_session": "Revocar sesión",
-    "revoke_confirm": "¿Estás seguro de que quieres revocar esta sesión?",
-    "session_tips": "Estos son dispositivos y navegadores donde has iniciado sesión actualmente. Si ves alguna actividad sospechosa, revoca la sesión inmediatamente y cambia tu contraseña.",
-    "no_login_history": "Sin historial de inicio de sesión",
-    "logged_in": "Sesión Iniciada",
-    "logged_out": "Sesión Cerrada",
-    "password_changed_action": "Contraseña Cambiada",
-    "2fa_enabled_action": "2FA Habilitada",
-    "2fa_disabled_action": "2FA Deshabilitada",
-    "session_revoked_action": "Sesión Revocada",
-    "method": "Método",
-    "unknown_platform": "Plataforma Desconocida",
-    "unknown_ip": "IP Desconocida",
-    "just_now": "Justo ahora",
-    "minutes_ago": "hace {count} minuto(s)",
-    "hours_ago": "hace {count} hora(s)",
-    "days_ago": "hace {count} día(s)"
-  },
-  "auth": {
-    "welcome_back": "Bienvenido de Nuevo",
-    "sign_in_continue": "Inicia sesión para continuar tu investigación",
-    "email_address": "Correo Electrónico",
-    "password": "Contraseña",
-    "signing_in": "Iniciando Sesión...",
-    "sign_in": "Iniciar Sesión",
-    "continue_google": "Continuar con Google",
-    "or": "o",
-    "no_account": "¿No tienes cuenta?",
-    "create_account": "Crear Cuenta",
-    "continue_guest": "Continuar como Invitado",
-    "progress_saved_locally": "Tu progreso se guardará localmente en este dispositivo",
-    "join_mindcase": "Únete a MindCase",
-    "create_track_progress": "Crea una cuenta para seguir tu progreso",
-    "full_name": "Nombre Completo",
-    "confirm_password": "Confirmar Contraseña",
-    "creating_account": "Creando Cuenta...",
-    "already_have_account": "¿Ya tienes cuenta?",
-    "terms_agreement": "Al crear una cuenta, aceptas nuestros Términos de Servicio",
-    "name_required": "El nombre es obligatorio",
-    "email_required": "El correo electrónico es obligatorio",
-    "password_min": "La contraseña debe tener al menos 6 caracteres",
-    "passwords_no_match": "Las contraseñas no coinciden",
-    "weak": "débil",
-    "medium": "medio",
-    "strong": "fuerte"
   },
   "shop": {
     "unlock_puzzle": "Desbloquear Puzzle",
@@ -800,7 +1066,16 @@
     "feedback_count": "Los resultados suelen depender de múltiples factores. Intenta identificar al menos 4.",
     "feedback_variety": "Diferentes factores juegan diferentes roles causales. Explora factores necesarios, suficientes y contribuyentes.",
     "feedback_scenarios": "Explorar más escenarios 'qué pasaría si' revela cuán contingentes son realmente los resultados."
+  },
+  "card": {
+    "unlock_tokens": "Desbloquear ({count} fichas)",
+    "review": "Revisar",
+    "solve_riddle": "Resolver Acertijo",
+    "analyze": "Analizar",
+    "locked": "Bloqueado",
+    "evidence": "Evidencia",
+    "alert_minigames": "🔒 ¡Completa los 3 minijuegos primero para desbloquear el botón Analizar!\n\nHaz clic en \"🎮 Evidencia\" para recolectar evidencia a través de minijuegos.",
+    "evidence_board": "Tablero de Pruebas",
+    "click_instruction": "Haz clic en un caso para escribir tu análisis"
   }
 }
-
-

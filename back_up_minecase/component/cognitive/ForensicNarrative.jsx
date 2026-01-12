@@ -439,8 +439,8 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
           <div className="flex items-center gap-2">
             <span className="text-2xl">{evidence.icon || '📋'}</span>
             <div>
-              <div className="text-amber-400 font-bold text-sm">{evidence.type?.replace(/_/g, ' ').toUpperCase()}</div>
-              <div className="text-stone-400 text-xs">Source: {evidence.source}</div>
+              <div className="text-amber-400 font-bold text-sm">{TranslationService.t(`cognitive.${evidence.type}`) || evidence.type?.replace(/_/g, ' ').toUpperCase()}</div>
+              <div className="text-stone-400 text-xs">{TranslationService.t('cognitive.source')}: {evidence.source}</div>
             </div>
           </div>
           <div className="text-stone-500 text-xs">{evidence.timing}</div>
@@ -450,7 +450,7 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
 
         {/* Reliability rating */}
         <div className="mb-3">
-          <div className="text-stone-400 text-xs mb-1">How reliable is this evidence?</div>
+          <div className="text-stone-400 text-xs mb-1">{TranslationService.t('cognitive.reliability_question')}</div>
           <div className="flex gap-1">
             {[1, 2, 3, 4, 5].map(r => (
               <button
@@ -471,7 +471,7 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
         <div>
           <input
             type="text"
-            placeholder="Add a note about this evidence..."
+            placeholder={TranslationService.t('cognitive.add_note_placeholder')}
             value={note || ''}
             onChange={(e) => addNote(evidence.id, e.target.value)}
             className="w-full bg-stone-900 border border-stone-600 rounded-lg px-3 py-2 text-sm text-white placeholder-stone-500"
@@ -481,14 +481,14 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
         {/* Contradiction warning if applicable */}
         {evidence.contradicts && (
           <div className="mt-2 px-2 py-1 bg-red-900/30 border border-red-700/50 rounded text-red-300 text-xs">
-            May contradict other evidence
+            {TranslationService.t('cognitive.may_contradict')}
           </div>
         )}
 
         {/* Gap indicator */}
         {evidence.gap && (
           <div className="mt-2 px-2 py-1 bg-amber-900/30 border border-amber-700/50 rounded text-amber-300 text-xs">
-            Contains gap or missing information
+            {TranslationService.t('cognitive.contains_gap')}
           </div>
         )}
       </div>
@@ -516,11 +516,11 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
             <div className="bg-amber-900/30 border border-amber-700/50 rounded-xl p-4">
               <h4 className="font-bold text-amber-400 mb-2">{TranslationService.t('cognitive.how_this_works')}</h4>
               <ul className="text-stone-300 text-sm space-y-2 text-left">
-                <li>1. Evidence will unlock progressively - don't rush</li>
-                <li>2. Rate each evidence's reliability and take notes</li>
-                <li>3. Build a narrative that explains the evidence</li>
-                <li>4. I will challenge your narrative - defend or revise it</li>
-                <li>5. There is no single "correct" answer</li>
+                <li>1. {TranslationService.t('cognitive.how_step_1')}</li>
+                <li>2. {TranslationService.t('cognitive.how_step_2')}</li>
+                <li>3. {TranslationService.t('cognitive.how_step_3')}</li>
+                <li>4. {TranslationService.t('cognitive.how_step_4')}</li>
+                <li>5. {TranslationService.t('cognitive.how_step_5')}</li>
               </ul>
             </div>
 
@@ -550,8 +550,7 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
             </div>
 
             <div className="bg-stone-800/30 border border-stone-700 rounded-xl p-4 text-sm text-stone-400 mb-4">
-              <strong>Instructions:</strong> Examine each piece of evidence carefully.
-              Rate its reliability (1-5), note any observations, and watch for contradictions.
+              <strong>{TranslationService.t('cognitive.instructions')}:</strong> {TranslationService.t('cognitive.forensic_instructions')}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -563,13 +562,13 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
                 onClick={() => setPhase('narrative_building')}
                 className="w-full py-3 bg-gradient-to-r from-amber-600 to-red-600 text-white font-bold rounded-xl hover:from-amber-500 hover:to-red-500 transition-all"
               >
-                Build Narrative
+                {TranslationService.t('cognitive.build_narrative')}
               </button>
             )}
 
             {reviewComplete && Object.keys(evidenceRatings).length < 3 && (
               <p className="text-center text-stone-500 text-sm">
-                Rate at least 3 pieces of evidence before proceeding
+                {TranslationService.t('cognitive.rate_minimum')}
               </p>
             )}
           </div>
@@ -578,16 +577,15 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
       case 'narrative_building':
         return (
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-white">Build Your Narrative</h3>
+            <h3 className="text-xl font-bold text-white">{TranslationService.t('cognitive.build_your_narrative')}</h3>
             <p className="text-stone-400 text-sm">
-              Based on the evidence, construct an interpretation of what happened.
-              Link evidence pieces together to support your narrative.
+              {TranslationService.t('cognitive.narrative_instruction')}
             </p>
 
             {/* Narrative type selection */}
             {scenario?.possibleNarratives && (
               <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
-                <div className="text-amber-400 font-bold text-sm mb-3">Possible Interpretations:</div>
+                <div className="text-amber-400 font-bold text-sm mb-3">{TranslationService.t('cognitive.possible_interpretations')}:</div>
                 <div className="flex flex-wrap gap-2">
                   {scenario.possibleNarratives.map(n => (
                     <button
@@ -608,26 +606,26 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
             {/* Narrative text */}
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
               <label className="block text-amber-400 font-bold mb-2">
-                Your Interpretation:
+                {TranslationService.t('cognitive.your_interpretation')}:
               </label>
               <textarea
                 value={narrative}
                 onChange={(e) => setNarrative(e.target.value)}
-                placeholder="Based on the evidence, I believe... The key evidence supporting this is... However, I acknowledge that..."
+                placeholder={TranslationService.t('cognitive.interpretation_placeholder_forensic')}
                 className="w-full h-48 bg-stone-900 border border-stone-600 rounded-lg p-3 text-white placeholder-stone-500 resize-none"
               />
               <p className="text-stone-500 text-sm mt-2">
-                Reference specific evidence. Acknowledge contradictions and gaps.
+                {TranslationService.t('cognitive.reference_evidence')}
               </p>
             </div>
 
             {/* Confidence slider */}
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
               <label className="block text-amber-400 font-bold mb-4">
-                How confident are you in this interpretation?
+                {TranslationService.t('cognitive.confidence_question')}
               </label>
               <div className="flex items-center gap-4">
-                <span className="text-red-400 text-sm">Very Uncertain</span>
+                <span className="text-red-400 text-sm">{TranslationService.t('cognitive.very_uncertain')}</span>
                 <input
                   type="range"
                   min="0"
@@ -636,7 +634,7 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
                   onChange={(e) => setConfidenceLevel(parseInt(e.target.value))}
                   className="flex-1 accent-amber-500"
                 />
-                <span className="text-green-400 text-sm">Very Confident</span>
+                <span className="text-green-400 text-sm">{TranslationService.t('cognitive.very_confident')}</span>
               </div>
               <div className="text-center text-2xl font-bold text-amber-400 mt-2">
                 {confidenceLevel}%
@@ -651,7 +649,7 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
                 }}
                 className="w-full py-3 bg-gradient-to-r from-red-600 to-amber-600 text-white font-bold rounded-xl hover:from-red-500 hover:to-amber-500 transition-all"
               >
-                Submit for Challenge
+                {TranslationService.t('cognitive.submit_for_challenge')}
               </button>
             )}
           </div>
@@ -661,37 +659,37 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
         return (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold text-white">Defend Your Narrative</h3>
+              <h3 className="text-xl font-bold text-white">{TranslationService.t('cognitive.defend_narrative')}</h3>
               <div className="px-4 py-2 bg-stone-800 rounded-lg">
-                <span className="text-stone-400">Challenge</span>
+                <span className="text-stone-400">{TranslationService.t('cognitive.challenge')}</span>
                 <span className="ml-2 font-bold text-amber-400">{challengeCount + 1}/{maxChallenges}</span>
               </div>
             </div>
 
             <div className="bg-red-900/30 border border-red-700/50 rounded-xl p-6">
-              <div className="text-red-400 font-bold mb-2">I Challenge Your Interpretation:</div>
+              <div className="text-red-400 font-bold mb-2">{TranslationService.t('cognitive.challenge_interpretation')}</div>
               <p className="text-white text-lg">{currentChallenge?.text}</p>
             </div>
 
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
               <label className="block text-amber-400 font-bold mb-2">
-                Your Response:
+                {TranslationService.t('cognitive.your_response')}:
               </label>
               <textarea
                 value={challengeResponse}
                 onChange={(e) => setChallengeResponse(e.target.value)}
-                placeholder="I defend my position because... OR I acknowledge this weakness because..."
+                placeholder={TranslationService.t('cognitive.defense_placeholder')}
                 className="w-full h-32 bg-stone-900 border border-stone-600 rounded-lg p-3 text-white placeholder-stone-500 resize-none"
               />
               <p className="text-stone-500 text-sm mt-2">
-                You may defend, revise, or acknowledge weaknesses. Intellectual honesty is valued.
+                {TranslationService.t('cognitive.defense_hint')}
               </p>
             </div>
 
             {/* Update confidence after challenge */}
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
               <label className="block text-amber-400 font-bold mb-2">
-                Has this challenge affected your confidence?
+                {TranslationService.t('cognitive.confidence_affected')}
               </label>
               <input
                 type="range"
@@ -709,7 +707,7 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
                 onClick={submitChallengeResponse}
                 className="w-full py-3 bg-gradient-to-r from-amber-600 to-red-600 text-white font-bold rounded-xl hover:from-amber-500 hover:to-red-500 transition-all"
               >
-                {challengeCount + 1 < maxChallenges ? 'Submit Response' : 'Final Response'}
+                {challengeCount + 1 < maxChallenges ? TranslationService.t('cognitive.submit_response') : TranslationService.t('cognitive.final_response')}
               </button>
             )}
           </div>
@@ -718,13 +716,12 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
       case 'defense':
         return (
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-white">Final Reflection</h3>
+            <h3 className="text-xl font-bold text-white">{TranslationService.t('cognitive.final_reflection')}</h3>
 
             <div className="bg-amber-900/30 border border-amber-700/50 rounded-xl p-4">
-              <h4 className="font-bold text-amber-400 mb-2">Name Your Uncertainties</h4>
+              <h4 className="font-bold text-amber-400 mb-2">{TranslationService.t('cognitive.name_uncertainties')}</h4>
               <p className="text-stone-300 text-sm mb-4">
-                Good reasoning includes knowing what you DON'T know.
-                List the things you remain uncertain about.
+                {TranslationService.t('cognitive.uncertainty_explanation')}
               </p>
 
               <div className="flex gap-2 mb-4">
@@ -732,7 +729,7 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
                   type="text"
                   value={currentUncertainty}
                   onChange={(e) => setCurrentUncertainty(e.target.value)}
-                  placeholder="I'm uncertain about..."
+                  placeholder={TranslationService.t('cognitive.uncertain_placeholder')}
                   className="flex-1 bg-stone-900 border border-stone-600 rounded-lg px-3 py-2 text-white placeholder-stone-500"
                 />
                 <button
@@ -740,7 +737,7 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
                   disabled={currentUncertainty.trim().length < 10}
                   className="px-4 py-2 bg-amber-600 text-white rounded-lg disabled:opacity-50"
                 >
-                  Add
+                  {TranslationService.t('cognitive.add')}
                 </button>
               </div>
 
@@ -758,7 +755,7 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
 
             {/* Summary of challenges */}
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
-              <h4 className="font-bold text-white mb-3">Challenge Summary</h4>
+              <h4 className="font-bold text-white mb-3">{TranslationService.t('cognitive.challenge_summary')}</h4>
               <div className="space-y-3">
                 {challengeHistory.map((ch, idx) => (
                   <div key={idx} className="bg-stone-900/50 rounded-lg p-3">
@@ -774,13 +771,13 @@ const ForensicNarrative = ({ scenario, userId, onComplete }) => {
                 onClick={completeSession}
                 className="w-full py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-xl hover:from-green-500 hover:to-emerald-500 transition-all"
               >
-                Complete Session
+                {TranslationService.t('cognitive.complete_session')}
               </button>
             )}
 
             {uncertainties.length < 2 && (
               <p className="text-center text-stone-500 text-sm">
-                Name at least 2 uncertainties before completing
+                {TranslationService.t('cognitive.uncertainties_minimum')}
               </p>
             )}
           </div>

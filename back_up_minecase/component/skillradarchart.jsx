@@ -1,3 +1,4 @@
+import TranslationService from '../services/TranslationService';
 
 const SkillRadarChart = ({ skills }) => {
     const centerX = 150;
@@ -6,11 +7,11 @@ const SkillRadarChart = ({ skills }) => {
   const levels = 5;
   
   const skillData = [
-    { name: 'Logical\nReasoning', value: skills.logical, angle: -90 },
-    { name: 'Decision\nMaking', value: skills.decision, angle: -18 },
-    { name: 'Adaptive\nLearning', value: skills.adaptive, angle: 54 },
-    { name: 'Source\nEvaluation', value: skills.source, angle: 126 },
-    { name: 'Bias\nDetection', value: skills.bias, angle: 198 },
+    { name: TranslationService.t('profile.skill_logical'), value: skills.logical, angle: -90 },
+    { name: TranslationService.t('profile.skill_decision'), value: skills.decision, angle: -18 },
+    { name: TranslationService.t('profile.skill_adaptive'), value: skills.adaptive, angle: 54 },
+    { name: TranslationService.t('profile.skill_source'), value: skills.source, angle: 126 },
+    { name: TranslationService.t('profile.skill_bias'), value: skills.bias, angle: 198 },
   ];
 
   const getPoint = (angle, radius) => {

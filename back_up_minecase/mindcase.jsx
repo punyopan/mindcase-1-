@@ -1029,11 +1029,11 @@ const MindCaseApp = () => {
             className="flex items-center gap-2 text-amber-500 hover:text-amber-400 transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
-            <span className="font-medium">Main Menu</span>
+            <span className="font-medium">{TranslationService.t('menu.main_menu')}</span>
           </button>
           <div className="flex items-center gap-3">
             <Brain className="w-8 h-8 text-red-500" />
-            <span className="text-xl font-bold text-white">Case Files</span>
+            <span className="text-xl font-bold text-white">{TranslationService.t('menu.case_files')}</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 bg-stone-800 border border-amber-700/50 rounded-lg px-3 py-2">
@@ -1143,15 +1143,15 @@ const MindCaseApp = () => {
                       <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mb-4">
                         <div className="bg-black/30 backdrop-blur-sm rounded-lg px-4 py-2 flex items-center gap-2">
                           <span className="text-2xl">🎯</span>
-                          <span className="text-white font-semibold">{topic.puzzles.length} Classic Puzzles</span>
+                          <span className="text-white font-semibold">{topic.puzzles.length} {TranslationService.t('menu.classic_puzzles')}</span>
                         </div>
                         <div className="bg-black/30 backdrop-blur-sm rounded-lg px-4 py-2 flex items-center gap-2">
                           <span className="text-2xl">🏆</span>
-                          <span className="text-amber-300 font-semibold">{topicCompleted}/{topic.puzzles.length} Solved</span>
+                          <span className="text-amber-300 font-semibold">{topicCompleted}/{topic.puzzles.length} {TranslationService.t('common.solved')}</span>
                         </div>
                         <div className="bg-black/30 backdrop-blur-sm rounded-lg px-4 py-2 flex items-center gap-2">
                           <span className="text-2xl">⭐</span>
-                          <span className="text-yellow-300 font-semibold">Interview Favorites</span>
+                          <span className="text-yellow-300 font-semibold">{TranslationService.t('menu.interview_favorites')}</span>
                         </div>
                       </div>
 
@@ -1183,7 +1183,7 @@ const MindCaseApp = () => {
         {/* Regular Topics Label */}
         <div className="flex items-center gap-4 mb-6">
           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-stone-600 to-transparent" />
-          <span className="text-stone-400 text-sm font-medium uppercase tracking-wider">Case Files</span>
+          <span className="text-stone-400 text-sm font-medium uppercase tracking-wider">{TranslationService.t('menu.case_files')}</span>
           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-stone-600 to-transparent" />
         </div>
 
@@ -1349,12 +1349,12 @@ const MindCaseApp = () => {
               className="flex items-center gap-2 text-amber-300 hover:text-amber-200 transition-colors"
             >
               <ChevronLeft className="w-5 h-5" />
-              <span className="font-medium">Case Files</span>
+              <span className="font-medium">{TranslationService.t('menu.case_files')}</span>
             </button>
             
             <div className="flex items-center gap-3 bg-amber-900/80 border-2 border-amber-700 rounded-lg px-4 py-2">
               <span className="text-2xl">{selectedTopic.icon}</span>
-              <span className="text-lg font-bold text-amber-100">{selectedTopic.name}</span>
+              <span className="text-lg font-bold text-amber-100">{TranslationService.t(`topics.${selectedTopic.id}.name`, { defaultValue: selectedTopic.name })}</span>
             </div>
             
             <div className="flex items-center gap-2 bg-amber-900/80 border-2 border-amber-700 rounded-lg px-3 py-2">
@@ -1367,8 +1367,8 @@ const MindCaseApp = () => {
         {/* Evidence board area */}
         <div className="max-w-7xl mx-auto px-6 py-10">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-amber-100 mb-2 drop-shadow-lg">Evidence Board</h2>
-            <p className="text-amber-200/70">Click a case to write your analysis</p>
+            <h2 className="text-2xl font-bold text-amber-100 mb-2 drop-shadow-lg">{TranslationService.t('card.evidence_board')}</h2>
+            <p className="text-amber-200/70">{TranslationService.t('card.click_instruction')}</p>
           </div>
 
           {/* Fixed position board container */}
@@ -1514,11 +1514,11 @@ const MindCaseApp = () => {
                     
                     {/* Content area */}
                     <div className="p-4">
-                      <h3 className="text-stone-800 font-bold text-base mb-2 leading-tight">{puzzle.title}</h3>
+                      <h3 className="text-stone-800 font-bold text-base mb-2 leading-tight">{TranslationService.t(`puzzles.${puzzle.id}.title`, { defaultValue: puzzle.title })}</h3>
 
                       <div className="flex items-center justify-between mb-3">
                         <span className="inline-block text-xs px-2 py-1 bg-amber-200 rounded text-amber-800 font-medium">
-                          {puzzle.skillFocus}
+                          {TranslationService.t(`profile.${puzzle.skillType || 'logical'}`, { defaultValue: puzzle.skillFocus })}
                         </span>
                         {minigameProgress && !isFeaturedTopic && (
                           <span className={`text-xs px-2 py-1 rounded font-medium ${
@@ -1541,7 +1541,7 @@ const MindCaseApp = () => {
                             }}
                             className="flex-1 text-xs font-medium py-2 px-3 rounded transition-colors bg-amber-600 hover:bg-amber-700 text-white"
                           >
-                            💰 Unlock ({requiresTokens} tokens)
+                            💰 {TranslationService.t('card.unlock_tokens', { count: requiresTokens })}
                           </button>
                         ) : (
                           <>
@@ -1549,7 +1549,7 @@ const MindCaseApp = () => {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 if (!hasCompletedMinigames && !isCompleted) {
-                                  alert('🔒 Complete all 3 minigames first to unlock the Analyze button!\n\nClick "🎮 Evidence" to collect evidence through minigames.');
+                                  alert(TranslationService.t('card.alert_minigames'));
                                   return;
                                 }
                                 openPuzzle(puzzle);
@@ -1563,7 +1563,7 @@ const MindCaseApp = () => {
                                     : 'text-stone-700 hover:text-stone-900 bg-amber-100 hover:bg-amber-200'
                               }`}
                             >
-                              {isCompleted ? '📋 Review' : isFeaturedTopic ? '🧩 Solve Riddle' : hasCompletedMinigames ? '🔍 Analyze' : '🔒 Locked'}
+                              {isCompleted ? TranslationService.t('card.review') : isFeaturedTopic ? TranslationService.t('card.solve_riddle') : hasCompletedMinigames ? TranslationService.t('card.analyze') : TranslationService.t('card.locked')}
                             </button>
                             {!isFeaturedTopic && (
                               <button
@@ -1573,7 +1573,7 @@ const MindCaseApp = () => {
                                 }}
                                 className="flex-1 text-red-700 hover:text-red-900 text-xs font-medium py-2 px-3 bg-red-100 hover:bg-red-200 rounded transition-colors"
                               >
-                                🎮 Evidence
+                                🎮 {TranslationService.t('card.evidence')}
                               </button>
                             )}
                           </>
@@ -1704,11 +1704,11 @@ const MindCaseApp = () => {
 
   const renderProfilePanel = () => {
     const skillDescriptions = {
-      logical: "Logical Reasoning: Your ability to identify flaws in arguments, recognize patterns, and draw valid conclusions from given information.",
-      decision: "Decision Making: Your skill in evaluating options, considering consequences, and making well-reasoned choices under pressure or uncertainty.",
-      adaptive: "Adaptive Learning: Your capacity to recognize the same logical patterns across different contexts and apply learned principles to new situations.",
-      source: "Source Evaluation: Your proficiency in assessing the credibility, reliability, and validity of information sources and research claims.",
-      bias: "Bias Detection: Your awareness of cognitive biases, logical fallacies, and how they can distort reasoning and decision-making processes."
+      logical: `${TranslationService.t('profile.logical')}: ${TranslationService.t('profile.logical_desc')}`,
+      decision: `${TranslationService.t('profile.decision')}: ${TranslationService.t('profile.decision_desc')}`,
+      adaptive: `${TranslationService.t('profile.adaptive')}: ${TranslationService.t('profile.adaptive_desc')}`,
+      source: `${TranslationService.t('profile.source')}: ${TranslationService.t('profile.source_desc')}`,
+      bias: `${TranslationService.t('profile.bias')}: ${TranslationService.t('profile.bias_desc')}`
     };
 
     if (!showProfilePanel) return null;
@@ -1732,7 +1732,7 @@ const MindCaseApp = () => {
             <div className="flex items-center justify-between mb-6 sticky top-0 bg-stone-900/95 backdrop-blur-sm pb-4 -mt-6 pt-6 -mx-6 px-6 border-b border-amber-700/30">
               <h3 className="text-2xl font-bold text-amber-400 flex items-center gap-2">
                 <User className="w-7 h-7" />
-                Profile
+                {TranslationService.t('profile.title')}
               </h3>
               <button
                 onClick={() => setShowProfilePanel(false)}
@@ -1747,10 +1747,10 @@ const MindCaseApp = () => {
               <div className="w-20 h-20 bg-gradient-to-br from-red-700 to-red-900 rounded-full flex items-center justify-center mx-auto mb-3 border-4 border-amber-600/50">
                 <User className="w-10 h-10 text-amber-200" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-1">{user?.name || 'Detective'}</h2>
+              <h2 className="text-2xl font-bold text-white mb-1">{user?.name || TranslationService.t('profile.detective')}</h2>
               <p className="text-stone-400 text-sm">{user?.email || 'guest@mindcase.com'}</p>
               {user && (
-                <p className="text-stone-500 text-xs mt-1">Member since {user.joinDate}</p>
+                <p className="text-stone-500 text-xs mt-1">{TranslationService.t('profile.member_since')} {user.joinDate}</p>
               )}
             </div>
 
@@ -1759,12 +1759,12 @@ const MindCaseApp = () => {
               <div className="bg-stone-800/60 backdrop-blur-sm border border-amber-700/30 rounded-xl p-4 text-center">
                 <Trophy className="w-8 h-8 text-amber-500 mx-auto mb-2" />
                 <div className="text-2xl font-bold text-red-400 mb-1">{stats.solved}</div>
-                <div className="text-stone-400 text-xs">Cases Solved</div>
+                <div className="text-stone-400 text-xs">{TranslationService.t('profile.cases_solved')}</div>
               </div>
               <div className="bg-stone-800/60 backdrop-blur-sm border border-amber-700/30 rounded-xl p-4 text-center">
                 <Star className="w-8 h-8 text-amber-500 mx-auto mb-2" filled />
                 <div className="text-2xl font-bold text-amber-400 mb-1">{totalScore}</div>
-                <div className="text-stone-400 text-xs">Total Points</div>
+                <div className="text-stone-400 text-xs">{TranslationService.t('profile.total_points')}</div>
               </div>
             </div>
 
@@ -1790,16 +1790,16 @@ const MindCaseApp = () => {
               >
                 {userSubscription?.status !== 'active' && <Lock className="w-4 h-4" />}
                 <BarChart2 className="w-5 h-5" />
-                View Advanced Analytics
+                {TranslationService.t('profile.view_advanced_analytics')}
               </button>
               <p className="text-center text-stone-500 text-xs mt-2">
-                {userSubscription?.status === 'active' ? '✨ Premium Feature' : '🔒 Premium Feature - Upgrade to unlock'}
+                {userSubscription?.status === 'active' ? `✨ ${TranslationService.t('profile.premium_feature')}` : `🔒 ${TranslationService.t('profile.premium_upgrade')}`}
               </p>
             </div>
 
             {/* Skill Chart */}
             <div className="bg-stone-800/60 backdrop-blur-sm border border-amber-700/30 rounded-2xl p-5 mb-6">
-              <h3 className="text-lg font-bold text-amber-400 mb-4 text-center">Your Skill Profile</h3>
+              <h3 className="text-lg font-bold text-amber-400 mb-4 text-center">{TranslationService.t('profile.your_skill_profile')}</h3>
               <div className="w-full max-w-sm mx-auto mb-4">
                 <SkillRadarChart skills={calculateSkills} />
               </div>
@@ -1831,14 +1831,14 @@ const MindCaseApp = () => {
             {userSubscription?.status !== 'active' && (
               <div className="bg-gradient-to-br from-amber-900/30 to-yellow-900/20 border-2 border-amber-600/50 rounded-xl p-4 mb-6">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-amber-300 font-bold">Token Balance</h4>
+                  <h4 className="text-amber-300 font-bold">{TranslationService.t('profile.token_balance')}</h4>
                   <span className="text-2xl">💰</span>
                 </div>
                 <div className="text-3xl font-bold text-amber-400 mb-1">
                   {window.UserProgressService?.getTokens(user?.id || 'default_user')?.tokens || 0}
                 </div>
                 <p className="text-amber-200/70 text-xs">
-                  Earn tokens by completing daily minigames. Use 5 tokens to unlock a new puzzle!
+                  {TranslationService.t('profile.token_description')}
                 </p>
               </div>
             )}
@@ -1858,7 +1858,7 @@ const MindCaseApp = () => {
           >
             <div className="flex items-center gap-3">
               <LogIn className="w-6 h-6 text-amber-500" />
-              <span className="text-white font-medium">Login / Sign Up</span>
+              <span className="text-white font-medium">{TranslationService.t('settings.login_signup')}</span>
             </div>
             <ChevronRight className="w-5 h-5 text-stone-500" />
           </button>
@@ -1869,7 +1869,7 @@ const MindCaseApp = () => {
           >
             <div className="flex items-center gap-3">
               <LogOut className="w-6 h-6 text-red-400" />
-              <span className="text-white font-medium">Logout</span>
+              <span className="text-white font-medium">{TranslationService.t('settings.logout')}</span>
             </div>
           </button>
         )}
@@ -1881,8 +1881,8 @@ const MindCaseApp = () => {
           <div className="flex items-center gap-3">
             <CreditCard className="w-6 h-6 text-amber-500" />
             <div className="text-left">
-              <div className="text-white font-medium">Subscription</div>
-              <div className="text-stone-400 text-sm">{user?.subscription || 'Free'} Plan</div>
+              <div className="text-white font-medium">{TranslationService.t('settings.subscription')}</div>
+              <div className="text-stone-400 text-sm">{user?.subscription || TranslationService.t('settings.free_plan')} {TranslationService.t('settings.plan')}</div>
             </div>
           </div>
           <ChevronRight className="w-5 h-5 text-stone-500" />
@@ -1894,7 +1894,7 @@ const MindCaseApp = () => {
         >
           <div className="flex items-center gap-3">
             <Shield className="w-6 h-6 text-amber-500" />
-            <span className="text-white font-medium">Security</span>
+            <span className="text-white font-medium">{TranslationService.t('settings.security')}</span>
           </div>
           <ChevronRight className="w-5 h-5 text-stone-500" />
         </button>
@@ -1907,7 +1907,7 @@ const MindCaseApp = () => {
             <svg className="w-6 h-6 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
             </svg>
-            <span className="text-white font-medium">Sessions & History</span>
+            <span className="text-white font-medium">{TranslationService.t('settings.sessions_history')}</span>
           </div>
           <ChevronRight className="w-5 h-5 text-stone-500" />
         </button>
@@ -1923,7 +1923,7 @@ const MindCaseApp = () => {
             <svg className="w-6 h-6 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
             </svg>
-            <span className="text-white font-medium">Sound & Music</span>
+            <span className="text-white font-medium">{TranslationService.t('settings.sound_music')}</span>
           </div>
           <ChevronRight className="w-5 h-5 text-stone-500" />
         </button>
@@ -1935,7 +1935,7 @@ const MindCaseApp = () => {
           >
             <div className="flex items-center gap-3">
               <FileText className="w-6 h-6 text-amber-500" />
-              <span className="text-white font-medium">Data Management</span>
+              <span className="text-white font-medium">{TranslationService.t('settings.data_management')}</span>
             </div>
             <ChevronRight className="w-5 h-5 text-stone-500" />
           </button>
@@ -1948,8 +1948,8 @@ const MindCaseApp = () => {
           <div className="flex items-center gap-3">
             <Bell className="w-6 h-6 text-amber-500" />
             <div className="text-left">
-              <div className="text-white font-medium">Daily Reminders</div>
-              <div className="text-stone-400 text-sm">Get notified to practice critical thinking</div>
+              <div className="text-white font-medium">{TranslationService.t('settings.daily_reminders')}</div>
+              <div className="text-stone-400 text-sm">{TranslationService.t('settings.reminders_desc')}</div>
             </div>
           </div>
           <ChevronRight className="w-5 h-5 text-stone-400" />
@@ -1964,7 +1964,7 @@ const MindCaseApp = () => {
               <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
             </svg>
             <div className="text-left">
-              <div className="text-white font-medium">Language</div>
+              <div className="text-white font-medium">{TranslationService.t('settings.language')}</div>
               <div className="text-stone-400 text-sm">{selectedLanguage}</div>
             </div>
           </div>
@@ -1972,20 +1972,20 @@ const MindCaseApp = () => {
         </button>
 
         <div className="p-4 bg-stone-800/60 rounded-xl border border-stone-700/50">
-          <p className="text-stone-400 text-xs mb-2">Legal</p>
+          <p className="text-stone-400 text-xs mb-2">{TranslationService.t('settings.legal')}</p>
           <div className="flex gap-3">
             <button
               onClick={() => setSettingsView('privacy')}
               className="text-amber-400 hover:text-amber-300 text-sm underline transition-colors"
             >
-              Privacy Policy
+              {TranslationService.t('settings.privacy_policy')}
             </button>
             <span className="text-stone-600">•</span>
             <button
               onClick={() => setSettingsView('terms')}
               className="text-amber-400 hover:text-amber-300 text-sm underline transition-colors"
             >
-              Terms of Service
+              {TranslationService.t('settings.terms_service')}
             </button>
           </div>
         </div>
@@ -2001,11 +2001,11 @@ const MindCaseApp = () => {
           className="flex items-center gap-2 text-amber-500 hover:text-amber-400 transition-colors mb-4"
         >
           <ChevronLeft className="w-5 h-5" />
-          <span className="font-medium">Back</span>
+          <span className="font-medium">{TranslationService.t('settings.back')}</span>
         </button>
 
         <div>
-          <label className="block text-amber-300 font-medium mb-2">Email</label>
+          <label className="block text-amber-300 font-medium mb-2">{TranslationService.t('settings.email')}</label>
           <input
             type="email"
             value={loginEmail}
@@ -2016,7 +2016,7 @@ const MindCaseApp = () => {
         </div>
 
         <div>
-          <label className="block text-amber-300 font-medium mb-2">Password</label>
+          <label className="block text-amber-300 font-medium mb-2">{TranslationService.t('settings.password')}</label>
           <input
             type="password"
             value={loginPassword}
@@ -2036,11 +2036,11 @@ const MindCaseApp = () => {
           }}
           className="w-full py-3 bg-gradient-to-r from-red-700 to-amber-700 hover:from-red-600 hover:to-amber-600 rounded-lg font-bold text-white transition-all"
         >
-          Login
+          {TranslationService.t('settings.login_action')}
         </button>
 
         <p className="text-stone-400 text-sm text-center">
-          Demo: Use any email and password to login
+          {TranslationService.t('settings.demo_text')}
         </p>
       </div>
     );

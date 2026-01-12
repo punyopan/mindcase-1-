@@ -15,7 +15,10 @@
     "main_menu": "Main Menu",
     "select_investigation": "Select Your Investigation",
     "investigation_desc": "Each case file contains 5 puzzles. Write your reasoning, get AI feedback.",
-    "progress": "Progress"
+    "progress": "Progress",
+    "case_files": "Case Files",
+    "classic_puzzles": "Classic Puzzles",
+    "interview_favorites": "Interview Favorites"
   },
   "settings": {
     "title": "Settings",
@@ -38,13 +41,124 @@
     "on": "On",
     "export_data": "Export Data",
     "import_data": "Import Data",
-    "reset_progress": "Reset Progress",
+    "reset_progress": "Reset All Progress",
     "change_password": "Change Password",
     "enable_2fa": "Enable Two-Factor Authentication",
-    "disable_2fa": "Disable Two-Factor Authentication",
+    "disable_2fa": "Disable 2FA",
     "current_password": "Current Password",
     "new_password": "New Password",
-    "confirm_password": "Confirm Password"
+    "confirm_password": "Confirm Password",
+    "sound_settings": "Sound Settings",
+    "background_music": "Background Music",
+    "music_desc": "Ambient detective music while you investigate",
+    "volume": "Volume",
+    "music_theme": "Music Theme",
+    "sound_effects": "Sound Effects",
+    "sfx_desc": "Interaction sounds and feedback",
+    "test_sounds": "Test Sounds",
+    "tip_music": "Background music helps create an immersive detective atmosphere. Choose from 7 carefully selected tracks to match your investigation mood!",
+    "data_desc": "Export, import, or reset your progress data",
+    "export_progress": "Export Progress",
+    "export_desc": "Download your progress data as a JSON file. Use this to backup your data or transfer to another device.",
+    "import_progress": "Import Progress",
+    "import_desc": "Restore your progress from a previously exported JSON file. This will overwrite your current progress.",
+    "reset_desc": "Permanently delete all your progress data including completed puzzles, scores, and statistics.",
+    "premium_preserved": "Your premium subscription will be preserved.",
+    "cannot_undo": "This action cannot be undone.",
+    "type_reset": "Type RESET to confirm:",
+    "confirm_reset": "Confirm Reset",
+    "daily_reminders": "Daily Reminders",
+    "reminder_desc": "Get notified to practice critical thinking",
+    "reminder_time": "Reminder Time",
+    "reminder_time_desc": "Choose when you'd like to receive your daily reminder",
+    "hour": "Hour",
+    "minute": "Minute",
+    "current_reminder_time": "Current reminder time",
+    "update_reminder_time": "Update Reminder Time",
+    "next_reminder": "Next Reminder",
+    "test_notifications": "Test Notifications",
+    "test_notifications_desc": "Send a test notification to see how reminders will look",
+    "send_test": "Send Test Notification",
+    "popular_times": "Popular Reminder Times",
+    "morning": "Morning",
+    "lunch": "Lunch",
+    "evening": "Evening",
+    "night": "Night",
+    "reminder_tip": "Daily practice helps build strong critical thinking habits. Enable reminders to stay consistent with your learning journey!",
+    "notifications_blocked": "Notifications are blocked. Please enable them in your browser settings.",
+    "grant_permission": "You'll be asked to grant notification permission when you enable reminders.",
+    "notifications_not_supported": "Notifications Not Supported",
+    "browser_not_support": "Your browser doesn't support notifications. Please use a modern browser like Chrome, Firefox, or Edge.",
+    "security_settings": "Security Settings",
+    "manage_security": "Manage your account security settings",
+    "update_password": "Update your password",
+    "confirm_new_password": "Confirm New Password",
+    "enter_current_password": "Enter current password",
+    "enter_new_password": "Enter new password",
+    "confirm_new_password_placeholder": "Confirm new password",
+    "password_changed_success": "Password changed successfully",
+    "passwords_no_match": "Passwords do not match",
+    "password_min_length": "Password must be at least 8 characters",
+    "two_factor_auth": "Two-Factor Authentication",
+    "2fa_enabled": "Enabled",
+    "2fa_add_security": "Add an extra layer of security",
+    "setup_2fa": "Setup 2FA",
+    "scan_qr": "Scan QR Code",
+    "scan_qr_desc": "Use Google Authenticator or any TOTP app to scan this code",
+    "enter_6_digit": "Enter 6-digit code from app",
+    "verify_enable": "Verify & Enable",
+    "verifying": "Verifying...",
+    "2fa_enabled_title": "2FA Enabled!",
+    "save_backup_codes": "Save Your Backup Codes",
+    "backup_codes_desc": "Store these codes securely - you'll need them if you lose your device",
+    "one_time_use": "Each code can only be used once. Store them securely!",
+    "done": "Done",
+    "disable_2fa_desc": "Enter your password to disable two-factor authentication",
+    "disabling": "Disabling...",
+    "security_tips": "Security Tips",
+    "tip_strong_password": "Use a strong, unique password",
+    "tip_enable_2fa": "Enable two-factor authentication",
+    "tip_never_share": "Never share your password with anyone",
+    "tip_check_sessions": "Review your active sessions regularly",
+    "security_activity": "Security Activity",
+    "monitor_activity": "Monitor your account activity",
+    "active_sessions": "Active Sessions",
+    "login_history": "Login History",
+    "no_active_sessions": "No active sessions",
+    "unknown_device": "Unknown Device",
+    "unknown_browser": "Unknown Browser",
+    "created": "Created",
+    "last_active": "Last active",
+    "revoke_session": "Revoke session",
+    "revoke_confirm": "Are you sure you want to revoke this session?",
+    "session_tips": "These are devices and browsers where you're currently logged in. If you see any suspicious activity, revoke the session immediately and change your password.",
+    "no_login_history": "No login history",
+    "logged_in": "Logged In",
+    "logged_out": "Logged Out",
+    "password_changed_action": "Password Changed",
+    "2fa_enabled_action": "2FA Enabled",
+    "2fa_disabled_action": "2FA Disabled",
+    "session_revoked_action": "Session Revoked",
+    "method": "Method",
+    "unknown_platform": "Unknown Platform",
+    "unknown_ip": "Unknown IP",
+    "just_now": "Just now",
+    "minutes_ago": "{count} minute(s) ago",
+    "hours_ago": "{count} hour(s) ago",
+    "days_ago": "{count} day(s) ago",
+    "login_signup": "Login / Sign Up",
+    "free_plan": "Free",
+    "plan": "Plan",
+    "sessions_history": "Sessions & History",
+    "sound_music": "Sound & Music",
+    "reminders_desc": "Get notified to practice critical thinking",
+    "legal": "Legal",
+    "privacy_policy": "Privacy Policy",
+    "terms_service": "Terms of Service",
+    "email": "Email",
+    "password": "Password",
+    "login_action": "Login",
+    "demo_text": "Demo: Use any email and password to login"
   },
   "auth": {
     "logged_in_as": "Logged in as",
@@ -59,7 +173,30 @@
     "continue_as_guest": "Continue as Guest",
     "or": "or",
     "already_have_account": "Already have an account?",
-    "dont_have_account": "Don't have an account?"
+    "dont_have_account": "Don't have an account?",
+    "welcome_back": "Welcome Back",
+    "sign_in_continue": "Sign in to continue your investigation",
+    "email_address": "Email Address",
+    "signing_in": "Signing In...",
+    "sign_in": "Sign In",
+    "continue_google": "Continue with Google",
+    "no_account": "Don't have an account?",
+    "create_account": "Create Account",
+    "continue_guest": "Continue as Guest",
+    "progress_saved_locally": "Your progress will be saved locally on this device",
+    "join_mindcase": "Join MindCase",
+    "create_track_progress": "Create an account to track your progress",
+    "full_name": "Full Name",
+    "confirm_password": "Confirm Password",
+    "creating_account": "Creating Account...",
+    "terms_agreement": "By creating an account, you agree to our Terms of Service",
+    "name_required": "Name is required",
+    "email_required": "Email is required",
+    "password_min": "Password must be at least 6 characters",
+    "passwords_no_match": "Passwords do not match",
+    "weak": "weak",
+    "medium": "medium",
+    "strong": "strong"
   },
   "common": {
     "loading": "Loading...",
@@ -74,9 +211,145 @@
     "done": "Done",
     "retry": "Retry",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "solved": "Solved"
   },
   "puzzles": {
+    "1": {
+      "title": "The Missing Money"
+    },
+    "2": {
+      "title": "The Identical Essays"
+    },
+    "3": {
+      "title": "The Back Row Pattern"
+    },
+    "4": {
+      "title": "The Budget Crisis"
+    },
+    "5": {
+      "title": "The Wonder Method"
+    },
+    "6": {
+      "title": "The Viral Statistic"
+    },
+    "7": {
+      "title": "The Principal Video"
+    },
+    "8": {
+      "title": "The Expert Influencer"
+    },
+    "9": {
+      "title": "The Comment Consensus"
+    },
+    "10": {
+      "title": "The Algorithm Echo"
+    },
+    "11": {
+      "title": "The Remote Work Blame"
+    },
+    "12": {
+      "title": "The Promotion Puzzle"
+    },
+    "13": {
+      "title": "The Meeting Paradox"
+    },
+    "14": {
+      "title": "The AI Vendor Pitch"
+    },
+    "15": {
+      "title": "The Survey Trap"
+    },
+    "16": {
+      "title": "The Miracle Supplement"
+    },
+    "17": {
+      "title": "The Diet Debate"
+    },
+    "18": {
+      "title": "The Breakfast Study"
+    },
+    "19": {
+      "title": "The Success Stories"
+    },
+    "20": {
+      "title": "The Natural Label"
+    },
+    "21": {
+      "title": "The Hot Stock Tip"
+    },
+    "22": {
+      "title": "The Course Dilemma"
+    },
+    "23": {
+      "title": "The Car Deal"
+    },
+    "24": {
+      "title": "The Tech Portfolio"
+    },
+    "25": {
+      "title": "The Raise Decision"
+    },
+    "26": {
+      "title": "The Screening Test Paradox"
+    },
+    "27": {
+      "title": "The Vaccination Correlation"
+    },
+    "28": {
+      "title": "The Celebrity Cure"
+    },
+    "29": {
+      "title": "The Painkiller Study"
+    },
+    "30": {
+      "title": "The Fitness Tracker Fallacy"
+    },
+    "31": {
+      "title": "The Cold Winter Argument"
+    },
+    "32": {
+      "title": "The Recycling Contradiction"
+    },
+    "33": {
+      "title": "The Corporate Pledge"
+    },
+    "34": {
+      "title": "The Plastic Straw Ban"
+    },
+    "35": {
+      "title": "The Local Food Movement"
+    },
+    "36": {
+      "title": "The Eyewitness Confidence"
+    },
+    "37": {
+      "title": "The Recidivism Algorithm"
+    },
+    "38": {
+      "title": "The Plea Bargain Pressure"
+    },
+    "39": {
+      "title": "The Tough-on-Crime Law"
+    },
+    "40": {
+      "title": "The Torture Ticking Bomb"
+    },
+    "41": {
+      "title": "The Free App Deal"
+    },
+    "42": {
+      "title": "The Smart Home Hack"
+    },
+    "43": {
+      "title": "The Encrypted Message Debate"
+    },
+    "44": {
+      "title": "The Personalized Feed"
+    },
+    "45": {
+      "title": "The Deepfake Evidence"
+    },
     "correct": "Correct!",
     "incorrect": "Incorrect",
     "skip": "Skip",
@@ -257,9 +530,7 @@
     "subgroup_desc": "Analyze specific subset against population",
     "interaction_desc": "Test if variables influence each other",
     "temporal_desc": "Find time-based patterns or phases",
-    "signal_detection": "Signal Detection",
     "signal_detection_desc": "Observe patterns in noise before acting.",
-    "forensic_reconstruction": "Forensic Reconstruction",
     "forensic_reconstruction_desc": "Build hypotheses from fragmented evidence.",
     "system_intervention_title": "System Intervention",
     "system_intervention_desc": "Manage trade-offs in a dynamic system.",
@@ -273,7 +544,114 @@
     "stage_variable": "Stage 3: Variable Manifold",
     "stage_analysis": "Final Phase: Analysis",
     "preparing_next": "Preparing Next Module",
-    "proceed": "Proceed"
+    "challenge_response_placeholder": "Respond to this challenge...",
+    "source": "Source",
+    "reliability_question": "How reliable is this evidence?",
+    "how_step_1": "Evidence will unlock progressively - don't rush",
+    "how_step_2": "Rate each evidence's reliability and take notes",
+    "how_step_3": "Build a narrative that explains the evidence",
+    "how_step_4": "I will challenge your narrative - defend or revise it",
+    "how_step_5": "There is no single 'correct' answer",
+    "forensic_instructions": "Examine each piece of evidence carefully. Rate its reliability (1-5), note any observations, and watch for contradictions.",
+    "rate_minimum": "Rate at least 3 pieces of evidence before proceeding",
+    "narrative_instruction": "Based on the evidence, construct an interpretation of what happened. Link evidence pieces together to support your narrative.",
+    "interpretation_placeholder_forensic": "Based on the evidence, I believe... The key evidence supporting this is... However, I acknowledge that...",
+    "reference_evidence": "Reference specific evidence. Acknowledge contradictions and gaps.",
+    "confidence_question": "How confident are you in this interpretation?",
+    "challenge": "Challenge",
+    "challenge_interpretation": "I Challenge Your Interpretation:",
+    "defense_placeholder": "I defend my position because... OR I acknowledge this weakness because...",
+    "defense_hint": "You may defend, revise, or acknowledge weaknesses. Intellectual honesty is valued.",
+    "uncertainty_explanation": "Good reasoning includes knowing what you DON'T know. List the things you remain uncertain about.",
+    "uncertain_placeholder": "I'm uncertain about...",
+    "uncertainties_minimum": "Name at least 2 uncertainties before completing",
+    "outcome": "Outcome",
+    "variable_step_1": "Explore the system to understand how variables connect",
+    "variable_step_2": "Make interventions (you have limited changes)",
+    "variable_step_3": "Watch how changes ripple through the system",
+    "variable_step_4": "Identify the fundamental tensions you cannot resolve",
+    "variable_step_5": "Defend your configuration as a reasonable trade-off",
+    "exploration_instructions": "Study how the variables connect. Click on variables to see their relationships. Take time to understand the system before making changes.",
+    "explore_minimum": "Continue exploring for at least 30 seconds",
+    "interventions_label": "Interventions",
+    "change_reason": "Why are you making this change?",
+    "change_placeholder": "I'm increasing this because...",
+    "irreducible_tensions": "Articulate Irreducible Tensions",
+    "tensions_explanation": "This system has fundamental tensions that cannot be resolved. Name them explicitly. What trade-offs are unavoidable?",
+    "hint_tensions": "Hint: Core System Tensions",
+    "defensible_placeholder": "My configuration is defensible because... I acknowledge that someone could disagree and prioritize differently by... But I chose this approach because...",
+    "tensions_minimum": "Identify at least 2 tensions and provide trade-off analysis",
+    "log": "LOG",
+    "statement": "STATEMENT",
+    "witness": "WITNESS",
+    "document": "DOCUMENT",
+    "digital_trace": "DIGITAL TRACE",
+    "physical": "PHYSICAL",
+    "scenarios": {
+      "education_title": "Student Performance Analysis",
+      "education_briefing": "You've been given performance data from a class. School administrators believe they've identified what's causing score differences and want to implement policy changes. Examine the data before they act.",
+      "education_insight": "The apparent pattern is confounded by pre-existing differences",
+      "health_title": "Treatment Outcome Analysis",
+      "health_briefing": "A hospital board is about to mandate Treatment C based on their analysis showing it has the best outcomes. You have access to the full dataset. What's actually going on?",
+      "health_insight": "Treatment selection is confounded by patient severity",
+      "business_title": "Remote Work Productivity Study",
+      "business_briefing": "The CEO wants to end remote work because office workers appear more productive. HR has provided this dataset. Analyze it before the policy announcement.",
+      "business_insight": "Work location differences are explained by management quality",
+      "val_front": "Front",
+      "val_front_mid": "Front-Mid",
+      "val_middle": "Middle",
+      "val_back_mid": "Back-Mid",
+      "val_back": "Back",
+      "val_morning": "morning",
+      "val_midday": "midday",
+      "val_afternoon": "afternoon",
+      "val_high_school": "high_school",
+      "val_college": "college",
+      "val_graduate": "graduate",
+      "city_title": "Urban Policy Simulator",
+      "city_briefing": "You are managing a complex city system. Interventions in one area will cascade to others. Find a stable configuration.",
+      "ecosystem_title": "Ecosystem Balance",
+      "ecosystem_briefing": "You are managing a complex ecosystem system. Interventions in one area will cascade to others. Find a stable configuration.",
+      "corp_title": "Corporate Strategy",
+      "corp_briefing": "You are managing a complex corp system. Interventions in one area will cascade to others. Find a stable configuration.",
+      "manifold_briefing_template": "You are managing a complex [SYSTEM] system. Interventions in one area will cascade to others. Find a stable configuration."
+    },
+    "cols": {
+      "testScore": "Test Score",
+      "seatPosition": "Seat Position",
+      "classTime": "Class Time",
+      "attendance": "Attendance",
+      "reportedStudyHours": "Study Hours",
+      "priorGradeLevel": "Prior Grade",
+      "extraCurricular": "Extra Curricular",
+      "partTimeJob": "Part Time Job",
+      "parentsEducation": "Parents Education",
+      "recoveryScore": "Recovery Score",
+      "age": "Age",
+      "treatmentType": "Treatment Type",
+      "hoursToTreatment": "Hours to Treatment",
+      "hospitalSize": "Hospital Size",
+      "hasInsurance": "Insurance",
+      "comorbidities": "Comorbidities",
+      "doctorExperience": "Doctor Exp",
+      "productivityScore": "Productivity",
+      "workLocation": "Location",
+      "yearsAtCompany": "Tenure",
+      "teamSize": "Team Size",
+      "meetingsPerWeek": "Meetings/Week",
+      "performanceReviews": "Perf. Reviews",
+      "department": "Department",
+      "managerId": "Manager ID",
+      "trainingHours": "Training Hours"
+    },
+    "trainer_title": "Cognitive Trainer",
+    "session_id": "SESSION ID",
+    "status_resumed": "Resumed",
+    "phase_1_title": "Phase 1: Observation",
+    "phase_2_title": "Phase 2: Hypothesis",
+    "phase_3_title": "Phase 3: Integration",
+    "premium_badge": "Premium",
+    "game_assumption": "Assumption Excavator"
   },
   "profile": {
     "title": "Profile",
@@ -286,7 +664,32 @@
     "decision_making": "Decision Making",
     "adaptive_learning": "Adaptive Learning",
     "source_evaluation": "Source Evaluation",
-    "bias_detection": "Bias Detection"
+    "bias_detection": "Bias Detection",
+    "member_since": "Member since",
+    "detective": "Detective",
+    "cases_solved": "Cases Solved",
+    "total_points": "Total Points",
+    "view_advanced_analytics": "View Advanced Analytics",
+    "premium_feature": "Premium Feature",
+    "premium_upgrade": "Premium Feature - Upgrade to unlock",
+    "your_skill_profile": "Your Skill Profile",
+    "logical_desc": "Your ability to construct sound arguments, analyze complex systems, and identify valid conclusions from premises.",
+    "decision_desc": "Your capacity to evaluate options, weigh trade-offs, and make reasoned choices under uncertainty.",
+    "adaptive_desc": "Your ability to recognize patterns, integrate new information, and update your mental models as you learn.",
+    "source_desc": "Your proficiency in assessing the credibility, reliability, and validity of information sources and research claims.",
+    "bias_desc": "Your awareness of cognitive biases, logical fallacies, and how they can distort reasoning and decision-making processes.",
+    "token_balance": "Token Balance",
+    "token_description": "Earn tokens by completing daily minigames. Use 5 tokens to unlock a new puzzle!",
+    "logical": "Logical Reasoning",
+    "decision": "Decision Making",
+    "adaptive": "Adaptive Learning",
+    "source": "Source Evaluation",
+    "bias": "Bias Detection",
+    "skill_logical": "Logical\nReasoning",
+    "skill_decision": "Decision\nMaking",
+    "skill_adaptive": "Adaptive\nLearning",
+    "skill_source": "Source\nEvaluation",
+    "skill_bias": "Bias\nDetection"
   },
   "daily": {
     "title": "Daily Minigames",
@@ -308,8 +711,7 @@
     "total_tokens": "Total tokens",
     "today_tokens": "Today",
     "daily_limit_reached": "Daily token limit reached. Come back tomorrow for more tokens!",
-    "back_to_menu": "Back to main menu"
-  },
+    "back_to_menu": "Back to main menu",
     "challenge": "Daily Challenge",
     "completed": "Completed",
     "streak_bonus": "Streak Bonus",
@@ -366,142 +768,6 @@
     "locked_case": "Locked Case File",
     "unlock_case": "Unlock Case",
     "complete_previous": "Complete previous cases"
-  },
-  "settings": {
-    "sound_settings": "Sound Settings",
-    "background_music": "Background Music",
-    "music_desc": "Ambient detective music while you investigate",
-    "volume": "Volume",
-    "music_theme": "Music Theme",
-    "sound_effects": "Sound Effects",
-    "sfx_desc": "Interaction sounds and feedback",
-    "test_sounds": "Test Sounds",
-    "tip_music": "Background music helps create an immersive detective atmosphere. Choose from 7 carefully selected tracks to match your investigation mood!",
-    "data_management": "Data Management",
-    "data_desc": "Export, import, or reset your progress data",
-    "export_progress": "Export Progress",
-    "export_desc": "Download your progress data as a JSON file. Use this to backup your data or transfer to another device.",
-    "export_data": "Export Data",
-    "import_progress": "Import Progress",
-    "import_desc": "Restore your progress from a previously exported JSON file. This will overwrite your current progress.",
-    "import_data": "Import Data",
-    "reset_progress": "Reset All Progress",
-    "reset_desc": "Permanently delete all your progress data including completed puzzles, scores, and statistics.",
-    "premium_preserved": "Your premium subscription will be preserved.",
-    "cannot_undo": "This action cannot be undone.",
-    "type_reset": "Type RESET to confirm:",
-    "confirm_reset": "Confirm Reset",
-    "daily_reminders": "Daily Reminders",
-    "reminder_desc": "Get notified to practice critical thinking",
-    "reminder_time": "Reminder Time",
-    "reminder_time_desc": "Choose when you'd like to receive your daily reminder",
-    "hour": "Hour",
-    "minute": "Minute",
-    "current_reminder_time": "Current reminder time",
-    "update_reminder_time": "Update Reminder Time",
-    "next_reminder": "Next Reminder",
-    "test_notifications": "Test Notifications",
-    "test_notifications_desc": "Send a test notification to see how reminders will look",
-    "send_test": "Send Test Notification",
-    "popular_times": "Popular Reminder Times",
-    "morning": "Morning",
-    "lunch": "Lunch",
-    "evening": "Evening",
-    "night": "Night",
-    "reminder_tip": "Daily practice helps build strong critical thinking habits. Enable reminders to stay consistent with your learning journey!",
-    "notifications_blocked": "Notifications are blocked. Please enable them in your browser settings.",
-    "grant_permission": "You'll be asked to grant notification permission when you enable reminders.",
-    "notifications_not_supported": "Notifications Not Supported",
-    "browser_not_support": "Your browser doesn't support notifications. Please use a modern browser like Chrome, Firefox, or Edge.",
-    "security_settings": "Security Settings",
-    "manage_security": "Manage your account security settings",
-    "change_password": "Change Password",
-    "update_password": "Update your password",
-    "current_password": "Current Password",
-    "new_password": "New Password",
-    "confirm_new_password": "Confirm New Password",
-    "enter_current_password": "Enter current password",
-    "enter_new_password": "Enter new password",
-    "confirm_new_password_placeholder": "Confirm new password",
-    "password_changed_success": "Password changed successfully",
-    "passwords_no_match": "Passwords do not match",
-    "password_min_length": "Password must be at least 8 characters",
-    "two_factor_auth": "Two-Factor Authentication",
-    "2fa_enabled": "Enabled",
-    "2fa_add_security": "Add an extra layer of security",
-    "setup_2fa": "Setup 2FA",
-    "scan_qr": "Scan QR Code",
-    "scan_qr_desc": "Use Google Authenticator or any TOTP app to scan this code",
-    "enter_6_digit": "Enter 6-digit code from app",
-    "verify_enable": "Verify & Enable",
-    "verifying": "Verifying...",
-    "2fa_enabled_title": "2FA Enabled!",
-    "save_backup_codes": "Save Your Backup Codes",
-    "backup_codes_desc": "Store these codes securely - you'll need them if you lose your device",
-    "one_time_use": "Each code can only be used once. Store them securely!",
-    "done": "Done",
-    "disable_2fa": "Disable 2FA",
-    "disable_2fa_desc": "Enter your password to disable two-factor authentication",
-    "disabling": "Disabling...",
-    "security_tips": "Security Tips",
-    "tip_strong_password": "Use a strong, unique password",
-    "tip_enable_2fa": "Enable two-factor authentication",
-    "tip_never_share": "Never share your password with anyone",
-    "tip_check_sessions": "Review your active sessions regularly",
-    "security_activity": "Security Activity",
-    "monitor_activity": "Monitor your account activity",
-    "active_sessions": "Active Sessions",
-    "login_history": "Login History",
-    "no_active_sessions": "No active sessions",
-    "unknown_device": "Unknown Device",
-    "unknown_browser": "Unknown Browser",
-    "created": "Created",
-    "last_active": "Last active",
-    "revoke_session": "Revoke session",
-    "revoke_confirm": "Are you sure you want to revoke this session?",
-    "session_tips": "These are devices and browsers where you're currently logged in. If you see any suspicious activity, revoke the session immediately and change your password.",
-    "no_login_history": "No login history",
-    "logged_in": "Logged In",
-    "logged_out": "Logged Out",
-    "password_changed_action": "Password Changed",
-    "2fa_enabled_action": "2FA Enabled",
-    "2fa_disabled_action": "2FA Disabled",
-    "session_revoked_action": "Session Revoked",
-    "method": "Method",
-    "unknown_platform": "Unknown Platform",
-    "unknown_ip": "Unknown IP",
-    "just_now": "Just now",
-    "minutes_ago": "{count} minute(s) ago",
-    "hours_ago": "{count} hour(s) ago",
-    "days_ago": "{count} day(s) ago"
-  },
-  "auth": {
-    "welcome_back": "Welcome Back",
-    "sign_in_continue": "Sign in to continue your investigation",
-    "email_address": "Email Address",
-    "password": "Password",
-    "signing_in": "Signing In...",
-    "sign_in": "Sign In",
-    "continue_google": "Continue with Google",
-    "or": "or",
-    "no_account": "Don't have an account?",
-    "create_account": "Create Account",
-    "continue_guest": "Continue as Guest",
-    "progress_saved_locally": "Your progress will be saved locally on this device",
-    "join_mindcase": "Join MindCase",
-    "create_track_progress": "Create an account to track your progress",
-    "full_name": "Full Name",
-    "confirm_password": "Confirm Password",
-    "creating_account": "Creating Account...",
-    "already_have_account": "Already have an account?",
-    "terms_agreement": "By creating an account, you agree to our Terms of Service",
-    "name_required": "Name is required",
-    "email_required": "Email is required",
-    "password_min": "Password must be at least 6 characters",
-    "passwords_no_match": "Passwords do not match",
-    "weak": "weak",
-    "medium": "medium",
-    "strong": "strong"
   },
   "shop": {
     "unlock_puzzle": "Unlock Puzzle",
@@ -800,7 +1066,16 @@
     "feedback_count": "Outcomes typically depend on multiple factors. Try to identify at least 4.",
     "feedback_variety": "Different factors play different causal roles. Explore necessary, sufficient, and contributing factors.",
     "feedback_scenarios": "Exploring more 'what if' scenarios reveals how contingent outcomes really are."
+  },
+  "card": {
+    "unlock_tokens": "Unlock ({count} tokens)",
+    "review": "Review",
+    "solve_riddle": "Solve Riddle",
+    "analyze": "Analyze",
+    "locked": "Locked",
+    "evidence": "Evidence",
+    "alert_minigames": "🔒 Complete all 3 minigames first to unlock the Analyze button!\n\nClick \"🎮 Evidence\" to collect evidence through minigames.",
+    "evidence_board": "Evidence Board",
+    "click_instruction": "Click a case to write your analysis"
   }
 }
-
-

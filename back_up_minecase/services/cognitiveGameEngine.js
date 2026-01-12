@@ -16,6 +16,16 @@
 const CognitiveGameEngine = (function() {
   'use strict';
 
+  // Translation helper
+  const t = (key, fallback) => {
+    if (typeof window !== 'undefined' && window.TranslationService) {
+      const val = window.TranslationService.t('cognitive.scenarios.' + key);
+      // If translation returns the key (missing), return fallback
+      return (val && val !== 'cognitive.scenarios.' + key) ? val : fallback;
+    }
+    return fallback;
+  };
+
   // ============================================================================
   // GAME TYPE DEFINITIONS
   // ============================================================================
@@ -221,27 +231,27 @@ const CognitiveGameEngine = (function() {
       students.push({
         id: `S${i + 1}`,
         testScore: Math.min(100, Math.max(0, baseScore + patternEffect + confoundEffect + noise)),
-        seatPosition: ['Front', 'Front-Mid', 'Middle', 'Back-Mid', 'Back'][seatPosition],
-        classTime,
+        seatPosition: [t('val_front', 'Front'), t('val_front_mid', 'Front-Mid'), t('val_middle', 'Middle'), t('val_back_mid', 'Back-Mid'), t('val_back', 'Back')][seatPosition],
+        classTime: t('val_' + classTime, classTime),
         attendance: Math.round(attendance),
         reportedStudyHours: Math.round(studyHours),
         priorGradeLevel: Math.round(priorGrade),
         extraCurricular: Math.random() > 0.6,
         partTimeJob: Math.random() > 0.7,
-        parentsEducation: ['high_school', 'college', 'graduate'][Math.floor(Math.random() * 3)]
+        parentsEducation: [t('val_high_school', 'high_school'), t('val_college', 'college'), t('val_graduate', 'graduate')][Math.floor(Math.random() * 3)]
       });
     }
 
     return {
       type: 'signal_field',
       domain: 'education',
-      title: 'Student Performance Analysis',
-      briefing: "You've been given performance data from a class. School administrators believe they've identified what's causing score differences and want to implement policy changes. Examine the data before they act.",
+      title: t('education_title', 'Student Performance Analysis'),
+      briefing: t('education_briefing', "You've been given performance data from a class. School administrators believe they've identified what's causing score differences and want to implement policy changes. Examine the data before they act."),
       dataPoints: students,
       hiddenPatterns: [hiddenPattern],
       redHerrings: ['study_hours', 'extracurricular'], // Appear meaningful but aren't
       confounds: ['prior_grade_affects_seating'],
-      correctInsight: "The apparent pattern is confounded by pre-existing differences",
+      correctInsight: t('education_insight', "The apparent pattern is confounded by pre-existing differences"),
       testingBudget: 3, // Limited number of analyses they can request
       difficulty
     };
@@ -288,13 +298,13 @@ const CognitiveGameEngine = (function() {
     return {
       type: 'signal_field',
       domain: 'health',
-      title: 'Treatment Outcome Analysis',
-      briefing: "A hospital board is about to mandate Treatment C based on their analysis showing it has the best outcomes. You have access to the full dataset. What's actually going on?",
+      title: t('health_title', 'Treatment Outcome Analysis'),
+      briefing: t('health_briefing', "A hospital board is about to mandate Treatment C based on their analysis showing it has the best outcomes. You have access to the full dataset. What's actually going on?"),
       dataPoints: patients,
       hiddenPatterns: ['time_to_treatment'],
       redHerrings: ['treatment_type', 'hospital_size'],
       confounds: ['healthier_patients_get_treatment_C'],
-      correctInsight: "Treatment selection is confounded by patient severity",
+      correctInsight: t('health_insight', "Treatment selection is confounded by patient severity"),
       testingBudget: 3,
       difficulty
     };
@@ -340,13 +350,13 @@ const CognitiveGameEngine = (function() {
     return {
       type: 'signal_field',
       domain: 'business',
-      title: 'Remote Work Productivity Study',
-      briefing: "The CEO wants to end remote work because office workers appear more productive. HR has provided this dataset. Analyze it before the policy announcement.",
+      title: t('business_title', 'Remote Work Productivity Study'),
+      briefing: t('business_briefing', "The CEO wants to end remote work because office workers appear more productive. HR has provided this dataset. Analyze it before the policy announcement."),
       dataPoints: employees,
       hiddenPatterns: ['manager_quality'],
       redHerrings: ['work_location', 'meetings_per_week'],
       confounds: ['good_managers_approve_remote'],
-      correctInsight: "Work location differences are explained by management quality",
+      correctInsight: t('business_insight', "Work location differences are explained by management quality"),
       testingBudget: 3,
       difficulty
     };
@@ -488,21 +498,21 @@ const CognitiveGameEngine = (function() {
     const themes = [
       {
         id: 'city',
-        title: 'Urban Policy Simulator',
-        variables: ['Education', 'Police', 'Housing', 'Transit', 'Parks'],
+        title: t('city_title', 'Urban Policy Simulator'),
+        variables: [t('var_education', 'Education'), t('var_police', 'Police'), t('var_housing', 'Housing'), t('var_transit', 'Transit'), t('var_parks', 'Parks')],
         outcomes: ['Crime Rate', 'GDP Growth', 'Public Health', 'Approval'],
         units: 'M$'
       },
       {
         id: 'ecosystem',
-        title: 'Ecosystem Balance',
+        title: t('ecosystem_title', 'Ecosystem Balance'),
         variables: ['Predators', 'Herbivores', 'Vegetation', 'Water', 'Insects'],
         outcomes: ['Biodiversity', 'Soil Health', 'Carbon Capture', 'Stability'],
         units: 'Pop'
       },
       {
         id: 'corp',
-        title: 'Corporate Strategy',
+        title: t('corp_title', 'Corporate Strategy'),
         variables: ['R&D', 'Marketing', 'Salaries', 'Dividends', 'Ops'],
         outcomes: ['Stock Price', 'Employee Morale', 'Innovation', 'Market Share'],
         units: 'k$'
@@ -565,7 +575,7 @@ const CognitiveGameEngine = (function() {
     return {
       type: 'variable_manifold',
       title: theme.title,
-      briefing: `You are managing a complex ${theme.id} system. Interventions in one area will cascade to others. Find a stable configuration.`,
+      briefing: t(theme.id + '_briefing', t('manifold_briefing_template', "You are managing a complex [SYSTEM] system...").replace('[SYSTEM]', theme.id)),
       variables: allNodes,
       interventionEffects: interventionEffects,
       constraints: [

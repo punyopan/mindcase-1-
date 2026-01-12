@@ -365,7 +365,10 @@ const SignalField = ({ scenario, userId, onComplete }) => {
                   className="px-2 py-2 text-left text-stone-400 cursor-pointer hover:text-amber-400 transition-colors"
                   onClick={() => handleSort(col)}
                 >
-                  {col.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ')}
+                  {(() => {
+                    const tVal = TranslationService.t('cognitive.cols.' + col);
+                    return tVal.startsWith('cognitive.cols.') ? col.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ') : tVal;
+                  })()}
                   {sortBy === col && (sortOrder === 'asc' ? ' ↑' : ' ↓')}
                 </th>
               ))}
@@ -385,7 +388,7 @@ const SignalField = ({ scenario, userId, onComplete }) => {
                 {columns.map(col => (
                   <td key={col} className="px-2 py-1 text-stone-300">
                     {typeof row[col] === 'boolean'
-                      ? (row[col] ? 'Yes' : 'No')
+                      ? (row[col] ? TranslationService.t('common.yes') : TranslationService.t('common.no'))
                       : typeof row[col] === 'number'
                         ? Number(row[col]).toFixed(1)
                         : row[col]
@@ -686,12 +689,12 @@ const SignalField = ({ scenario, userId, onComplete }) => {
 
             <div className="bg-stone-800/50 border border-stone-700 rounded-xl p-4">
               <label className="block text-amber-400 font-bold mb-2">
-                What are you uncertain about and why?
+                {TranslationService.t('cognitive.uncertainty_prompt')}
               </label>
               <textarea
                 value={uncertaintyReasoning}
                 onChange={(e) => setUncertaintyReasoning(e.target.value)}
-                placeholder="I'm uncertain about... because the data doesn't clearly show..."
+                placeholder={TranslationService.t('cognitive.uncertainty_placeholder')}
                 className="w-full h-24 bg-stone-900 border border-stone-600 rounded-lg p-3 text-white placeholder-stone-500 resize-none"
               />
             </div>
@@ -701,7 +704,7 @@ const SignalField = ({ scenario, userId, onComplete }) => {
               disabled={synthesisResponse.length < 50}
               className="w-full py-3 bg-gradient-to-r from-amber-600 to-red-600 text-white font-bold rounded-xl hover:from-amber-500 hover:to-red-500 transition-all disabled:opacity-50"
             >
-              Submit Synthesis
+              {TranslationService.t('cognitive.submit_synthesis')}
             </button>
           </div>
         );
@@ -718,11 +721,11 @@ const SignalField = ({ scenario, userId, onComplete }) => {
     return (
       <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
         <div className="bg-stone-900 border border-amber-700/50 rounded-xl p-6 max-w-lg w-full">
-          <h3 className="text-xl font-bold text-amber-400 mb-4">Challenge Your Reasoning</h3>
+          <h3 className="text-xl font-bold text-amber-400 mb-4">{TranslationService.t('cognitive.challenge_reasoning')}</h3>
           <p className="text-stone-200 mb-6">{currentChallenge}</p>
 
           <textarea
-            placeholder="Respond to this challenge..."
+            placeholder={TranslationService.t('cognitive.challenge_response_placeholder')}
             className="w-full h-32 bg-stone-800 border border-stone-600 rounded-lg p-3 text-white placeholder-stone-500 resize-none mb-4"
           />
 
@@ -733,7 +736,7 @@ const SignalField = ({ scenario, userId, onComplete }) => {
             }}
             className="w-full py-3 bg-amber-600 text-white font-bold rounded-xl hover:bg-amber-500 transition-all"
           >
-            Complete Session
+            {TranslationService.t('cognitive.complete_session')}
           </button>
         </div>
       </div>
