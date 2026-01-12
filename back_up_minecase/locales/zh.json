@@ -1052,5 +1052,161 @@
     "alert_minigames": "🔒 请先完成所有 3 个迷你游戏以解锁分析按钮！\n\n点击“🎮 证据”通过迷你游戏收集证据。",
     "evidence_board": "证据板",
     "click_instruction": "点击案件以撰写分析"
+  },
+  "minigames": {
+    "color_sequence": "颜色记忆",
+    "memory_constellation": "星座连线",
+    "rhythm_reef": "节奏珊瑚",
+    "word_cipher": "单词解密",
+    "evidence_weight": {
+      "name": "证据权重",
+      "title": "证据权重",
+      "instruction": "将证据从最弱(1)到最强(3)进行排序",
+      "complete": "分析完成！",
+      "claim": "论点",
+      "available": "可用证据",
+      "your_ranking": "你的排序（从最弱到最强）",
+      "submit": "提交排序",
+      "select_instruction": "选择全部3条证据 ({n}/3)",
+      "success": "太棒了！你正确识别了证据的强弱。",
+      "fail": "不太对。请查看下方的正确排序。",
+      "weakest": "最弱",
+      "moderate": "中等",
+      "strongest": "最强",
+      "why": "原因：",
+      "try_another": "尝试其他场景",
+      "tip": "思考：信息来源是谁？有数据支持吗？可以验证吗？个人轶事比对照研究的证据力度弱。",
+      "scenarios": {
+        "0": {
+          "claim": "咖啡能提高认知能力",
+          "evidence_0_text": "一位名人发推说'咖啡让我更聪明！'",
+          "evidence_0_reason": "非专家的轶事",
+          "evidence_1_text": "你的个人经验：喝咖啡后感觉更清醒",
+          "evidence_1_reason": "个人轶事 - 真实但不可推广",
+          "evidence_2_text": "一项针对50人的同行评审研究显示记忆测试提高了15%",
+          "evidence_2_reason": "有可测量结果的对照研究"
+        },
+        "1": {
+          "claim": "睡前阅读能改善睡眠质量",
+          "evidence_0_text": "一篇标题为'阅读的10大好处'但没有引用来源的文章",
+          "evidence_0_reason": "无法验证来源",
+          "evidence_1_text": "一项调查显示100人自述阅读后睡眠更好",
+          "evidence_1_reason": "样本量适中的自我报告数据",
+          "evidence_2_text": "睡眠实验室研究追踪了200名受试者的脑电波，显示快速眼动睡眠改善",
+          "evidence_2_reason": "对照研究的客观测量数据"
+        },
+        "2": {
+          "claim": "运动能减轻焦虑",
+          "evidence_0_text": "你的朋友说运动帮助缓解了他们的焦虑",
+          "evidence_0_reason": "单一轶事案例",
+          "evidence_1_text": "一篇博客文章声称'研究表明'但没有链接实际研究",
+          "evidence_1_reason": "声称有研究但无法验证",
+          "evidence_2_text": "对40项研究的荟萃分析，涉及5000多名参与者，显示焦虑持续减少",
+          "evidence_2_reason": "多项研究汇总，样本量大"
+        },
+        "3": {
+          "claim": "植物性饮食能降低心脏病风险",
+          "evidence_0_text": "一部纪录片展示了转为植物性饮食后康复的人",
+          "evidence_0_reason": "幸存者偏差 - 只展示成功案例",
+          "evidence_1_text": "对1000名素食者的观察性研究显示心脏病发病率较低",
+          "evidence_1_reason": "发现相关性但因果关系不明确",
+          "evidence_2_text": "随机对照试验比较植物性与肉食饮食，并测量胆固醇变化",
+          "evidence_2_reason": "有对照组的实验设计"
+        },
+        "4": {
+          "claim": "冥想能提高专注力",
+          "evidence_0_text": "一条获得1万点赞的励志Instagram帖子",
+          "evidence_0_reason": "受欢迎不等于证据",
+          "evidence_1_text": "你的老师说冥想帮助他们更好地集中注意力",
+          "evidence_1_reason": "专家意见但仍是轶事",
+          "evidence_2_text": "脑成像研究显示冥想者前额叶皮层活动增加",
+          "evidence_2_reason": "客观的生物学测量"
+        }
+      }
+    },
+    "missing_constraint": {
+      "name": "寻找缺失",
+      "title": "寻找缺失的约束",
+      "instruction": "找出连接证据的隐藏规则",
+      "loading": "正在生成案件...",
+      "attempts": "尝试次数",
+      "known_constraints": "已知约束",
+      "select_constraint": "选择缺失的约束类型",
+      "case_closed": "案件结案",
+      "submit": "提交答案",
+      "show_hint": "显示提示",
+      "hide_hint": "隐藏提示",
+      "hint_text": "寻找尚未明确说明的关系。线索板上缺少哪种连接？",
+      "success": "推理完美！",
+      "wrong_constraint": "节点正确，但约束类型错误！",
+      "wrong_nodes": "约束类型正确，但节点错误！",
+      "try_again": "再试一次 - 检查连接关系！",
+      "node": "节点",
+      "constraint_types": {
+        "same_location": { "name": "同一位置", "desc": "两个实体必须在同一地点" },
+        "before": { "name": "时间先后", "desc": "一个事件发生在另一个之前" },
+        "never_together": { "name": "从不在一起", "desc": "两个实体不能同时出现" },
+        "owns": { "name": "所有权", "desc": "一个实体拥有另一个" },
+        "witnessed": { "name": "目击", "desc": "一个实体看到了另一个" }
+      }
+    },
+    "logic_grid": {
+      "name": "逻辑网格",
+      "title": "逻辑网格",
+      "instruction": "将每个人与其属性匹配",
+      "attempts": "尝试次数",
+      "clues": "线索",
+      "hint": "提示",
+      "check_solution": "检查答案",
+      "select_all": "全部选择",
+      "wrong_answer": "不太对！请查看线索并再试一次。",
+      "puzzles": {
+        "0": {
+          "detectives": ["爱丽丝", "鲍勃", "查理"],
+          "colors": ["红色", "绿色", "蓝色"],
+          "clues": [
+            "喜欢咖啡的人住在红色房子里",
+            "爱丽丝不住在蓝色房子里",
+            "喝茶的人住在绿色房子主人的隔壁",
+            "鲍勃住在绿色房子里",
+            "查理不喝咖啡",
+            "蓝色房子的主人喝果汁"
+          ],
+          "hint": "从鲍勃的房子开始，然后用饮料偏好来排除选项。"
+        },
+        "1": {
+          "detectives": ["卡洛斯", "达娜", "埃琳娜"],
+          "colors": ["东翼", "西翼", "北翼"],
+          "clues": [
+            "最早的会议是上午9点在东翼",
+            "达娜的会议在卡洛斯之后但在埃琳娜之前",
+            "西翼的会议是上午11点",
+            "卡洛斯没有在东翼开会",
+            "埃琳娜的会议是中午在北翼"
+          ],
+          "hint": "埃琳娜的位置和时间是确定的。用时间顺序来安排其他人。"
+        },
+        "2": {
+          "detectives": ["弗兰克", "格蕾丝", "亨利"],
+          "colors": ["A室", "B室", "C室"],
+          "clues": [
+            "持刀的嫌疑人在A室",
+            "弗兰克在持枪嫌疑人之后被审讯",
+            "B室的嫌疑人有绳子",
+            "格蕾丝不在A室",
+            "亨利最后被审讯，而且没有绳子"
+          ],
+          "hint": "格蕾丝不能在A室，但持刀嫌疑人在。从这里开始推理。"
+        }
+      }
+    },
+    "color_chaos_kitchen": "色彩厨房",
+    "number_ghost": "数字幽灵",
+    "tap_unless": "条件反应",
+    "rule_flip": "规则反转",
+    "face_fusion": "面孔融合",
+    "math_puzzle": "速算谜题",
+    "visual_matching": "视觉匹配",
+    "mirror_match": "镜像镜像"
   }
 }

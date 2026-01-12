@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, X, AlertCircle } from '../icon';
+import TranslationService from '../../services/TranslationService';
 
 const EvidenceWeight = ({ onComplete, difficulty = 'medium' }) => {
   const [scenario, setScenario] = useState(null);
@@ -7,48 +8,52 @@ const EvidenceWeight = ({ onComplete, difficulty = 'medium' }) => {
   const [gameState, setGameState] = useState('playing');
   const [attempts, setAttempts] = useState(0);
 
-  const scenarios = [
-    {
-      claim: "Coffee improves cognitive performance",
-      evidence: [
-        { id: 1, text: "A tweet from a celebrity saying 'Coffee makes me smarter!'", strength: 1, reason: "Anecdote from non-expert" },
-        { id: 2, text: "Your personal experience: you feel more alert after coffee", strength: 2, reason: "Personal anecdote - real but not generalizable" },
-        { id: 3, text: "A peer-reviewed study of 50 people showing 15% improvement on memory tests", strength: 3, reason: "Controlled study with measurable outcomes" }
-      ]
-    },
-    {
-      claim: "Reading before bed improves sleep quality",
-      evidence: [
-        { id: 1, text: "An article titled '10 Benefits of Reading' with no sources cited", strength: 1, reason: "No source verification possible" },
-        { id: 2, text: "A survey where 100 people self-reported better sleep after reading", strength: 2, reason: "Self-reported data from decent sample size" },
-        { id: 3, text: "Sleep lab study tracking brain waves of 200 subjects, showing improved REM sleep", strength: 3, reason: "Objective measurements from controlled study" }
-      ]
-    },
-    {
-      claim: "Exercise reduces anxiety",
-      evidence: [
-        { id: 1, text: "Your friend says exercise helped their anxiety", strength: 1, reason: "Single anecdotal case" },
-        { id: 2, text: "A blog post citing 'research shows' without linking to actual studies", strength: 2, reason: "Claims research exists but no verification" },
-        { id: 3, text: "Meta-analysis of 40 studies with 5,000+ participants showing consistent anxiety reduction", strength: 3, reason: "Multiple studies aggregated, large sample" }
-      ]
-    },
-    {
-      claim: "Plant-based diets reduce heart disease risk",
-      evidence: [
-        { id: 1, text: "A documentary featuring people who recovered after going plant-based", strength: 1, reason: "Survivorship bias - only shows successes" },
-        { id: 2, text: "Observational study of 1,000 vegetarians showing lower heart disease rates", strength: 2, reason: "Correlation found but causation unclear" },
-        { id: 3, text: "Randomized controlled trial comparing plant vs. meat diet with measured cholesterol changes", strength: 3, reason: "Experimental design with control group" }
-      ]
-    },
-    {
-      claim: "Meditation improves focus",
-      evidence: [
-        { id: 1, text: "A motivational Instagram post with 10k likes", strength: 1, reason: "Popularity doesn't equal evidence" },
-        { id: 2, text: "Your teacher said meditation helped them focus better", strength: 2, reason: "Expert opinion but still anecdotal" },
-        { id: 3, text: "Brain imaging study showing increased prefrontal cortex activity in meditators", strength: 3, reason: "Objective biological measurements" }
-      ]
-    }
-  ];
+  // Build scenarios from translations
+  const getScenarios = () => {
+    const t = (key) => TranslationService.t(`minigames.evidence_weight.scenarios.${key}`);
+    return [
+      {
+        claim: t('0.claim'),
+        evidence: [
+          { id: 1, text: t('0.evidence_0_text'), strength: 1, reason: t('0.evidence_0_reason') },
+          { id: 2, text: t('0.evidence_1_text'), strength: 2, reason: t('0.evidence_1_reason') },
+          { id: 3, text: t('0.evidence_2_text'), strength: 3, reason: t('0.evidence_2_reason') }
+        ]
+      },
+      {
+        claim: t('1.claim'),
+        evidence: [
+          { id: 1, text: t('1.evidence_0_text'), strength: 1, reason: t('1.evidence_0_reason') },
+          { id: 2, text: t('1.evidence_1_text'), strength: 2, reason: t('1.evidence_1_reason') },
+          { id: 3, text: t('1.evidence_2_text'), strength: 3, reason: t('1.evidence_2_reason') }
+        ]
+      },
+      {
+        claim: t('2.claim'),
+        evidence: [
+          { id: 1, text: t('2.evidence_0_text'), strength: 1, reason: t('2.evidence_0_reason') },
+          { id: 2, text: t('2.evidence_1_text'), strength: 2, reason: t('2.evidence_1_reason') },
+          { id: 3, text: t('2.evidence_2_text'), strength: 3, reason: t('2.evidence_2_reason') }
+        ]
+      },
+      {
+        claim: t('3.claim'),
+        evidence: [
+          { id: 1, text: t('3.evidence_0_text'), strength: 1, reason: t('3.evidence_0_reason') },
+          { id: 2, text: t('3.evidence_1_text'), strength: 2, reason: t('3.evidence_1_reason') },
+          { id: 3, text: t('3.evidence_2_text'), strength: 3, reason: t('3.evidence_2_reason') }
+        ]
+      },
+      {
+        claim: t('4.claim'),
+        evidence: [
+          { id: 1, text: t('4.evidence_0_text'), strength: 1, reason: t('4.evidence_0_reason') },
+          { id: 2, text: t('4.evidence_1_text'), strength: 2, reason: t('4.evidence_1_reason') },
+          { id: 3, text: t('4.evidence_2_text'), strength: 3, reason: t('4.evidence_2_reason') }
+        ]
+      }
+    ];
+  };
 
   useEffect(() => {
     generateScenario();
@@ -61,6 +66,7 @@ const EvidenceWeight = ({ onComplete, difficulty = 'medium' }) => {
   }, []);
 
   const generateScenario = () => {
+    const scenarios = getScenarios();
     const randomScenario = scenarios[Math.floor(Math.random() * scenarios.length)];
     setScenario(randomScenario);
     setUserRanking([]);
@@ -125,22 +131,22 @@ const EvidenceWeight = ({ onComplete, difficulty = 'medium' }) => {
   return (
     <div className="bg-stone-900/60 backdrop-blur-sm border border-amber-700/30 rounded-xl p-6">
       <div className="text-center mb-6">
-        <h3 className="text-xl font-bold text-white mb-2">⚖️ Evidence Weight</h3>
+        <h3 className="text-xl font-bold text-white mb-2">⚖️ {TranslationService.t('minigames.evidence_weight.title')}</h3>
         <p className="text-stone-400 text-sm">
-          {gameState === 'playing' ? 'Rank the evidence from weakest to strongest' : 'Analysis complete!'}
+          {gameState === 'playing' ? TranslationService.t('minigames.evidence_weight.instruction') : TranslationService.t('minigames.evidence_weight.complete', {defaultValue: 'Analysis complete!'})}
         </p>
         {attempts > 0 && <p className="text-amber-400 text-xs mt-1">Attempts: {attempts + 1}</p>}
       </div>
 
       {/* Claim */}
       <div className="bg-stone-800/60 border border-stone-700 rounded-lg p-4 mb-6">
-        <h4 className="text-amber-400 font-semibold text-sm mb-2">Claim:</h4>
+        <h4 className="text-amber-400 font-semibold text-sm mb-2">{TranslationService.t('minigames.evidence_weight.claim')}</h4>
         <p className="text-white font-medium">{scenario.claim}</p>
       </div>
 
       {/* Evidence Cards */}
       <div className="mb-6">
-        <h4 className="text-white font-medium text-sm mb-3">Available Evidence (click to add to ranking):</h4>
+        <h4 className="text-white font-medium text-sm mb-3">{TranslationService.t('minigames.evidence_weight.available')}</h4>
         <div className="space-y-3">
           {scenario.evidence.map((evidence) => {
             const rankIndex = userRanking.findIndex(e => e.id === evidence.id);
@@ -174,7 +180,7 @@ const EvidenceWeight = ({ onComplete, difficulty = 'medium' }) => {
       {/* Current Ranking */}
       {userRanking.length > 0 && (
         <div className="mb-6 p-4 bg-stone-800/30 border border-stone-600 rounded-lg">
-          <h4 className="text-white font-medium text-sm mb-3">Your Ranking (Weakest → Strongest):</h4>
+          <h4 className="text-white font-medium text-sm mb-3">{TranslationService.t('minigames.evidence_weight.your_ranking')}</h4>
           <div className="space-y-2">
             {userRanking.map((evidence, index) => (
               <div key={evidence.id} className="flex items-center gap-2 text-sm">
@@ -197,7 +203,7 @@ const EvidenceWeight = ({ onComplete, difficulty = 'medium' }) => {
               : 'bg-stone-700 text-stone-500 cursor-not-allowed'
           }`}
         >
-          {userRanking.length === 3 ? 'Submit Ranking' : `Select all 3 pieces (${userRanking.length}/3)`}
+          {userRanking.length === 3 ? TranslationService.t('minigames.evidence_weight.submit') : TranslationService.t('minigames.evidence_weight.select_instruction', { n: userRanking.length })}
         </button>
       )}
 
@@ -215,7 +221,7 @@ const EvidenceWeight = ({ onComplete, difficulty = 'medium' }) => {
             <p className={`text-sm font-medium ${
               gameState === 'won' ? 'text-green-200' : 'text-red-200'
             }`}>
-              {gameState === 'won' ? '✓ Perfect ranking!' : '✗ Not quite right. Here\'s the correct ranking:'}
+              {gameState === 'won' ? TranslationService.t('minigames.evidence_weight.success') : TranslationService.t('minigames.evidence_weight.fail')}
             </p>
           </div>
 
@@ -227,11 +233,11 @@ const EvidenceWeight = ({ onComplete, difficulty = 'medium' }) => {
                   <span className={`font-bold ${
                     index === 0 ? 'text-red-400' : index === 1 ? 'text-yellow-400' : 'text-green-400'
                   }`}>
-                    {index + 1}. {index === 0 ? 'WEAKEST' : index === 1 ? 'MODERATE' : 'STRONGEST'}
+                    {index + 1}. {TranslationService.t('minigames.evidence_weight.' + (index === 0 ? 'weakest' : index === 1 ? 'moderate' : 'strongest'))}
                   </span>
                 </div>
                 <p className="text-white text-sm mb-2">{evidence.text}</p>
-                <p className="text-stone-400 text-xs italic">Why: {evidence.reason}</p>
+                <p className="text-stone-400 text-xs italic">{TranslationService.t('minigames.evidence_weight.why')} {evidence.reason}</p>
               </div>
             ))}
           </div>
@@ -244,7 +250,7 @@ const EvidenceWeight = ({ onComplete, difficulty = 'medium' }) => {
           onClick={handleRetry}
           className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 mt-4"
         >
-          Try Another Scenario
+          {TranslationService.t('minigames.evidence_weight.try_another')}
         </button>
       )}
 
@@ -252,7 +258,7 @@ const EvidenceWeight = ({ onComplete, difficulty = 'medium' }) => {
       {gameState === 'playing' && (
         <div className="mt-4 p-3 bg-blue-900/20 border border-blue-700/30 rounded-lg">
           <p className="text-blue-300 text-xs">
-            💡 Tip: Strong evidence is verifiable, objective, controlled, and from larger samples. Anecdotes and opinions are weakest.
+            💡 {TranslationService.t('minigames.evidence_weight.tip')}
           </p>
         </div>
       )}

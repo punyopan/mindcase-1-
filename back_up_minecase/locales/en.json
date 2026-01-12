@@ -1077,5 +1077,161 @@
     "alert_minigames": "🔒 Complete all 3 minigames first to unlock the Analyze button!\n\nClick \"🎮 Evidence\" to collect evidence through minigames.",
     "evidence_board": "Evidence Board",
     "click_instruction": "Click a case to write your analysis"
+  },
+  "minigames": {
+    "color_sequence": "Color Sequence",
+    "memory_constellation": "Memory Constellation",
+    "rhythm_reef": "Rhythm Reef",
+    "word_cipher": "Word Cipher",
+    "evidence_weight": {
+      "name": "Evidence Weight",
+      "title": "Evidence Weight",
+      "instruction": "Rank evidence from weakest (1) to strongest (3)",
+      "complete": "Analysis complete!",
+      "claim": "The Claim",
+      "available": "Available Evidence",
+      "your_ranking": "Your Ranking (weakest to strongest)",
+      "submit": "Submit Ranking",
+      "select_instruction": "Select all 3 evidence pieces ({n}/3)",
+      "success": "Excellent! You correctly identified the evidence strengths.",
+      "fail": "Not quite. Review the correct ranking below.",
+      "weakest": "Weakest",
+      "moderate": "Moderate",
+      "strongest": "Strongest",
+      "why": "Why:",
+      "try_another": "Try Another Scenario",
+      "tip": "Consider: Who is the source? Is there data? Is it verifiable? Personal anecdotes are weaker than controlled studies.",
+      "scenarios": {
+        "0": {
+          "claim": "Coffee improves cognitive performance",
+          "evidence_0_text": "A tweet from a celebrity saying 'Coffee makes me smarter!'",
+          "evidence_0_reason": "Anecdote from non-expert",
+          "evidence_1_text": "Your personal experience: you feel more alert after coffee",
+          "evidence_1_reason": "Personal anecdote - real but not generalizable",
+          "evidence_2_text": "A peer-reviewed study of 50 people showing 15% improvement on memory tests",
+          "evidence_2_reason": "Controlled study with measurable outcomes"
+        },
+        "1": {
+          "claim": "Reading before bed improves sleep quality",
+          "evidence_0_text": "An article titled '10 Benefits of Reading' with no sources cited",
+          "evidence_0_reason": "No source verification possible",
+          "evidence_1_text": "A survey where 100 people self-reported better sleep after reading",
+          "evidence_1_reason": "Self-reported data from decent sample size",
+          "evidence_2_text": "Sleep lab study tracking brain waves of 200 subjects, showing improved REM sleep",
+          "evidence_2_reason": "Objective measurements from controlled study"
+        },
+        "2": {
+          "claim": "Exercise reduces anxiety",
+          "evidence_0_text": "Your friend says exercise helped their anxiety",
+          "evidence_0_reason": "Single anecdotal case",
+          "evidence_1_text": "A blog post citing 'research shows' without linking to actual studies",
+          "evidence_1_reason": "Claims research exists but no verification",
+          "evidence_2_text": "Meta-analysis of 40 studies with 5,000+ participants showing consistent anxiety reduction",
+          "evidence_2_reason": "Multiple studies aggregated, large sample"
+        },
+        "3": {
+          "claim": "Plant-based diets reduce heart disease risk",
+          "evidence_0_text": "A documentary featuring people who recovered after going plant-based",
+          "evidence_0_reason": "Survivorship bias - only shows successes",
+          "evidence_1_text": "Observational study of 1,000 vegetarians showing lower heart disease rates",
+          "evidence_1_reason": "Correlation found but causation unclear",
+          "evidence_2_text": "Randomized controlled trial comparing plant vs. meat diet with measured cholesterol changes",
+          "evidence_2_reason": "Experimental design with control group"
+        },
+        "4": {
+          "claim": "Meditation improves focus",
+          "evidence_0_text": "A motivational Instagram post with 10k likes",
+          "evidence_0_reason": "Popularity doesn't equal evidence",
+          "evidence_1_text": "Your teacher said meditation helped them focus better",
+          "evidence_1_reason": "Expert opinion but still anecdotal",
+          "evidence_2_text": "Brain imaging study showing increased prefrontal cortex activity in meditators",
+          "evidence_2_reason": "Objective biological measurements"
+        }
+      }
+    },
+    "missing_constraint": {
+      "name": "Missing Constraint",
+      "title": "The Missing Constraint",
+      "instruction": "Find the hidden rule connecting the evidence",
+      "loading": "Generating case...",
+      "attempts": "Attempts",
+      "known_constraints": "Known Constraints",
+      "select_constraint": "Select Missing Constraint Type",
+      "case_closed": "Case Closed",
+      "submit": "Submit Solution",
+      "show_hint": "Show Hint",
+      "hide_hint": "Hide Hint",
+      "hint_text": "Look for relationships that haven't been explicitly stated. Which connection is missing from the board?",
+      "success": "Perfect deduction!",
+      "wrong_constraint": "Correct nodes, wrong constraint type!",
+      "wrong_nodes": "Correct constraint type, wrong nodes!",
+      "try_again": "Try again - check the connections!",
+      "node": "Node",
+      "constraint_types": {
+        "same_location": { "name": "Same Location", "desc": "Two entities must be at the same place" },
+        "before": { "name": "Time Before", "desc": "One event happened before another" },
+        "never_together": { "name": "Never Together", "desc": "Two entities cannot be together" },
+        "owns": { "name": "Ownership", "desc": "One entity owns another" },
+        "witnessed": { "name": "Witnessed", "desc": "One entity saw another" }
+      }
+    },
+    "logic_grid": {
+      "name": "Logic Grid",
+      "title": "Logic Grid",
+      "instruction": "Match each detective with their attribute",
+      "attempts": "Attempts",
+      "clues": "Clues",
+      "hint": "Hint",
+      "check_solution": "Check Solution",
+      "select_all": "Select All",
+      "wrong_answer": "Not quite right! Review the clues and try again.",
+      "puzzles": {
+        "0": {
+          "detectives": ["Alice", "Bob", "Charlie"],
+          "colors": ["Red", "Green", "Blue"],
+          "clues": [
+            "The person who likes Coffee lives in the Red house",
+            "Alice doesn't live in the Blue house",
+            "The Tea drinker lives next to the Green house owner",
+            "Bob lives in the Green house",
+            "Charlie doesn't drink Coffee",
+            "The Blue house owner drinks Juice"
+          ],
+          "hint": "Start with Bob's house, then use the drink preferences to eliminate options."
+        },
+        "1": {
+          "detectives": ["Carlos", "Dana", "Elena"],
+          "colors": ["East", "West", "North"],
+          "clues": [
+            "The earliest meeting was at 9 AM in the East wing",
+            "Dana's meeting was after Carlos but before Elena",
+            "The West wing meeting was at 11 AM",
+            "Carlos didn't meet in the East wing",
+            "Elena's meeting was in the North wing at noon"
+          ],
+          "hint": "Elena's location and time are certain. Use the timing sequence to place the others."
+        },
+        "2": {
+          "detectives": ["Frank", "Grace", "Henry"],
+          "colors": ["Room A", "Room B", "Room C"],
+          "clues": [
+            "The suspect with the Knife was in Room A",
+            "Frank was interrogated after the Gun suspect",
+            "The Room B suspect had the Rope",
+            "Grace wasn't in Room A",
+            "Henry was interrogated last and didn't have the Rope"
+          ],
+          "hint": "Grace can't be in Room A, but the Knife suspect is. Work from there."
+        }
+      }
+    },
+    "color_chaos_kitchen": "Color Chaos Kitchen",
+    "number_ghost": "Number Ghost",
+    "tap_unless": "Tap Unless",
+    "rule_flip": "Rule Flip",
+    "face_fusion": "Face Fusion",
+    "math_puzzle": "Math Puzzle",
+    "visual_matching": "Visual Matching",
+    "mirror_match": "Mirror Match"
   }
 }

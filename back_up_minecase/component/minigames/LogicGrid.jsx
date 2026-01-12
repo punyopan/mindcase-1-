@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CheckCircle, X, Lightbulb } from '../icon';
+import TranslationService from '../../services/TranslationService';
 
 const LogicGrid = ({ onComplete }) => {
+  const t = (key, params) => TranslationService.t(`minigames.logic_grid.${key}`, params);
   const [puzzle, setPuzzle] = useState(null);
   const [userAnswers, setUserAnswers] = useState({});
   const [showHint, setShowHint] = useState(false);
@@ -9,62 +11,44 @@ const LogicGrid = ({ onComplete }) => {
   const [completed, setCompleted] = useState(false);
   const completedRef = useRef(false);
 
-  const puzzles = [
-    {
-      clues: [
-        "The person who likes Coffee lives in the Red house",
-        "Alice doesn't live in the Blue house",
-        "The Tea drinker lives next to the Green house owner",
-        "Bob lives in the Green house",
-        "Charlie doesn't drink Coffee",
-        "The Blue house owner drinks Juice"
-      ],
-      detectives: ["Alice", "Bob", "Charlie"],
-      colors: ["Red", "Green", "Blue"],
-      solution: {
-        "Alice": "Red",
-        "Bob": "Green",
-        "Charlie": "Blue"
-      },
-      hint: "Start with Bob's house, then use the drink preferences to eliminate options."
-    },
-    {
-      clues: [
-        "The earliest meeting was at 9 AM in the East wing",
-        "Dana's meeting was after Carlos but before Elena",
-        "The West wing meeting was at 11 AM",
-        "Carlos didn't meet in the East wing",
-        "Elena's meeting was in the North wing at noon"
-      ],
-      detectives: ["Carlos", "Dana", "Elena"],
-      colors: ["East", "West", "North"],
-      solution: {
-        "Carlos": "West",
-        "Dana": "East",
-        "Elena": "North"
-      },
-      hint: "Elena's location and time are certain. Use the timing sequence to place the others."
-    },
-    {
-      clues: [
-        "The suspect with the Knife was in Room A",
-        "Frank was interrogated after the Gun suspect",
-        "The Room B suspect had the Rope",
-        "Grace wasn't in Room A",
-        "Henry was interrogated last and didn't have the Rope"
-      ],
-      detectives: ["Frank", "Grace", "Henry"],
-      colors: ["Room A", "Room B", "Room C"],
-      solution: {
-        "Frank": "Room B",
-        "Grace": "Room A",
-        "Henry": "Room C"
-      },
-      hint: "Grace can't be in Room A, but the Knife suspect is. Work from there."
-    }
-  ];
+  // Load puzzles from translations
+  const getPuzzles = () => {
+    const tp = (key) => TranslationService.t(`minigames.logic_grid.puzzles.${key}`);
+
+    // Build puzzles from translation arrays
+    // solutionMap[i] = which color index detective[i] maps to
+    const puzzleData = [
+      { index: '0', solutionMap: [0, 1, 2] }, // Alice->Red, Bob->Green, Charlie->Blue
+      { index: '1', solutionMap: [1, 0, 2] }, // Carlos->West, Dana->East, Elena->North
+      { index: '2', solutionMap: [1, 0, 2] }  // Frank->Room B, Grace->Room A, Henry->Room C
+    ];
+
+    return puzzleData.map(({ index, solutionMap }) => {
+      const detectives = tp(`${index}.detectives`);
+      const colors = tp(`${index}.colors`);
+      const clues = tp(`${index}.clues`);
+      const hint = tp(`${index}.hint`);
+
+      // Build solution object mapping detective names to colors
+      const solution = {};
+      if (Array.isArray(detectives) && Array.isArray(colors)) {
+        detectives.forEach((det, i) => {
+          solution[det] = colors[solutionMap[i]];
+        });
+      }
+
+      return {
+        detectives: Array.isArray(detectives) ? detectives : [],
+        colors: Array.isArray(colors) ? colors : [],
+        clues: Array.isArray(clues) ? clues : [],
+        hint: hint || '',
+        solution
+      };
+    });
+  };
 
   useEffect(() => {
+    const puzzles = getPuzzles();
     const randomPuzzle = puzzles[Math.floor(Math.random() * puzzles.length)];
     setPuzzle(randomPuzzle);
     // Play game start sound
@@ -117,7 +101,7 @@ const LogicGrid = ({ onComplete }) => {
       } catch (e) {
         console.warn('Sound failed:', e);
       }
-      alert('Not quite right! Review the clues and try again.');
+      alert(t('try_again'));
     }
   };
 
@@ -126,14 +110,14 @@ const LogicGrid = ({ onComplete }) => {
   return (
     <div className="bg-stone-900/60 backdrop-blur-sm border border-amber-700/30 rounded-xl p-6">
       <div className="text-center mb-6">
-        <h3 className="text-xl font-bold text-white mb-2">🔍 Logic Grid</h3>
-        <p className="text-stone-400 text-sm">Match each detective with their attribute</p>
-        {attempts > 0 && <p className="text-amber-400 text-xs mt-1">Attempts: {attempts}</p>}
+        <h3 className="text-xl font-bold text-white mb-2">🔍 {t('title')}</h3>
+        <p className="text-stone-400 text-sm">{t('instruction')}</p>
+        {attempts > 0 && <p className="text-amber-400 text-xs mt-1">{t('attempts')}: {attempts}</p>}
       </div>
 
       {/* Clues */}
       <div className="bg-stone-800/60 border border-stone-700 rounded-lg p-4 mb-6">
-        <p className="text-amber-400 font-semibold mb-3 text-sm">📋 Clues:</p>
+        <p className="text-amber-400 font-semibold mb-3 text-sm">📋 {t('clues')}:</p>
         <ul className="space-y-2">
           {puzzle.clues.map((clue, idx) => (
             <li key={idx} className="text-stone-300 text-sm flex items-start gap-2">
@@ -185,7 +169,7 @@ const LogicGrid = ({ onComplete }) => {
             onClick={() => setShowHint(true)}
             className="flex-1 bg-stone-700 hover:bg-stone-600 text-white font-medium py-3 px-6 rounded-lg transition-all"
           >
-            💡 Hint
+            💡 {t('hint')}
           </button>
         )}
         <button
@@ -193,7 +177,7 @@ const LogicGrid = ({ onComplete }) => {
           disabled={!isComplete || completed}
           className="flex-1 bg-gradient-to-r from-red-700 to-red-800 hover:from-red-600 hover:to-red-700 disabled:from-stone-700 disabled:to-stone-800 text-white font-bold py-3 px-6 rounded-lg transition-all disabled:cursor-not-allowed"
         >
-          {isComplete ? 'Check Solution' : 'Select All'}
+          {isComplete ? t('check_solution') : t('select_all')}
         </button>
       </div>
     </div>

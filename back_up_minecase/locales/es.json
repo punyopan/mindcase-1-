@@ -1077,5 +1077,161 @@
     "alert_minigames": "🔒 ¡Completa los 3 minijuegos primero para desbloquear el botón Analizar!\n\nHaz clic en \"🎮 Evidencia\" para recolectar evidencia a través de minijuegos.",
     "evidence_board": "Tablero de Pruebas",
     "click_instruction": "Haz clic en un caso para escribir tu análisis"
+  },
+  "minigames": {
+    "color_sequence": "Secuencia de Colores",
+    "memory_constellation": "Constelación de Memoria",
+    "rhythm_reef": "Arrecife de Ritmo",
+    "word_cipher": "Cifrado de Palabras",
+    "evidence_weight": {
+      "name": "Peso de la Evidencia",
+      "title": "Peso de la Evidencia",
+      "instruction": "Clasifica la evidencia de la más débil (1) a la más fuerte (3)",
+      "complete": "¡Análisis completo!",
+      "claim": "La Afirmación",
+      "available": "Evidencia Disponible",
+      "your_ranking": "Tu Clasificación (de más débil a más fuerte)",
+      "submit": "Enviar Clasificación",
+      "select_instruction": "Selecciona las 3 evidencias ({n}/3)",
+      "success": "¡Excelente! Identificaste correctamente la fuerza de las evidencias.",
+      "fail": "No del todo. Revisa la clasificación correcta abajo.",
+      "weakest": "Más Débil",
+      "moderate": "Moderado",
+      "strongest": "Más Fuerte",
+      "why": "Por qué:",
+      "try_another": "Probar Otro Escenario",
+      "tip": "Considera: ¿Quién es la fuente? ¿Hay datos? ¿Es verificable? Las anécdotas personales son más débiles que los estudios controlados.",
+      "scenarios": {
+        "0": {
+          "claim": "El café mejora el rendimiento cognitivo",
+          "evidence_0_text": "Un tweet de una celebridad diciendo '¡El café me hace más inteligente!'",
+          "evidence_0_reason": "Anécdota de un no experto",
+          "evidence_1_text": "Tu experiencia personal: te sientes más alerta después del café",
+          "evidence_1_reason": "Anécdota personal - real pero no generalizable",
+          "evidence_2_text": "Un estudio revisado por pares de 50 personas que muestra 15% de mejora en pruebas de memoria",
+          "evidence_2_reason": "Estudio controlado con resultados medibles"
+        },
+        "1": {
+          "claim": "Leer antes de dormir mejora la calidad del sueño",
+          "evidence_0_text": "Un artículo titulado '10 Beneficios de la Lectura' sin fuentes citadas",
+          "evidence_0_reason": "No es posible verificar la fuente",
+          "evidence_1_text": "Una encuesta donde 100 personas reportaron mejor sueño después de leer",
+          "evidence_1_reason": "Datos autorreportados de un tamaño de muestra decente",
+          "evidence_2_text": "Estudio de laboratorio del sueño rastreando ondas cerebrales de 200 sujetos, mostrando mejora en el sueño REM",
+          "evidence_2_reason": "Mediciones objetivas de un estudio controlado"
+        },
+        "2": {
+          "claim": "El ejercicio reduce la ansiedad",
+          "evidence_0_text": "Tu amigo dice que el ejercicio ayudó con su ansiedad",
+          "evidence_0_reason": "Caso anecdótico único",
+          "evidence_1_text": "Una publicación de blog citando 'la investigación muestra' sin enlazar estudios reales",
+          "evidence_1_reason": "Afirma que existe investigación pero sin verificación",
+          "evidence_2_text": "Meta-análisis de 40 estudios con más de 5,000 participantes mostrando reducción consistente de ansiedad",
+          "evidence_2_reason": "Múltiples estudios agregados, muestra grande"
+        },
+        "3": {
+          "claim": "Las dietas basadas en plantas reducen el riesgo de enfermedades cardíacas",
+          "evidence_0_text": "Un documental presentando personas que se recuperaron después de adoptar una dieta vegetal",
+          "evidence_0_reason": "Sesgo de supervivencia - solo muestra éxitos",
+          "evidence_1_text": "Estudio observacional de 1,000 vegetarianos mostrando tasas más bajas de enfermedades cardíacas",
+          "evidence_1_reason": "Correlación encontrada pero causalidad no clara",
+          "evidence_2_text": "Ensayo controlado aleatorio comparando dieta vegetal vs. carne con cambios medidos en colesterol",
+          "evidence_2_reason": "Diseño experimental con grupo de control"
+        },
+        "4": {
+          "claim": "La meditación mejora la concentración",
+          "evidence_0_text": "Una publicación motivacional de Instagram con 10k likes",
+          "evidence_0_reason": "Popularidad no equivale a evidencia",
+          "evidence_1_text": "Tu profesor dijo que la meditación le ayudó a concentrarse mejor",
+          "evidence_1_reason": "Opinión de experto pero aún anecdótica",
+          "evidence_2_text": "Estudio de imagen cerebral mostrando aumento de actividad en la corteza prefrontal en meditadores",
+          "evidence_2_reason": "Mediciones biológicas objetivas"
+        }
+      }
+    },
+    "missing_constraint": {
+      "name": "Restricción Faltante",
+      "title": "La Restricción Faltante",
+      "instruction": "Encuentra la regla oculta que conecta las evidencias",
+      "loading": "Generando caso...",
+      "attempts": "Intentos",
+      "known_constraints": "Restricciones Conocidas",
+      "select_constraint": "Selecciona el Tipo de Restricción Faltante",
+      "case_closed": "Caso Cerrado",
+      "submit": "Enviar Solución",
+      "show_hint": "Mostrar Pista",
+      "hide_hint": "Ocultar Pista",
+      "hint_text": "Busca relaciones que no se hayan declarado explícitamente. ¿Qué conexión falta en el tablero?",
+      "success": "¡Deducción perfecta!",
+      "wrong_constraint": "¡Nodos correctos, tipo de restricción incorrecto!",
+      "wrong_nodes": "¡Tipo de restricción correcto, nodos incorrectos!",
+      "try_again": "¡Inténtalo de nuevo - revisa las conexiones!",
+      "node": "Nodo",
+      "constraint_types": {
+        "same_location": { "name": "Mismo Lugar", "desc": "Dos entidades deben estar en el mismo lugar" },
+        "before": { "name": "Tiempo Antes", "desc": "Un evento ocurrió antes que otro" },
+        "never_together": { "name": "Nunca Juntos", "desc": "Dos entidades no pueden estar juntas" },
+        "owns": { "name": "Propiedad", "desc": "Una entidad posee a otra" },
+        "witnessed": { "name": "Presenció", "desc": "Una entidad vio a otra" }
+      }
+    },
+    "logic_grid": {
+      "name": "Cuadrícula Lógica",
+      "title": "Cuadrícula Lógica",
+      "instruction": "Empareja cada detective con su atributo",
+      "attempts": "Intentos",
+      "clues": "Pistas",
+      "hint": "Pista",
+      "check_solution": "Verificar Solución",
+      "select_all": "Seleccionar Todo",
+      "wrong_answer": "¡No del todo! Revisa las pistas e intenta de nuevo.",
+      "puzzles": {
+        "0": {
+          "detectives": ["Alicia", "Roberto", "Carlos"],
+          "colors": ["Roja", "Verde", "Azul"],
+          "clues": [
+            "La persona que le gusta el Café vive en la casa Roja",
+            "Alicia no vive en la casa Azul",
+            "El bebedor de Té vive junto al dueño de la casa Verde",
+            "Roberto vive en la casa Verde",
+            "Carlos no bebe Café",
+            "El dueño de la casa Azul bebe Jugo"
+          ],
+          "hint": "Comienza con la casa de Roberto, luego usa las preferencias de bebidas para eliminar opciones."
+        },
+        "1": {
+          "detectives": ["Carlos", "Diana", "Elena"],
+          "colors": ["Este", "Oeste", "Norte"],
+          "clues": [
+            "La reunión más temprana fue a las 9 AM en el ala Este",
+            "La reunión de Diana fue después de Carlos pero antes de Elena",
+            "La reunión del ala Oeste fue a las 11 AM",
+            "Carlos no se reunió en el ala Este",
+            "La reunión de Elena fue en el ala Norte al mediodía"
+          ],
+          "hint": "La ubicación y hora de Elena son seguras. Usa la secuencia de tiempos para ubicar a los demás."
+        },
+        "2": {
+          "detectives": ["Francisco", "Gloria", "Héctor"],
+          "colors": ["Sala A", "Sala B", "Sala C"],
+          "clues": [
+            "El sospechoso con el Cuchillo estaba en la Sala A",
+            "Francisco fue interrogado después del sospechoso de la Pistola",
+            "El sospechoso de la Sala B tenía la Cuerda",
+            "Gloria no estaba en la Sala A",
+            "Héctor fue interrogado último y no tenía la Cuerda"
+          ],
+          "hint": "Gloria no puede estar en la Sala A, pero el sospechoso del Cuchillo sí. Trabaja desde ahí."
+        }
+      }
+    },
+    "color_chaos_kitchen": "Cocina de Colores",
+    "number_ghost": "Fantasma Numérico",
+    "tap_unless": "Tocar Si No",
+    "rule_flip": "Regla Inversa",
+    "face_fusion": "Fusión de Rostros",
+    "math_puzzle": "Rompecabezas Matemático",
+    "visual_matching": "Coincidencia Visual",
+    "mirror_match": "Coincidencia de Espejo"
   }
 }

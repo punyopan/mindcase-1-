@@ -381,13 +381,23 @@ const DailyMinigame = ({ onClose, userSubscription, onOpenSubscription, onTokens
                       <Star className="w-4 h-4 text-amber-500" />
                     )}
                   </div>
-                  <div className="text-white font-medium text-xs">{game.name}</div>
+                  <div className="text-white font-medium text-xs">
+                    {(() => {
+                      const key = `minigames.${game.name.toLowerCase().replace(/ /g, '_')}`;
+                      // Check if nested structure exists (has .name property)
+                      if (TranslationService.hasKey(`${key}.name`)) {
+                        return TranslationService.t(`${key}.name`);
+                      }
+                      // Fall back to flat structure
+                      return TranslationService.t(key, { defaultValue: game.name });
+                    })()}
+                  </div>
                   <div className={`text-[10px] mt-0.5 capitalize ${
                     game.difficulty === 'easy' ? 'text-green-400' :
                     game.difficulty === 'medium' ? 'text-yellow-400' :
                     'text-red-400'
                   }`}>
-                    {game.difficulty}
+                    {TranslationService.t(`daily.${game.difficulty}`, { defaultValue: game.difficulty })}
                   </div>
                 </button>
               );

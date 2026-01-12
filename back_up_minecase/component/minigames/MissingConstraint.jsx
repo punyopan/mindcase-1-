@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, X, Lightbulb } from '../icon';
+import TranslationService from '../../services/TranslationService';
 
 const MissingConstraint = ({ onComplete, difficulty = 'medium' }) => {
+  const t = (key, params) => TranslationService.t(`minigames.missing_constraint.${key}`, params);
   const [caseBoard, setCaseBoard] = useState(null);
   const [selectedNodes, setSelectedNodes] = useState([]);
   const [selectedConstraint, setSelectedConstraint] = useState(null);
@@ -22,12 +24,12 @@ const MissingConstraint = ({ onComplete, difficulty = 'medium' }) => {
   const locations = ['🏛️', '🏥', '🏢', '🏭', '🏪', '🏠'];
   const objects = ['💼', '🔑', '📱', '💊', '📄', '💻'];
 
-  const constraintTypes = [
-    { id: 'same-location', name: 'Same Location', description: 'Two entities must be at the same place' },
-    { id: 'before', name: 'Time Before', description: 'One event happened before another' },
-    { id: 'never-together', name: 'Never Together', description: 'Two entities cannot be together' },
-    { id: 'owns', name: 'Ownership', description: 'One entity owns another' },
-    { id: 'witnessed', name: 'Witnessed', description: 'One entity saw another' }
+  const getConstraintTypes = () => [
+    { id: 'same-location', name: t('constraint_types.same_location.name'), description: t('constraint_types.same_location.desc') },
+    { id: 'before', name: t('constraint_types.before.name'), description: t('constraint_types.before.desc') },
+    { id: 'never-together', name: t('constraint_types.never_together.name'), description: t('constraint_types.never_together.desc') },
+    { id: 'owns', name: t('constraint_types.owns.name'), description: t('constraint_types.owns.desc') },
+    { id: 'witnessed', name: t('constraint_types.witnessed.name'), description: t('constraint_types.witnessed.desc') }
   ];
 
   useEffect(() => {
@@ -41,6 +43,7 @@ const MissingConstraint = ({ onComplete, difficulty = 'medium' }) => {
 
   const generateCase = () => {
     const numNodes = settings.numNodes;
+    const constraintTypes = getConstraintTypes();
 
     // Generate nodes
     const nodes = Array.from({ length: numNodes }, (_, i) => ({
@@ -51,7 +54,7 @@ const MissingConstraint = ({ onComplete, difficulty = 'medium' }) => {
         : i < 4
           ? locations[i - 2]
           : objects[i - 4],
-      name: `Node ${i + 1}`
+      name: `${t('node')} ${i + 1}`
     }));
 
     // Generate constraints (one will be hidden/missing)
@@ -104,7 +107,7 @@ const MissingConstraint = ({ onComplete, difficulty = 'medium' }) => {
 
     if (isCorrect) {
       // Success!
-      setResult({ success: true, message: 'Perfect deduction!' });
+      setResult({ success: true, message: t('perfect_deduction') });
       setIsComplete(true);
 
       try {
@@ -123,11 +126,11 @@ const MissingConstraint = ({ onComplete, difficulty = 'medium' }) => {
     } else {
       // Partial feedback
       if (correctNodes) {
-        setResult({ success: false, message: 'Correct nodes, wrong constraint type!' });
+        setResult({ success: false, message: t('correct_nodes_wrong_constraint') });
       } else if (correctConstraint) {
-        setResult({ success: false, message: 'Correct constraint type, wrong nodes!' });
+        setResult({ success: false, message: t('correct_constraint_wrong_nodes') });
       } else {
-        setResult({ success: false, message: 'Try again - check the connections!' });
+        setResult({ success: false, message: t('try_again') });
       }
 
       try {
@@ -157,7 +160,7 @@ const MissingConstraint = ({ onComplete, difficulty = 'medium' }) => {
     return (
       <div className="bg-stone-900/60 backdrop-blur-sm border border-amber-700/30 rounded-xl p-6 text-center">
         <div className="animate-spin w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-        <p className="text-white">Generating case...</p>
+        <p className="text-white">{t('loading')}</p>
       </div>
     );
   }
@@ -165,12 +168,12 @@ const MissingConstraint = ({ onComplete, difficulty = 'medium' }) => {
   return (
     <div className="bg-stone-900/60 backdrop-blur-sm border border-amber-700/30 rounded-xl p-6">
       <div className="text-center mb-6">
-        <h3 className="text-xl font-bold text-white mb-2">🔍 The Missing Constraint</h3>
-        <p className="text-stone-400 text-sm">Find the hidden rule connecting the evidence</p>
+        <h3 className="text-xl font-bold text-white mb-2">🔍 {t('title')}</h3>
+        <p className="text-stone-400 text-sm">{t('instruction')}</p>
 
         <div className="flex justify-center gap-6 mt-3">
           <div className="flex items-center gap-2">
-            <span className="text-stone-400 text-xs">Attempts:</span>
+            <span className="text-stone-400 text-xs">{t('attempts')}:</span>
             <span className="font-bold text-sm text-amber-400">{attempts} / {settings.maxAttempts}</span>
           </div>
         </div>
@@ -201,7 +204,7 @@ const MissingConstraint = ({ onComplete, difficulty = 'medium' }) => {
 
         {/* Visible Constraints */}
         <div className="space-y-2">
-          <h4 className="text-amber-400 text-sm font-bold mb-3">📋 Known Constraints:</h4>
+          <h4 className="text-amber-400 text-sm font-bold mb-3">📋 {t('known_constraints')}:</h4>
           {caseBoard.constraints.map((constraint, idx) => (
             <div key={idx} className="bg-stone-900/60 border border-stone-600 rounded-lg p-3 flex items-center gap-3">
               <div className="text-2xl">{constraint.from.icon}</div>
@@ -217,9 +220,9 @@ const MissingConstraint = ({ onComplete, difficulty = 'medium' }) => {
 
       {/* Select Missing Constraint Type */}
       <div className="mb-6">
-        <h4 className="text-white font-semibold mb-3 text-sm">🎯 Select Missing Constraint Type:</h4>
+        <h4 className="text-white font-semibold mb-3 text-sm">🎯 {t('select_constraint')}:</h4>
         <div className="grid grid-cols-2 gap-2">
-          {constraintTypes.map((type) => (
+          {getConstraintTypes().map((type) => (
             <button
               key={type.id}
               onClick={() => handleConstraintSelect(type.id)}
@@ -265,7 +268,7 @@ const MissingConstraint = ({ onComplete, difficulty = 'medium' }) => {
           }
         `}
       >
-        {isComplete ? 'Case Closed' : 'Submit Solution'}
+        {isComplete ? t('case_closed') : t('submit')}
       </button>
 
       {/* Hint */}
@@ -274,14 +277,14 @@ const MissingConstraint = ({ onComplete, difficulty = 'medium' }) => {
           onClick={() => setShowHint(!showHint)}
           className="w-full mt-3 bg-stone-700 hover:bg-stone-600 text-amber-300 font-medium py-2 px-4 rounded-lg transition-all text-sm"
         >
-          {showHint ? 'Hide' : 'Show'} Hint
+          {showHint ? t('hide_hint') : t('show_hint')}
         </button>
       )}
 
       {showHint && !isComplete && (
         <div className="mt-3 bg-amber-900/20 border border-amber-700/30 rounded-lg p-3">
           <p className="text-amber-200 text-xs">
-            💡 Look for relationships that haven't been explicitly stated. Which connection is missing from the board?
+            💡 {t('hint_text')}
           </p>
         </div>
       )}
