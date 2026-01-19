@@ -33,6 +33,13 @@ class LoginHistory {
      * Get active sessions (one per login family, non-revoked, non-expired)
      */
     static async getActiveSessions(userId) {
+        // First, cleanup expired tokens to prevent stale session accumulation
+        try {
+            await db.query('DELETE FROM t_refresh_tokens WHERE expires_at < NOW()');
+        } catch (e) {
+            console.warn('Failed to cleanup expired tokens:', e.message);
+        }
+
         // Get the most recent valid (non-revoked, non-expired) token per family
         // We need to find tokens where the session is still active
         const result = await db.query(

@@ -270,6 +270,7 @@
             analyticsEngineService,
             rewardedAdManagerService,
             retryManagerService,
+            rateAppService,
             cognitiveGameEngineService,
             cognitiveGradingEngineService,
             translationService,
@@ -286,6 +287,7 @@
             advancedAnalytics,
             topicUnlockModal,
             watchAdModal,
+            rateAppModal,
             signalFieldComponent,
             forensicNarrativeComponent,
             variableManifoldComponent,
@@ -343,6 +345,7 @@
             fetch("services/analyticsEngine.js?v=" + Date.now()).then((r) => r.text()),
             fetch("services/rewardedAdManager.js").then((r) => r.text()),
             fetch("services/retryManager.js").then((r) => r.text()),
+            fetch("services/RateAppService.js").then((r) => r.text()),
             fetch("services/cognitiveGameEngine.js").then((r) => r.text()),
             fetch("services/CognitiveGradingEngine.js").then((r) => r.text()),
             fetch("services/TranslationService.js").then((r) => r.text()),
@@ -359,6 +362,7 @@
             fetch("component/AdvancedAnalytics.jsx").then((r) => r.text()),
             fetch("component/TopicUnlockModal.jsx").then((r) => r.text()),
             fetch("component/WatchAdModal.jsx").then((r) => r.text()),
+            fetch("component/RateAppModal.jsx").then((r) => r.text()),
             fetch("component/cognitive/SignalField.jsx").then((r) => r.text()),
             fetch("component/cognitive/ForensicNarrative.jsx").then((r) =>
               r.text()
@@ -495,6 +499,7 @@
                     ${cleanModule(analyticsEngineService)}
                     ${cleanModule(rewardedAdManagerService)}
                     ${cleanModule(retryManagerService)}
+                    ${cleanModule(rateAppService)}
                     ${cleanModule(cognitiveGameEngineService)}
                     ${cleanModule(cognitiveGradingEngineService)}
                     ${cleanModule(translationService)}
@@ -522,6 +527,7 @@
                     ${cleanModule(advancedAnalytics)}
                     ${cleanModule(topicUnlockModal)}
                     ${cleanModule(watchAdModal)}
+                    ${cleanModule(rateAppModal)}
                     ${cleanModule(signalFieldComponent)}
                     ${cleanModule(forensicNarrativeComponent)}
                     ${cleanModule(variableManifoldComponent)}
