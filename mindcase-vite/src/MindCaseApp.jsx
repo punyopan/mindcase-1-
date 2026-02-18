@@ -10,26 +10,26 @@ import { StructuralEvaluator } from './services/structuralEvaluator';
 import { SoundService } from './services/sound';
 import { ExpertAlignmentGrader } from './services/ExpertAlignmentGrader';
 import { ReminderService } from './services/reminder';
-import SkillRadarChart from './component/skillradarchart';
-import NavigationBar from './component/navigation';
-import PuzzleModal from './component/puzzles/puzzlemodel';
-import DailyPuzzleModal from './component/puzzles/dailypuzzle';
-import LoginForm from './component/auth/LoginForm';
-import SignupForm from './component/auth/SignupForm';
-import SecuritySettings from './component/settings/SecuritySettings';
-import SessionsHistory from './component/settings/SessionsHistory';
-import DataManagement from './component/settings/DataManagement';
-import SoundSettings from './component/settings/SoundSettings';
-import ReminderSettings from './component/settings/ReminderSettings';
-import MinigameManager from './component/minigames/MinigameManager';
-import DailyMinigame from './component/minigames/DailyMinigame';
-import StripeCheckout from './component/payment/StripeCheckout';
-import TokenShop from './component/TokenShop';
-import AdvancedAnalytics from './component/AdvancedAnalytics';
-import TopicUnlockModal from './component/TopicUnlockModal';
-import WatchAdModal from './component/WatchAdModal';
-import RateAppModal from './component/RateAppModal';
-import CognitiveTrainer from './component/cognitive/CognitiveTrainer';
+import SkillRadarChart from './components/skillradarchart';
+import NavigationBar from './components/navigation';
+import PuzzleModal from './components/puzzles/puzzlemodel';
+import DailyPuzzleModal from './components/puzzles/dailypuzzle';
+import LoginForm from './components/auth/LoginForm';
+import SignupForm from './components/auth/SignupForm';
+import SecuritySettings from './components/settings/SecuritySettings';
+import SessionsHistory from './components/settings/SessionsHistory';
+import DataManagement from './components/settings/DataManagement';
+import SoundSettings from './components/settings/SoundSettings';
+import ReminderSettings from './components/settings/ReminderSettings';
+import MinigameManager from './components/minigames/MinigameManager';
+import DailyMinigame from './components/minigames/DailyMinigame';
+import StripeCheckout from './components/payment/StripeCheckout';
+import TokenShop from './components/TokenShop';
+import AdvancedAnalytics from './components/AdvancedAnalytics';
+import TopicUnlockModal from './components/TopicUnlockModal';
+import WatchAdModal from './components/WatchAdModal';
+import RateAppModal from './components/RateAppModal';
+import CognitiveTrainer from './components/cognitive/CognitiveTrainer';
 import {
   Brain,
   Lock,
@@ -47,7 +47,7 @@ import {
   LogOut,
   LogIn,
   Settings
-} from './component/icon';
+} from './components/icon';
 import TranslationService from './services/TranslationService';
 import ContentTranslator from './services/ContentTranslator';
 import enLocale from './locales/en.json';

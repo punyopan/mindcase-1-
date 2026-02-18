@@ -397,12 +397,5 @@ const ReminderService = (() => {
   };
 })();
 
-// Export for use in other modules
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { ReminderService };
-}
-
-// Make available globally for browser
-if (typeof window !== 'undefined') {
-  window.ReminderService = ReminderService;
-}
+// Export for ESM (Vite)
+export { ReminderService };
