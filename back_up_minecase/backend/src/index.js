@@ -44,7 +44,7 @@ app.use(cookieParser());
 // IMPORTANT: Use consistent domains for cookies to work
 // Both localhost and 127.0.0.1 must be allowed for cross-origin cookie handling
 app.use(cors({
-    origin: [process.env.FRONTEND_URL, 'http://127.0.0.1:5500', 'http://127.0.0.1:5501', 'http://localhost:5500', 'http://localhost:5501'].filter(Boolean),
+    origin: [process.env.FRONTEND_URL, 'https://punyopan.github.io', 'http://127.0.0.1:5500', 'http://127.0.0.1:5501', 'http://localhost:5500', 'http://localhost:5501', 'http://localhost:5173'].filter(Boolean),
     credentials: true
 }));
 

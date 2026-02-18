@@ -10,7 +10,7 @@ const API_URL = import.meta.env.VITE_API_URL ||
     ? 'http://localhost:3000/api'
     : typeof window !== 'undefined' && window.location.hostname === '127.0.0.1'
       ? 'http://127.0.0.1:3000/api'
-      : '/api');
+      : 'https://mindcase-backend-u23ay2wrba-as.a.run.app/api');
 
 const AppConfig = {
   API_URL,
