@@ -9,7 +9,7 @@ export default defineConfig({
     tailwindcss(),
   ],
   // GitHub Pages deploys to /mindcase/ subpath
-  base: '/mindcase/',
+  base: '/mindcase-1-/',
   build: {
     // The app is large (128KB+ main component), suppress chunk size warnings
     chunkSizeWarningLimit: 1500,
