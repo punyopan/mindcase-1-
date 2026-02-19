@@ -65,7 +65,8 @@ exports.register = async (req, res) => {
         res.status(201).json({ 
             success: true, 
             user: { id: user.id, name: user.name, email: user.email, role: user.role },
-            accessToken 
+            accessToken,
+            refreshToken
         });
     } catch (err) {
         res.status(400).json({ success: false, message: err.message });
@@ -97,7 +98,8 @@ exports.login = async (req, res) => {
         res.json({ 
             success: true, 
             user: { id: user.id, name: user.name, email: user.email, role: user.role },
-            accessToken 
+            accessToken,
+            refreshToken
         });
     } catch (err) {
         // Generic error message for security
@@ -114,7 +116,8 @@ exports.guestLogin = async (req, res) => {
         res.json({ 
             success: true, 
             user: { id: user.id, role: user.role, is_guest: true },
-            accessToken 
+            accessToken,
+            refreshToken
         });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
@@ -139,7 +142,8 @@ exports.upgrade = async (req, res) => {
         res.status(200).json({ 
             success: true, 
             user: { id: user.id, name: user.name, email: user.email, role: user.role },
-            accessToken 
+            accessToken,
+            refreshToken
         });
     } catch (err) {
         res.status(400).json({ success: false, message: err.message });
@@ -147,12 +151,13 @@ exports.upgrade = async (req, res) => {
 };
 
 exports.refresh = async (req, res) => {
-    const incomingRefreshToken = req.cookies.refresh_token;
+    // Accept refresh token from request body (cross-origin) or cookie (same-origin fallback)
+    const incomingRefreshToken = req.body.refresh_token || req.cookies.refresh_token;
     console.log('[Auth] Refresh request from origin:', req.headers.origin);
-    console.log('[Auth] Cookies received:', req.cookies); // Debug log
+    console.log('[Auth] Token source:', req.body.refresh_token ? 'body' : 'cookie');
     
     if (!incomingRefreshToken) {
-        console.log('[Auth] No refresh token found in cookies');
+        console.log('[Auth] No refresh token found in body or cookies');
         return res.status(401).json({ message: 'No refresh token provided' });
     }
 
@@ -160,36 +165,30 @@ exports.refresh = async (req, res) => {
         const { accessToken, refreshToken } = await AuthService.refreshAccessToken(incomingRefreshToken);
         
         setRefreshTokenCookie(res, refreshToken);
-        // Clear old cookie path if it exists (migration)
-        res.clearCookie('refresh_token', { path: '/api/auth/refresh' });
-        res.clearCookie('refresh_token', { path: '/api/auth' });
-        res.json({ success: true, accessToken });
+        res.json({ success: true, accessToken, refreshToken });
     } catch (err) {
-        // Clear cookie if invalid
         res.clearCookie('refresh_token', { path: '/' });
-        res.clearCookie('refresh_token', { path: '/api/auth' }); // Legacy cleanup
         res.status(403).json({ success: false, message: err.message });
     }
 };
 
 exports.logout = async (req, res) => {
-    const incomingRefreshToken = req.cookies.refresh_token;
+    // Accept refresh token from body (cross-origin) or cookie (same-origin fallback)
+    const incomingRefreshToken = req.body.refresh_token || req.cookies.refresh_token;
 
     // Revoke the token family if we have a refresh token
     if (incomingRefreshToken) {
         try {
-            const tokenHash = require('../services/AuthService').hashToken(incomingRefreshToken);
-            const storedToken = await require('../models/RefreshToken').findByTokenHash(tokenHash);
+            const tokenHash = AuthService.hashToken(incomingRefreshToken);
+            const storedToken = await RefreshToken.findByTokenHash(tokenHash);
             if (storedToken) {
-                // Log logout event before revoking
                 const deviceInfo = getDeviceInfo(req);
                 await LoginHistory.create({
                     userId: storedToken.user_id,
                     action: 'logout',
                     ...deviceInfo
                 });
-                
-                await require('../models/RefreshToken').revokeFamily(storedToken.family_id);
+                await RefreshToken.revokeFamily(storedToken.family_id);
             }
         } catch (e) {
             console.error('Token revocation error:', e);
@@ -197,8 +196,6 @@ exports.logout = async (req, res) => {
     }
 
     res.clearCookie('refresh_token', { path: '/' });
-    res.clearCookie('refresh_token', { path: '/api/auth' }); // Legacy
-    res.clearCookie('refresh_token', { path: '/api/auth/refresh' }); // Legacy
     res.json({ success: true, message: 'Logged out' });
 };
 
@@ -209,7 +206,6 @@ exports.logout = async (req, res) => {
 exports.socialCallback = async (req, res) => {
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5501';
     try {
-        // req.user is populated by Passport after successful OAuth
         if (!req.user) {
             return res.redirect(`${frontendUrl}?error=auth_failed`);
         }
@@ -217,7 +213,7 @@ exports.socialCallback = async (req, res) => {
         const deviceInfo = getDeviceInfo(req);
         
         // Generate tokens for the authenticated user
-        const { refreshToken } = await AuthService.issueTokenPair(req.user, deviceInfo);
+        const { accessToken, refreshToken } = await AuthService.issueTokenPair(req.user, deviceInfo);
 
         // Log the OAuth login event
         await LoginHistory.create({
@@ -226,31 +222,25 @@ exports.socialCallback = async (req, res) => {
             method: 'google',
             ...deviceInfo
         });
-        console.log('[Auth] OAuth login history created for user:', req.user.id);
+        console.log('[Auth] OAuth login successful for user:', req.user.id);
 
-        setRefreshTokenCookie(res, refreshToken);
-
-        // Extract redirect URL from OAuth state (passed from initial auth request)
+        // Extract redirect URL from OAuth state
         let redirectUrl = frontendUrl;
         try {
             if (req.query.state) {
                 const state = JSON.parse(Buffer.from(req.query.state, 'base64').toString());
-                console.log('[Auth] Parsed OAuth state:', JSON.stringify(state));
-
                 if (state.redirectUri) {
                     redirectUrl = state.redirectUri;
-                    console.log('[Auth] Original redirectUrl from state:', redirectUrl);
                 }
             }
         } catch (e) {
-            console.log('[Auth] Could not parse OAuth state, using default redirect', e);
+            console.log('[Auth] Could not parse OAuth state, using default redirect');
         }
 
-        console.log('[Auth] Final redirect URL:', redirectUrl);
-
-        // Add auth success param
-        const separator = redirectUrl.includes('?') ? '&' : '?';
-        res.redirect(`${redirectUrl}${separator}auth=success`);
+        // Pass tokens via URL hash fragment (not query params for security)
+        // Hash fragments are never sent to the server, keeping tokens client-side only
+        const baseUrl = redirectUrl.split('#')[0].split('?')[0];
+        res.redirect(`${baseUrl}?auth=success#access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`);
     } catch (err) {
         console.error('Social callback error:', err);
         res.redirect(`${frontendUrl}?error=auth_failed`);
@@ -428,7 +418,8 @@ exports.verify2FALogin = async (req, res) => {
         res.json({
             success: true,
             user: { id: user.id, name: user.name, email: user.email, role: user.role },
-            accessToken
+            accessToken,
+            refreshToken
         });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });

@@ -20,24 +20,48 @@ export class AuthService {
    * Initialize session (Check for valid Refresh Token cookie)
    */
   static async checkSession() {
+    // 1. Check for tokens in URL hash (OAuth callback)
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const hashAccessToken = hashParams.get('access_token');
+    const hashRefreshToken = hashParams.get('refresh_token');
+
+    if (hashAccessToken && hashRefreshToken) {
+        // Store tokens
+        _accessToken = hashAccessToken;
+        this._storeRefreshToken(hashRefreshToken);
+        
+        // Clean URL
+        window.history.replaceState(null, null, window.location.pathname + window.location.search);
+        
+        _currentUser = this._decodeToken(_accessToken);
+        return _currentUser;
+    }
+
+    // 2. Fallback: Try to refresh using stored refresh token
+    const storedRefreshToken = this._getRefreshToken();
+    if (!storedRefreshToken) return null;
+
     try {
       const response = await fetch(`${API_URL}/refresh`, {
         method: 'POST',
-        credentials: 'include',
+        credentials: 'include', // Still send cookies for localhost fallback
         headers: {
             'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({ refresh_token: storedRefreshToken })
       });
 
       if (response.ok) {
           const data = await response.json();
           _accessToken = data.accessToken;
-          // Decode user from token OR fetch profile. 
-          // For simplicity, let's assume /refresh returns user payload in token or we decode it.
-          // In our backend controller, /refresh returns { accessToken }. 
-          // We need to decode the token to get the user part.
+          if (data.refreshToken) {
+              this._storeRefreshToken(data.refreshToken); // Rotate token
+          }
           _currentUser = this._decodeToken(_accessToken);
           return _currentUser;
+      } else {
+          // If refresh fails (e.g. invalid/expired), clear stored token
+          this._removeRefreshToken();
       }
     } catch (e) {
       console.warn('Session check failed:', e);
@@ -63,6 +87,7 @@ export class AuthService {
       if (!response.ok) throw new Error(data.message || 'Registration failed');
 
       _accessToken = data.accessToken;
+      if (data.refreshToken) this._storeRefreshToken(data.refreshToken);
       _currentUser = data.user;
       return { success: true, user: _currentUser };
     } catch (e) {
@@ -86,6 +111,7 @@ export class AuthService {
       if (!response.ok) throw new Error(data.message || 'Upgrade failed');
 
       _accessToken = data.accessToken;
+      if (data.refreshToken) this._storeRefreshToken(data.refreshToken);
       _currentUser = data.user;
       return { success: true, user: _currentUser };
     } catch (e) {
@@ -106,6 +132,9 @@ export class AuthService {
       if (!response.ok) throw new Error(data.message || 'Login failed');
 
       _accessToken = data.accessToken;
+      // Store refresh token
+      if (data.refreshToken) this._storeRefreshToken(data.refreshToken);
+      
       _currentUser = data.user;
       return { success: true, user: _currentUser };
     } catch (e) {
@@ -125,6 +154,7 @@ export class AuthService {
       if (!response.ok) throw new Error(data.message || 'Guest login failed');
 
       _accessToken = data.accessToken;
+      if (data.refreshToken) this._storeRefreshToken(data.refreshToken);
       _currentUser = data.user;
       return { success: true, user: _currentUser };
     } catch (e) {
@@ -134,18 +164,34 @@ export class AuthService {
 
   static async logout() {
     try {
+      const refreshToken = this._getRefreshToken();
       await fetch(`${API_URL}/logout`, { 
         method: 'POST',
-        credentials: 'include'
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refreshToken })
       });
     } catch (e) {
       console.error('Logout error', e);
     }
     _accessToken = null;
     _currentUser = null;
-    // Clear any local storage leftovers just in case
-    localStorage.removeItem('mindcase_auth_v2'); 
+    this._removeRefreshToken(); 
     return { success: true };
+  }
+
+  // --- Token Storage Helpers ---
+  static _storeRefreshToken(token) {
+      localStorage.setItem('mindcase_refresh_token', token);
+  }
+
+  static _getRefreshToken() {
+      return localStorage.getItem('mindcase_refresh_token');
+  }
+
+  static _removeRefreshToken() {
+      localStorage.removeItem('mindcase_refresh_token');
+      localStorage.removeItem('mindcase_auth_v2'); // Legacy
   }
 
   static getCurrentUser() {
@@ -373,6 +419,7 @@ export class AuthService {
       if (!response.ok) throw new Error(data.message || 'Invalid 2FA code');
       
       _accessToken = data.accessToken;
+      if (data.refreshToken) this._storeRefreshToken(data.refreshToken);
       _currentUser = data.user;
       return { success: true, user: _currentUser };
     } catch (e) {
