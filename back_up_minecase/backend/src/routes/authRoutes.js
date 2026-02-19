@@ -36,7 +36,7 @@ router.get('/google', (req, res, next) => {
     })(req, res, next);
 });
 router.get('/google/callback', 
-    passport.authenticate('google', { session: false, failureRedirect: '/login?error=auth_failed' }),
+    passport.authenticate('google', { session: false, failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:5501'}?error=auth_failed` }),
     authController.socialCallback
 );
 

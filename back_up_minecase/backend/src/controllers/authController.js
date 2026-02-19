@@ -207,10 +207,11 @@ exports.logout = async (req, res) => {
  * Called after successful OAuth authentication
  */
 exports.socialCallback = async (req, res) => {
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5501';
     try {
         // req.user is populated by Passport after successful OAuth
         if (!req.user) {
-            return res.redirect('/login?error=auth_failed');
+            return res.redirect(`${frontendUrl}?error=auth_failed`);
         }
 
         const deviceInfo = getDeviceInfo(req);
@@ -230,15 +231,13 @@ exports.socialCallback = async (req, res) => {
         setRefreshTokenCookie(res, refreshToken);
 
         // Extract redirect URL from OAuth state (passed from initial auth request)
-        let redirectUrl = 'http://localhost:5501/prod.html'; // Safe default - serving from project root
+        let redirectUrl = frontendUrl;
         try {
             if (req.query.state) {
                 const state = JSON.parse(Buffer.from(req.query.state, 'base64').toString());
                 console.log('[Auth] Parsed OAuth state:', JSON.stringify(state));
 
                 if (state.redirectUri) {
-                    // redirectUri is already decoded by Express when it was received as query param
-                    // Just use it directly
                     redirectUrl = state.redirectUri;
                     console.log('[Auth] Original redirectUrl from state:', redirectUrl);
                 }
@@ -247,11 +246,6 @@ exports.socialCallback = async (req, res) => {
             console.log('[Auth] Could not parse OAuth state, using default redirect', e);
         }
 
-        // ALWAYS ensure the URL ends with .html if it's the prod page
-        // Simple string replacement - guaranteed to work
-        if (redirectUrl.includes('/prod') && !redirectUrl.includes('.html')) {
-            redirectUrl = redirectUrl.replace('/prod', '/prod.html');
-        }
         console.log('[Auth] Final redirect URL:', redirectUrl);
 
         // Add auth success param
@@ -259,7 +253,7 @@ exports.socialCallback = async (req, res) => {
         res.redirect(`${redirectUrl}${separator}auth=success`);
     } catch (err) {
         console.error('Social callback error:', err);
-        res.redirect('/login?error=auth_failed');
+        res.redirect(`${frontendUrl}?error=auth_failed`);
     }
 };
 
