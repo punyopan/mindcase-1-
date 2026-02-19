@@ -3,7 +3,8 @@
  * Frontend client for communicating with the server-side token system
  */
 
-const PROGRESS_API_URL = 'http://localhost:3000/api/progress';
+import AppConfig from '../config.js';
+const PROGRESS_API_URL = `${AppConfig.API_URL || 'http://localhost:3000/api'}/progress`;
 
 // Get access token from AuthService
 function getAccessToken() {

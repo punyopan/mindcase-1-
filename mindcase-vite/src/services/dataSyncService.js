@@ -3,7 +3,8 @@
  * Syncs localStorage progress/analytics to server
  */
 
-const API_URL = 'http://localhost:3000/api/progress';
+import AppConfig from '../config.js';
+const API_URL = `${AppConfig.API_URL || 'http://localhost:3000/api'}/progress`;
 
 export class DataSyncService {
     static _accessToken = null;
