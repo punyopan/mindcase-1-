@@ -1,6 +1,6 @@
 -- Core users table (must run before all other migrations)
 CREATE TABLE IF NOT EXISTS t_users (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) UNIQUE,
     password_hash VARCHAR(255),
     name VARCHAR(255) DEFAULT 'Detective',

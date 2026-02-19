@@ -1,0 +1,10 @@
+﻿  ? init_tokens.sql: foreign key constraint "t_user_wallets_user_id_fkey" cannot be implemented
+  ? init_streaks.sql: foreign key constraint "t_user_streaks_user_id_fkey" cannot be implemented
+  ? init_sessions.sql: foreign key constraint "t_minigame_sessions_user_id_fkey" cannot be implemented
+  ? init_progress_sync.sql: foreign key constraint "t_user_progress_sync_user_id_fkey" cannot be implemented
+  ? init_login_history.sql: foreign key constraint "t_login_history_user_id_fkey" cannot be implemented
+  ? init_entitlements.sql: foreign key constraint "t_user_entitlements_user_id_fkey" cannot be implemented
+  ? fix_subscriptions_schema.sql: foreign key constraint "t_user_subscriptions_user_id_fkey" cannot be implemented
+memory, and will not scale past a single process.
+designed for a production environment, as it will leak
+Warning: connect.session() MemoryStore is not

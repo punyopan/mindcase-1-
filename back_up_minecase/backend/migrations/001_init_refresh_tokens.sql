@@ -1,12 +1,12 @@
 -- Refresh tokens table for JWT rotation
 CREATE TABLE IF NOT EXISTS t_refresh_tokens (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES t_users(id) ON DELETE CASCADE,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES t_users(id) ON DELETE CASCADE,
     token_hash VARCHAR(255) NOT NULL,
     family_id VARCHAR(255) NOT NULL,
     expires_at TIMESTAMPTZ NOT NULL,
     revoked BOOLEAN DEFAULT FALSE,
-    replaced_by_token_id INTEGER,
+    replaced_by_token_id UUID,
     ip_address VARCHAR(45),
     user_agent TEXT,
     platform VARCHAR(100),
