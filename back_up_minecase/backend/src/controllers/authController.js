@@ -46,8 +46,8 @@ const setRefreshTokenCookie = (res, token) => {
     res.cookie('refresh_token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', 
-        sameSite: 'Lax',
-        path: '/', // Changed to root to avoid scoping issues between /api/auth and other paths
+        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+        path: '/',
         maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
     });
 };
